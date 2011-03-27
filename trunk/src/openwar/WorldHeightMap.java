@@ -48,11 +48,11 @@ public class WorldHeightMap extends ImageBasedHeightMap {
 
         int index = 0;
         for (int h = 0; h < imageHeight; h++) {
-            for (int w = imageWidth-1; w >= 0; w--) {
+            for (int w = imageWidth - 1; w >= 0; w--) {
                 int baseIndex = (h * imageWidth + w) * 3;
                 float r = data[baseIndex] & 0xff;
-                float g = data[baseIndex + 1]& 0xff;
-                float b = data[baseIndex + 2]& 0xff;
+                float g = data[baseIndex + 1] & 0xff;
+                float b = data[baseIndex + 2] & 0xff;
                 heightData[index++] = calculateHeight(r, g, b);
 
 
@@ -70,10 +70,10 @@ public class WorldHeightMap extends ImageBasedHeightMap {
 
         float grayscale = ((r + g + b) * dampen / 3f) - b * 0.05f;
 
-        if (b > 200f || grayscale < -0.5f) {
-            return -0.5f;
+        if (b > 200f || grayscale < -0.2f) {
+            return -.25f;
         } else {
-            return grayscale;
+            return grayscale / 2.5f;
         }
 
     }
