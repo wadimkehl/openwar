@@ -13,6 +13,7 @@ import com.jme3.light.DirectionalLight;
 
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.scene.Node;
@@ -141,7 +142,6 @@ public class WorldMap {
 
         try {
 
-            material = new Material(assetManager, "materials/terrain/terrain.j3md");
             heightMapImage = assetManager.loadTexture("map/heights.tga");
             groundTypeImage = assetManager.loadTexture("map/types.tga");
             regionsImage = assetManager.loadTexture("map/regions.tga");
@@ -158,6 +158,8 @@ public class WorldMap {
             }
             key0Image = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf0));
             key1Image = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf1));
+
+            material = new Material(assetManager, "materials/terrain/terrain.j3md");
             material.setTexture("Key0", key0Image);
             material.setTexture("Key1", key1Image);
 
@@ -214,9 +216,7 @@ public class WorldMap {
 
             terrain = new TerrainQuad("terrain", 128, heightMap.getSize(), heightMap.getHeightMap());
             terrain.setMaterial(material);
-            terrain.setLocalScale(1f, 0.5f, 1f);
             terrain.setLocalTranslation(width / 2f, 0f, height / 2f);
-            terrain.setModelBound(new BoundingBox());
 
             selectedTiles = new ArrayList<SelectionTile>();
 
@@ -225,7 +225,11 @@ public class WorldMap {
             FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
             WaterFilter water = new WaterFilter(scene, sunDirection);
 
-            water.setWaterHeight(0f);
+            water.setWaterHeight(-0.3f);
+            water.setMaxAmplitude(0.3f);
+            water.setSpeed(0.2f);
+            water.setShoreHardness(2f);
+            water.setFoamExistence(new Vector3f(0.2f, 0f, 0.3f));
             fpp.addFilter(water);
             app.getViewPort().addProcessor(fpp);
 
@@ -253,6 +257,14 @@ public class WorldMap {
 
         return true;
 
+    }
+    
+    
+    public Vector3f getGLTileCenter(int x, int z)
+    {
+        return new Vector3f (x + ((float) x/ (float) width),
+                heightMap.getTrueHeightAtPoint(x, z),
+                z + ((float) z/ (float) height));
     }
 
     // Select a tile of the terrain (gets highlighting)
@@ -306,7 +318,17 @@ public class WorldMap {
 
     }
 
-    public void update() {
+    public void update(float tpf) {
+
+
+        for (WorldArmy a : worldArmies) {
+            a.update(tpf);
+        }
+
+        for (WorldCity c : worldCities) {
+            c.update(tpf);
+        }
+
 
         if (selectedTilesChanged) {
             showSelectedTiles();
@@ -318,7 +340,7 @@ public class WorldMap {
     public WorldArmy createArmy(int x, int z, int player) {
 
         Spatial m = (Spatial) assetManager.loadModel("Models/Oto/Oto.mesh.xml");
-        WorldArmy a = new WorldArmy(x, z, player, m, heightMap.getScaledHeightAtPoint(255 - x, 255 - z));
+        WorldArmy a = new WorldArmy(x, z, player, m, this);
 
         worldArmies.add(a);
         scene.attachChild(m);

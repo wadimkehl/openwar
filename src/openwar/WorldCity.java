@@ -5,6 +5,8 @@
 
 package openwar;
 
+import com.jme3.scene.Spatial;
+
 /**
  *
  * @author kehl
@@ -17,5 +19,17 @@ public class WorldCity {
     String name;
     String region;
     boolean hasHarbor;
+    Spatial model;
+    
+    
+    public WorldCity()
+    {
+        
+    }
+    
+    public void update(float tpf)
+    {
+        
+    }
 
 }
