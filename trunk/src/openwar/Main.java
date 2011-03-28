@@ -55,8 +55,8 @@ public class Main extends SimpleApplication {
                     }
 
                     Vector3f pt = r.getContactPoint();
-                    int x = (int) Math.floor(pt.x - 0.5f);
-                    int z = (int) Math.floor(pt.z - 0.5f);
+                    int x = (int) Math.floor(pt.x - pt.x / (float) map.width);
+                    int z = (int) Math.floor(pt.z - pt.z / (float) map.height);
 
 
                     if (r.getGeometry() instanceof TerrainPatch) {
@@ -67,14 +67,22 @@ public class Main extends SimpleApplication {
                         System.out.print(")  Type: ");
                         System.out.println(GroundTypeManager.getGroundTypeString(map.worldTiles[x][z].groundType));
                         map.deselectTiles();
+                        map.selectTile(x, z);
                         return;
 
                     }
-                    WorldArmy a = map.getArmy((Spatial) r.getGeometry().getParent());
 
+                    WorldArmy a = map.getArmy((Spatial) r.getGeometry().getParent());
                     if (a != null) {
                         a.control.jump();
                         map.selectArmy(a);
+                        return;
+                    }
+
+                    WorldCity c = map.getCity((Spatial) r.getGeometry().getParent());
+                    if (c != null) {
+                        map.selectCity(c);
+                        return;
                     }
 
 
@@ -90,9 +98,7 @@ public class Main extends SimpleApplication {
                         return;
                     }
                     Vector3f pt = r.getContactPoint();
-                    int x = (int) Math.floor(pt.x - 0.5f);
-                    int z = (int) Math.floor(pt.z - 0.5f);
-                    x = 255 - x;
+
 
 
                 }
@@ -106,7 +112,9 @@ public class Main extends SimpleApplication {
 
 
                 if (name.equals("cursor") && !pressed) {
+                    app.getInputManager().setCursorVisible(flyCam.isEnabled());
                     flyCam.setEnabled(!flyCam.isEnabled());
+
                 }
             }
         };
@@ -129,7 +137,6 @@ public class Main extends SimpleApplication {
             inputManager.addListener(actionListener, "cursor");
 
             sceneNode = new Node("WorldMap");
-            assetManager.registerLocator("data/", FileLocator.class.getName());
             map = new WorldMap(app, assetManager, bulletState, sceneNode);
             if (!map.create()) {
                 app.stop();
@@ -138,19 +145,20 @@ public class Main extends SimpleApplication {
 
             map.material.setBoolean("useGrid", grid);
 
+            map.createArmy(0, 0, 0);
             map.createArmy(128, 128, 0);
             map.createArmy(84, 157, 0);
             map.createArmy(112, 26, 0);
+            map.createArmy(254, 254, 0);
+
 
 //            audioRenderer.playSource(new AudioNode(assetManager, "music/lol.ogg", false));
 
             rootNode.attachChild(sceneNode);
-            getCamera().getLocation().x = 128;
-            getCamera().getLocation().y = 9;
-            getCamera().getLocation().z = 108;
-            getCamera().setDirection(new Vector3f(0f, -.05f, 1f));
+            getCamera().setLocation(new Vector3f(128, 9, 108));
+            getCamera().setDirection(new Vector3f(0f, -.05f, -1f));
 
-
+            nifty.fromXml("data/ui/worldmap/worldmap.xml", "start");
 
             initialized = true;
         }
@@ -183,15 +191,15 @@ public class Main extends SimpleApplication {
     public void simpleInitApp() {
 
         this.stateManager.attach(bulletState);
+        bulletState.getPhysicsSpace().enableDebug(assetManager);
         this.stateManager.attach(worldMapState);
         this.stateManager.attach(screenshotState);
+        assetManager.registerLocator("data/", FileLocator.class.getName());
 
         guiNode.detachAllChildren();
 
-        NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(assetManager,
-                inputManager,
-                audioRenderer,
-                guiViewPort);
+        NiftyJmeDisplay niftyDisplay =
+                new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
         nifty = niftyDisplay.getNifty();
         guiViewPort.addProcessor(niftyDisplay);
 
@@ -200,11 +208,11 @@ public class Main extends SimpleApplication {
 
     }
 
+    // Calculates a mouse pick with a spatial and returns nearest result or null
     public CollisionResult getNiftyMousePick(Spatial s) {
 
         int x = nifty.getNiftyMouse().getX();
         int y = cam.getHeight() - nifty.getNiftyMouse().getY();
-        System.out.println(x + "  " + y);
         Vector2f mouse = new Vector2f(x, y);
         Vector3f t0 = cam.getWorldCoordinates(mouse, 0f);
         Vector3f t1 = cam.getWorldCoordinates(mouse, 1f);

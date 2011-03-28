@@ -6,6 +6,7 @@
 package openwar;
 
 import com.jme3.scene.Spatial;
+import java.util.ArrayList;
 
 /**
  *
@@ -19,11 +20,19 @@ public class WorldCity {
     String name;
     String region;
     boolean hasHarbor;
+    Spatial harbor;
     Spatial model;
+    ArrayList<ArmyUnit> units;
     
     
-    public WorldCity()
+    public WorldCity(int x, int z, int player, String name)
     {
+        this.posX = x;
+        this.posZ = z;
+        playerNumber = player;
+        this.name = name;
+        
+        units = new ArrayList<ArmyUnit>();
         
     }
     

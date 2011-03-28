@@ -1,0 +1,1 @@
+With a 256x256 terrain, there are only 255x255 tiles, therefore this x + x/width  <-- accounts for that missing last tile
