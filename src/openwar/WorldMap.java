@@ -258,13 +258,12 @@ public class WorldMap {
         return true;
 
     }
-    
-    
-    public Vector3f getGLTileCenter(int x, int z)
-    {
-        return new Vector3f (x + ((float) x/ (float) width),
+
+    public Vector3f getGLTileCenter(int x, int z) {
+        return new Vector3f(
+                x + ((float)x / (float) width) + 0.5f,
                 heightMap.getTrueHeightAtPoint(x, z),
-                z + ((float) z/ (float) height));
+                z + ((float)z / (float) height) + 0.5f);
     }
 
     // Select a tile of the terrain (gets highlighting)
@@ -299,7 +298,7 @@ public class WorldMap {
 
         //Set new key 1 texture values (activate overlay0)
         for (SelectionTile t : selectedTiles) {
-            int index = (((height - t.z - 1) * width + (width - 1 - t.x)) * 4);
+            int index = ((t.z * width + t.x) * 4);
             buf1.put(index + 3, (byte) (255 * t.intensity));
         }
 
@@ -345,6 +344,7 @@ public class WorldMap {
         worldArmies.add(a);
         scene.attachChild(m);
         bulletState.getPhysicsSpace().add(a.control);
+        a.units.add(new ArmyUnit(10));
 
         return a;
 
@@ -364,12 +364,51 @@ public class WorldMap {
         return null;
     }
 
+    public WorldArmy getArmy(int x, int z) {
+
+        for (WorldArmy w : worldArmies) {
+            if (w.posX == x && w.posZ == z) {
+                return w;
+            }
+        }
+        return null;
+    }
+
+    public WorldCity getCity(Spatial model) {
+
+        for (WorldCity w : worldCities) {
+            if (w.model == model) {
+                return w;
+            }
+        }
+        return null;
+    }
+
+    public WorldCity getCity(int x, int z) {
+
+        for (WorldCity w : worldCities) {
+            if (w.posX == x && w.posZ == z) {
+                return w;
+            }
+        }
+        return null;
+    }
+
     public void selectArmy(WorldArmy army) {
         if (army == null) {
             return;
         }
 
+        System.out.println(army.posX + "   "  + army.posZ);
         drawReachableArea(army);
+
+    }
+
+    public void selectCity(WorldCity city) {
+        if (city == null) {
+            return;
+        }
+
 
     }
 

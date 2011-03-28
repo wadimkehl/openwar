@@ -18,9 +18,10 @@ public class ArmyUnit {
     Texture unitCard;
     
     
-    public ArmyUnit()
+    public ArmyUnit(int maxpoints)
     {
         
+       currMovePoints = maxMovePoints = maxpoints;
     }
     
     public void resetMovePoints()

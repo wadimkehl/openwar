@@ -31,8 +31,8 @@ public class GroundTypeManager {
 
         // jME loads the image x-flipped, so start at the right
 
-        for (int y = 0; y < h; y++) {
-            for (int x = w - 1; x >= 0; x--) {
+        for (int y = h-1; y >= 0; y--) {
+            for (int x = 0; x < w; x++) {
                 int base = (y * w + x) * 4;
                 int r, g, b;
 
@@ -177,7 +177,7 @@ public class GroundTypeManager {
 
         switch (type) {
             case (0):
-                return 1;
+                return 1000;
             case (1):
                 return 1;
             case (2):

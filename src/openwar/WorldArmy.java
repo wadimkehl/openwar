@@ -37,14 +37,18 @@ public class WorldArmy {
         model = m;
         model.setShadowMode(ShadowMode.CastAndReceive);
 
-        model.scale(0.3f);
 
 
-        control = new CharacterControl(new CapsuleCollisionShape(1.5f, 0f, 1), 1f);
+
+        control = new CharacterControl(new CapsuleCollisionShape(0.5f, 1.5f, 1), 1f);
         model.addControl(control);
 
-        control.setPhysicsLocation(map.getGLTileCenter(x, z)); 
-        
+        Vector3f vec = map.getGLTileCenter(x, z);
+        vec.addLocal(0, 0.5f, 0);
+        control.setPhysicsLocation(vec);
+
+
+        model.scale(0.25f);
         units = new ArrayList<ArmyUnit>();
 
     }
@@ -52,23 +56,20 @@ public class WorldArmy {
     public int calculateMovePoints() {
 
         int points = 10000;
-        for(ArmyUnit u: units)
+        for (ArmyUnit u : units) {
             points = Math.min(u.currMovePoints, points);
+        }
         return currMovePoints = points;
-            
+
     }
-    
-    public int resetMovePoints()
-    {
-        for(ArmyUnit u: units)
+
+    public int resetMovePoints() {
+        for (ArmyUnit u : units) {
             u.resetMovePoints();
+        }
         return calculateMovePoints();
     }
 
-   
-        
-    public void update(float tpf)
-    {
-        
+    public void update(float tpf) {
     }
 }
