@@ -119,7 +119,7 @@ public class WorldMap {
     boolean selectedTilesChanged = false;
     Application app;
     int width, height;
-    Vector3f sunDirection = new Vector3f(0.8f, -0.5f, 0.5f).normalize();
+    Vector3f sunDirection = new Vector3f(-0.8f, -0.5f, -0.5f).normalize();
     ArrayList<WorldArmy> worldArmies;
     ArrayList<WorldCity> worldCities;
 
@@ -144,7 +144,7 @@ public class WorldMap {
 
             heightMapImage = assetManager.loadTexture("map/heights.tga");
             groundTypeImage = assetManager.loadTexture("map/types.tga");
-            regionsImage = assetManager.loadTexture("map/regions.tga");
+//            regionsImage = assetManager.loadTexture("map/regions.tga");
 
 
             // Create key textures
@@ -173,6 +173,7 @@ public class WorldMap {
                     r = buf.get(base + 0) & 0xff;
                     g = buf.get(base + 1) & 0xff;
                     b = buf.get(base + 2) & 0xff;
+                    
                     worldTiles[i][255 - j] = new WorldTile(i, 255 - j, GroundTypeManager.RGBtoGroundType(r, g, b));
                 }
             }
@@ -214,7 +215,7 @@ public class WorldMap {
             heightMap = new WorldHeightMap(ImageToAwt.convert(heightMapImage.getImage(), false, false, 0), 0.1f);
             heightMap.load(false, false);
 
-            terrain = new TerrainQuad("terrain", 128, heightMap.getSize(), heightMap.getHeightMap());
+            terrain = new TerrainQuad("terrain", 64, heightMap.getSize(), heightMap.getHeightMap());
             terrain.setMaterial(material);
             terrain.setLocalTranslation(width / 2f, 0f, height / 2f);
 
@@ -225,11 +226,11 @@ public class WorldMap {
             FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
             WaterFilter water = new WaterFilter(scene, sunDirection);
 
-            water.setWaterHeight(-0.3f);
-            water.setMaxAmplitude(0.3f);
-            water.setSpeed(0.2f);
-            water.setShoreHardness(2f);
-            water.setFoamExistence(new Vector3f(0.2f, 0f, 0.3f));
+            water.setWaterHeight(-0.1f);
+            water.setMaxAmplitude(0.2f);
+            water.setSpeed(0.1f);
+            water.setFoamHardness(1.5f);
+            water.setFoamExistence(new Vector3f(0.1f, 0.2f, 0.15f));
             fpp.addFilter(water);
             app.getViewPort().addProcessor(fpp);
 
@@ -240,10 +241,7 @@ public class WorldMap {
 
             scene.addLight(dlight);
             scene.attachChild(terrain);
-
             rootScene.attachChild(scene);
-
-
 
             terrain.addControl(new RigidBodyControl(0));
             bulletState.getPhysicsSpace().addAll(terrain);
@@ -259,11 +257,12 @@ public class WorldMap {
 
     }
 
+    // Returns for a tile the real opengl center coordinates
     public Vector3f getGLTileCenter(int x, int z) {
         return new Vector3f(
-                x + ((float)x / (float) width) + 0.5f,
+                x  + 0.5f,
                 heightMap.getTrueHeightAtPoint(x, z),
-                z + ((float)z / (float) height) + 0.5f);
+                z +  0.5f);
     }
 
     // Select a tile of the terrain (gets highlighting)

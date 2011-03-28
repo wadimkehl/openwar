@@ -55,8 +55,8 @@ public class Main extends SimpleApplication {
                     }
 
                     Vector3f pt = r.getContactPoint();
-                    int x = (int) Math.floor(pt.x - pt.x / (float) map.width);
-                    int z = (int) Math.floor(pt.z - pt.z / (float) map.height);
+                    int x = (int) Math.floor(pt.x);
+                    int z = (int) Math.floor(pt.z);
 
 
                     if (r.getGeometry() instanceof TerrainPatch) {
@@ -179,6 +179,7 @@ public class Main extends SimpleApplication {
         app.setSettings(new AppSettings(true));
         app.settings.setTitle("OpenWar");
         app.settings.setVSync(true);
+        app.settings.setFrameRate(20);
 
         app.start();
 

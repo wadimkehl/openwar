@@ -1,1 +1,5 @@
 With a 256x256 terrain, there are only 255x255 tiles, therefore this x + x/width  <-- accounts for that missing last tile
+
+
+
+Heightmap: 2^n + 1 pixels, Groundtype: 2^n      Heightmap has -1 pixel offset for x and y. Example: heightmap pixel (50,50) is types pixel (51,51)

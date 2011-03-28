@@ -30,18 +30,18 @@ vec4 computeDiffuse()
 	vec4 key0=texture2D(m_Key0,texCoord);
 	vec4 key1=texture2D(m_Key1,texCoord);
 
-	vec4 t0=texture2D(m_Tex0,texCoord*32.0);
-	vec4 t1=texture2D(m_Tex1,texCoord*32.0);
-	vec4 t2=texture2D(m_Tex2,texCoord*32.0);
-	vec4 t3=texture2D(m_Tex3,texCoord*32.0);
-	vec4 t4=texture2D(m_Tex4,texCoord*32.0);
-	vec4 t5=texture2D(m_Tex5,texCoord*64.0);
-	vec4 t6=texture2D(m_Tex6,texCoord*32.0);
-	vec4 t7=texture2D(m_Tex7,texCoord*32.0);
-	vec4 t8=texture2D(m_Tex8,texCoord*32.0);
-	vec4 t9=texture2D(m_Tex9,texCoord*32.0);
-	vec4 t10=texture2D(m_Tex10,texCoord*16.0);
-	vec4 t11=texture2D(m_Tex11,texCoord*32.0);
+	vec4 t0=texture2D(m_Tex0,texCoord*64.0);
+	vec4 t1=texture2D(m_Tex1,texCoord*64.0);
+	vec4 t2=texture2D(m_Tex2,texCoord*64.0);
+	vec4 t3=texture2D(m_Tex3,texCoord*64.0);
+	vec4 t4=texture2D(m_Tex4,texCoord*64.0);
+	vec4 t5=texture2D(m_Tex5,texCoord*128.0);
+	vec4 t6=texture2D(m_Tex6,texCoord*64.0);
+	vec4 t7=texture2D(m_Tex7,texCoord*64.0);
+	vec4 t8=texture2D(m_Tex8,texCoord*64.0);
+	vec4 t9=texture2D(m_Tex9,texCoord*64.0);
+	vec4 t10=texture2D(m_Tex10,texCoord*32.0);
+	vec4 t11=texture2D(m_Tex11,texCoord*64.0);
 
 
 	vec4 outColor=t0*(key0.r * key1.r);
