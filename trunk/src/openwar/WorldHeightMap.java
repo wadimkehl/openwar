@@ -47,7 +47,7 @@ public class WorldHeightMap extends ImageBasedHeightMap {
         heightData = new float[(imageWidth * imageHeight)];
 
         int index = 0;
-        for (int h = imageHeight-1; h >= 0; h--) {
+        for (int h = imageHeight - 1; h >= 0; h--) {
             for (int w = 0; w < imageWidth; w++) {
                 int baseIndex = (h * imageWidth + w) * 3;
                 float r = data[baseIndex] & 0xff;
@@ -67,14 +67,10 @@ public class WorldHeightMap extends ImageBasedHeightMap {
 
     public float calculateHeight(float r, float g, float b) {
 
-
-        float grayscale = ((r + g + b) * dampen / 3f) - b * 0.05f;
-
-        if (b > 200f || grayscale < -0.2f) {
+        if (b > 200f) {
             return -.25f;
-        } else {
-            return grayscale / 2.5f;
         }
-
+        float grayscale = Math.max(0f, (r + g + b) * (dampen / 3f) - b * 0.05f);
+        return grayscale * 0.5f;
     }
 }

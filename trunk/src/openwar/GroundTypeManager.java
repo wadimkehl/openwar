@@ -29,7 +29,7 @@ public class GroundTypeManager {
         ByteBuffer buffer = im.getData(0);
 
 
-        // jME loads the image x-flipped, so start at the right
+        // jME loads the image y-flipped, so start at the bottom
 
         for (int y = h-1; y >= 0; y--) {
             for (int x = 0; x < w; x++) {
