@@ -55,9 +55,8 @@ public class Main extends SimpleApplication {
                     }
 
                     Vector3f pt = r.getContactPoint();
-                    int x = (int) (pt.x - pt.x/map.width);
-                    int z = (int) (pt.z - pt.z/map.height);
-                    System.out.println(pt.x +  "    " +pt.z);
+                    int x = (int) (pt.x - pt.x / map.width);
+                    int z = (int) (pt.z - pt.z / map.height);
 
                     if (r.getGeometry() instanceof TerrainPatch) {
                         System.out.print("Terrain tile: (");
@@ -98,8 +97,8 @@ public class Main extends SimpleApplication {
                         return;
                     }
                     Vector3f pt = r.getContactPoint();
-                    int x = (int) Math.floor(pt.x);
-                    int z = (int) Math.floor(pt.z);
+                    int x = (int) (pt.x - pt.x / map.width);
+                    int z = (int) (pt.z - pt.z / map.height);
 
 
                 }
@@ -107,7 +106,7 @@ public class Main extends SimpleApplication {
 
                 if (name.equals("grid") && !pressed) {
                     grid = !grid;
-                    map.material.setBoolean("useGrid", grid);
+                    map.matTerrain.setBoolean("useGrid", grid);
                     map.deselectTiles();
                 }
 
@@ -143,7 +142,7 @@ public class Main extends SimpleApplication {
                 app.stop();
             }
 
-            map.material.setBoolean("useGrid", grid);
+            map.matTerrain.setBoolean("useGrid", grid);
 
             map.createArmy(0, 0, 0);
             map.createArmy(16, 16, 0);
@@ -186,7 +185,7 @@ public class Main extends SimpleApplication {
         app.settings.setVSync(true);
 
         app.settings.setFrameRate(30);
-        
+
         app.start();
 
 
