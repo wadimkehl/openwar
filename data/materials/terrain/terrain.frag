@@ -27,8 +27,13 @@ varying vec4 vLightDir;
 
 vec4 computeDiffuse()
 {
+
+        vec2 tex = texCoord;
+        tex.r = texCoord.r *(1.0 + 1.0/256.0);
+        tex.g = texCoord.g *(1.0 + 1.0/256.0);  
 	vec4 key0=texture2D(m_Key0,texCoord);
 	vec4 key1=texture2D(m_Key1,texCoord);
+
 
 	vec4 t0=texture2D(m_Tex0,texCoord*64.0);
 	vec4 t1=texture2D(m_Tex1,texCoord*64.0);
@@ -64,7 +69,7 @@ vec4 computeDiffuse()
 
 #ifdef USE_GRID
 // somewhen in the future this grid will be used for green/red/brown path coloring
-	vec4 t13=texture2D(m_Tex13,texCoord*256.0);
+	vec4 t13=texture2D(m_Tex13,texCoord*257.0);
         outColor *=t13;
 #endif
 

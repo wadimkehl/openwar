@@ -119,7 +119,7 @@ public class WorldMap {
     boolean selectedTilesChanged = false;
     Application app;
     int width, height;
-    Vector3f sunDirection = new Vector3f(-0.8f, -0.5f, -0.5f).normalize();
+    Vector3f sunDirection = new Vector3f(-0.3f, -0.8f, -1f).normalize();
     ArrayList<WorldArmy> worldArmies;
     ArrayList<WorldCity> worldCities;
 
@@ -174,7 +174,7 @@ public class WorldMap {
                     g = buf.get(base + 1) & 0xff;
                     b = buf.get(base + 2) & 0xff;
                     
-                    worldTiles[i][255 - j] = new WorldTile(i, 255 - j, GroundTypeManager.RGBtoGroundType(r, g, b));
+                    worldTiles[i][height-1 - j] = new WorldTile(i, height-1 - j, GroundTypeManager.RGBtoGroundType(r, g, b));
                 }
             }
 
@@ -227,8 +227,8 @@ public class WorldMap {
             WaterFilter water = new WaterFilter(scene, sunDirection);
 
             water.setWaterHeight(-0.1f);
-            water.setMaxAmplitude(0.2f);
-            water.setSpeed(0.1f);
+            water.setMaxAmplitude(0.15f);
+            water.setSpeed(0.25f);
             water.setFoamHardness(1.5f);
             water.setFoamExistence(new Vector3f(0.1f, 0.2f, 0.15f));
             fpp.addFilter(water);
