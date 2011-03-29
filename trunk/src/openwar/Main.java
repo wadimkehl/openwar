@@ -146,17 +146,21 @@ public class Main extends SimpleApplication {
             map.material.setBoolean("useGrid", grid);
 
             map.createArmy(0, 0, 0);
+            map.createArmy(16, 16, 0);
+
+            map.createArmy(31, 31, 0);
+
             map.createArmy(128, 128, 0);
             map.createArmy(84, 157, 0);
             map.createArmy(112, 26, 0);
-            map.createArmy(254, 254, 0);
+            map.createArmy(255, 255, 0);
 
 
 //            audioRenderer.playSource(new AudioNode(assetManager, "music/lol.ogg", false));
 
             rootNode.attachChild(sceneNode);
-            getCamera().setLocation(new Vector3f(128, 9, 108));
-            getCamera().setDirection(new Vector3f(0f, -.05f, -1f));
+            getCamera().setLocation(new Vector3f(map.width / 2, 9, map.height / 2));
+            getCamera().setDirection(new Vector3f(0f, -.9f, -1f).normalizeLocal());
 
             nifty.fromXml("data/ui/worldmap/worldmap.xml", "start");
 
@@ -175,13 +179,16 @@ public class Main extends SimpleApplication {
         Main app = new Main();
 
 
-        app.setShowSettings(false);
+        app.setShowSettings(true);
         app.setSettings(new AppSettings(true));
         app.settings.setTitle("OpenWar");
         app.settings.setVSync(true);
-        app.settings.setFrameRate(20);
 
+        app.settings.setFrameRate(30);
+        
         app.start();
+
+
 
 
 
@@ -191,11 +198,13 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleInitApp() {
 
+
+        assetManager.registerLocator("data/", FileLocator.class.getName());
+
+
         this.stateManager.attach(bulletState);
-        bulletState.getPhysicsSpace().enableDebug(assetManager);
         this.stateManager.attach(worldMapState);
         this.stateManager.attach(screenshotState);
-        assetManager.registerLocator("data/", FileLocator.class.getName());
 
         guiNode.detachAllChildren();
 
