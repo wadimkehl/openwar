@@ -32,6 +32,7 @@ import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.Stack;
 import jme3tools.converters.ImageToAwt;
 
 /**
@@ -113,7 +114,7 @@ public class WorldMap {
     AssetManager assetManager;
     WorldHeightMap heightMap;
     Texture[] textures;
-    Texture key0Image, key1Image,key1Image_overlay;
+    Texture key0Image, key1Image, key1Image_overlay;
     Texture groundTypeImage;
     Texture heightMapImage;
     Texture regionsImage;
@@ -125,6 +126,8 @@ public class WorldMap {
     Vector3f sunDirection = new Vector3f(-0.3f, -0.8f, -1f).normalize();
     ArrayList<WorldArmy> worldArmies;
     ArrayList<WorldCity> worldCities;
+    WorldArmy selectedArmy;
+    WorldCity selectedCity;
 
     public WorldMap(
             Application app, AssetManager assetman, BulletAppState bullet, Node scene) {
@@ -248,8 +251,8 @@ public class WorldMap {
             matOverlay.setColor("Color", ColorRGBA.Blue);
             selectedTilesOverlay.setMaterial(matOverlay);
             matOverlay.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
-            
-            
+
+
             scene.attachChild(terrain);
 //            scene.attachChild(selectedTilesOverlay);
             rootScene.attachChild(scene);
@@ -295,7 +298,7 @@ public class WorldMap {
         selectTile(x, z, 1f);
     }
 
- // Process all the selected tiles into key 1 texture to make them visible
+    // Process all the selected tiles into key 1 texture to make them visible
     private void showSelectedTiles() {
 
         ByteBuffer b1 = key1Image.getImage().getData(0);
@@ -325,7 +328,11 @@ public class WorldMap {
 
     }
 
-
+    public void deselectAll() {
+        deselectTiles();
+        selectedArmy = null;
+        selectedCity = null;
+    }
 
     // Deselects the selected tiles (removes highlighting)
     public void deselectTiles() {
@@ -425,7 +432,7 @@ public class WorldMap {
         if (army == null) {
             return;
         }
-
+        selectedArmy = army;
         System.out.println(army.posX + "   " + army.posZ);
         drawReachableArea(army);
 
@@ -435,6 +442,7 @@ public class WorldMap {
         if (city == null) {
             return;
         }
+        selectedCity = city;
 
 
     }
@@ -472,7 +480,7 @@ public class WorldMap {
         distance[points][points] = 0;
 
         // Do BFS for all tiles in question starting from army's position
-        Queue<PathTile> q = new LinkedList<PathTile>();
+        LinkedList<PathTile> q = new LinkedList<PathTile>();
         q.add(new PathTile(army.posX, army.posZ, 0, null));
         while (!q.isEmpty()) {
 
@@ -512,7 +520,7 @@ public class WorldMap {
                     }
 
                     if (isBorder) {
-                        selectTile(army.posX + x, army.posZ + z, 1f);
+                        selectTile(army.posX + x, army.posZ + z, 0.3f);
                     } else {
                         selectTile(army.posX + x, army.posZ + z, 0.3f);
                     }
@@ -522,5 +530,123 @@ public class WorldMap {
             }
 
         }
+    }
+
+    public boolean walkableTile(Tile t) {
+        return walkableTile(t.x, t.z);
+    }
+
+    public boolean walkableTile(int x, int z) {
+        if (worldTiles[x][z].cost >= 1000) {
+            return false;
+        }
+
+        return true;
+    }
+
+    // Calculates the shortest path between two tiles with A*
+    // Not really because I dont calculate the heuristic part of the distance
+    public Stack<PathTile> findPath(Tile start, Tile end) {
+
+        if (!walkableTile(start) || !walkableTile(end)) {
+            return null;
+        }
+
+        LinkedList<PathTile> open = new LinkedList<PathTile>();
+        LinkedList<PathTile> closed = new LinkedList<PathTile>();
+        open.add(new PathTile(start.x, start.z, 0, null));
+
+        PathTile p = null;
+        while (!open.isEmpty()) {
+
+            // find in open list best candidate (minimal distance) and remove
+            int min = 100000;
+            PathTile best = null;
+            for (PathTile temp : open) {
+                if (temp.distance < min) {
+                    min = temp.distance;
+                    best = temp;
+                }
+            }
+            open.remove(best);
+
+
+            // check if we reached the goal
+            if (best.x == end.x && best.z == end.z) {
+                p = best;
+                break;
+            }
+
+            // expand the candidate, i.e. run through all neighbors and check 'em
+            for (int i = -1; i < 2; i++) {
+                for (int j = -1; j < 2; j++) {
+                    int newx = ensureInTerrainX(best.x + i);
+                    int newz = ensureInTerrainZ(best.z + j);
+
+                    // check if already in closed list -> ignore
+                    boolean alreadyClosed = false;
+                    for (PathTile temp : closed) {
+                        if (temp.x == newx && temp.z == newz) {
+                            alreadyClosed = true;
+                        }
+                    }
+                    if (alreadyClosed) {
+                        continue;
+                    }
+
+                    int new_distance = best.distance + worldTiles[newx][newz].cost;
+
+                    // check if in open list
+                    boolean alreadyOpen = false;
+                    for (PathTile temp : open) {
+                        if (temp.x == newx && temp.z == newz) {
+                            alreadyOpen = true;
+
+                            // check if we found a shorter path
+                            if (new_distance < temp.distance) {
+                                temp.ancestor = best;
+                                temp.distance = new_distance;
+                            }
+                        }
+                    }
+
+                    if (!alreadyOpen) {
+                        open.add(new PathTile(newx, newz, new_distance, best));
+                    }
+
+                }
+            }
+
+            // And finally add to closed list
+            closed.add(best);
+
+        }
+
+        // Build the path recursively
+        Stack<PathTile> path = new Stack<PathTile>();
+        path.push(p);
+        while (path.peek().ancestor != null) {
+            path.push(path.peek().ancestor);
+        }
+        return path;
+    }
+
+    public void marchTo(WorldArmy a, Tile t) {
+        marchTo(a, t.x, t.z);
+    }
+
+    public void marchTo(WorldArmy a, WorldCity c) {
+        marchTo(a, c.posX, c.posZ);
+    }
+
+    public void marchTo(WorldArmy a, WorldArmy goal) {
+        marchTo(a, goal.posX, goal.posZ);
+    }
+
+    public void marchTo(WorldArmy a, int x, int z) {
+        
+        Stack<PathTile> p = findPath(new Tile(a.posX,a.posZ),new Tile(x,z));
+        if (p != null)
+            selectedArmy.setRoute(p);
     }
 }

@@ -11,6 +11,8 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Spatial;
 import java.util.ArrayList;
+import java.util.Stack;
+import openwar.WorldMap.PathTile;
 
 /**
  *
@@ -25,6 +27,8 @@ public class WorldArmy {
     CharacterControl control;
     WorldMap map;
     ArrayList<ArmyUnit> units;
+    Stack<PathTile> route;
+    boolean onRoute = false;
 
     public WorldArmy() {
     }
@@ -40,7 +44,7 @@ public class WorldArmy {
 
 
 
-        control = new CharacterControl(new CapsuleCollisionShape(0.25f, 1.4f, 1), 1f);
+        control = new CharacterControl(new CapsuleCollisionShape(0.25f, 1.5f, 1), 10000f);
         model.addControl(control);
 
         Vector3f vec = map.getGLTileCenter(x, z);
@@ -71,5 +75,51 @@ public class WorldArmy {
     }
 
     public void update(float tpf) {
+
+        if (onRoute) {
+
+            // check if goal reached
+            if (route.isEmpty()) {
+                route = null;
+                onRoute = false;
+                System.out.println("Goal reached");
+                control.setWalkDirection(Vector3f.ZERO);
+
+
+            } else {
+
+                PathTile t = route.peek();
+                Vector3f checkpoint = map.getGLTileCenter(t.x, t.z);
+                Vector3f location = control.getPhysicsLocation().subtractLocal(0, 0.75f, 0);
+
+                // next checkpoint reached
+                if (checkpoint.distanceSquared(location) < 0.15f) {
+                    route.pop();
+                    System.out.println("Checkpoint reached");
+                    control.setWalkDirection(Vector3f.ZERO);
+
+
+                    if (route.isEmpty()) {
+                        control.setPhysicsLocation(checkpoint.addLocal(0, 0.75f, 0));                   
+                        return;
+                    }
+
+                    t = route.peek();
+                    checkpoint = map.getGLTileCenter(t.x, t.z);
+                    Vector3f dir = checkpoint.subtractLocal(location);
+                    dir.normalizeLocal().multLocal(0.5f * tpf).setY(0);
+                    control.setWalkDirection(dir);
+                }
+            }
+
+
+
+        }
+
+    }
+
+    public void setRoute(Stack<PathTile> r) {
+        route = r;
+        onRoute = true;
     }
 }
