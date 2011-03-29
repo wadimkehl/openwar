@@ -101,17 +101,38 @@ public class Main extends SimpleApplication {
                     int z = (int) (pt.z - pt.z / map.height);
 
 
+                    // Check if we ordered a march command
+                    if (map.selectedArmy != null) {
+
+                        if (r.getGeometry() instanceof TerrainPatch) {
+                            map.marchTo(map.selectedArmy, x, z);
+                            return;
+                        }
+
+                        WorldArmy a = map.getArmy((Spatial) r.getGeometry().getParent());
+                        if (a != null) {
+                            map.marchTo(map.selectedArmy, a);
+                            return;
+                        }
+
+                        WorldCity c = map.getCity((Spatial) r.getGeometry().getParent());
+                        if (c != null) {
+                            map.marchTo(map.selectedArmy, c);
+                            return;
+                        }
+                    }
                 }
 
 
-                if (name.equals("grid") && !pressed) {
+                if (name.equals(
+                        "grid") && !pressed) {
                     grid = !grid;
                     map.matTerrain.setBoolean("useGrid", grid);
                     map.deselectTiles();
                 }
 
-
-                if (name.equals("cursor") && !pressed) {
+                if (name.equals(
+                        "cursor") && !pressed) {
                     app.getInputManager().setCursorVisible(flyCam.isEnabled());
                     flyCam.setEnabled(!flyCam.isEnabled());
 
@@ -189,36 +210,25 @@ public class Main extends SimpleApplication {
         app.start();
 
 
-
-
-
-
     }
 
     @Override
     public void simpleInitApp() {
 
-
         assetManager.registerLocator("data/", FileLocator.class.getName());
-
-
         this.stateManager.attach(bulletState);
         this.stateManager.attach(worldMapState);
         this.stateManager.attach(screenshotState);
 
         guiNode.detachAllChildren();
-
         NiftyJmeDisplay niftyDisplay =
                 new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
         nifty = niftyDisplay.getNifty();
+
         guiViewPort.addProcessor(niftyDisplay);
-
-
-
-
     }
 
-    // Calculates a mouse pick with a spatial and returns nearest result or null
+// Calculates a mouse pick with a spatial and returns nearest result or null
     public CollisionResult getNiftyMousePick(Spatial s) {
 
         int x = nifty.getNiftyMouse().getX();
