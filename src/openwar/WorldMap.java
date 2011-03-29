@@ -12,10 +12,12 @@ import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.light.DirectionalLight;
 
 import com.jme3.material.Material;
+import com.jme3.material.RenderState.FaceCullMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.TerrainQuad;
@@ -107,17 +109,19 @@ public class WorldMap {
     TerrainQuad terrain;
     BulletAppState bulletState;
     Node scene, rootScene;
-    Material material;
+    Material matTerrain;
     AssetManager assetManager;
     WorldHeightMap heightMap;
     Texture[] textures;
-    Texture key0Image, key1Image;
+    Texture key0Image, key1Image,key1Image_overlay;
     Texture groundTypeImage;
     Texture heightMapImage;
     Texture regionsImage;
     WorldTile[][] worldTiles;
     ArrayList<SelectionTile> selectedTiles;
     boolean selectedTilesChanged = false;
+    Geometry selectedTilesOverlay;
+    Material matOverlay;
     Vector3f sunDirection = new Vector3f(-0.3f, -0.8f, -1f).normalize();
     ArrayList<WorldArmy> worldArmies;
     ArrayList<WorldCity> worldCities;
@@ -158,9 +162,9 @@ public class WorldMap {
             key0Image = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf0));
             key1Image = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf1));
 
-            material = new Material(assetManager, "materials/terrain/terrain.j3md");
-            material.setTexture("Key0", key0Image);
-            material.setTexture("Key1", key1Image);
+            matTerrain = new Material(assetManager, "materials/terrain/terrain.j3md");
+            matTerrain.setTexture("Key0", key0Image);
+            matTerrain.setTexture("Key1", key1Image);
 
             // Create worldTiles array
             worldTiles = new WorldTile[width][height];
@@ -196,26 +200,26 @@ public class WorldMap {
             for (int i = 0; i < 14; i++) {
                 textures[i].setWrap(Texture.WrapMode.Repeat);
             }
-            material.setTexture("Tex0", textures[0]);
-            material.setTexture("Tex1", textures[1]);
-            material.setTexture("Tex2", textures[2]);
-            material.setTexture("Tex3", textures[3]);
-            material.setTexture("Tex4", textures[4]);
-            material.setTexture("Tex5", textures[5]);
-            material.setTexture("Tex6", textures[6]);
-            material.setTexture("Tex7", textures[7]);
-            material.setTexture("Tex8", textures[8]);
-            material.setTexture("Tex9", textures[9]);
-            material.setTexture("Tex10", textures[10]);
-            material.setTexture("Tex11", textures[11]);
-            material.setTexture("Tex12", textures[12]);
-            material.setTexture("Tex13", textures[13]);
+            matTerrain.setTexture("Tex0", textures[0]);
+            matTerrain.setTexture("Tex1", textures[1]);
+            matTerrain.setTexture("Tex2", textures[2]);
+            matTerrain.setTexture("Tex3", textures[3]);
+            matTerrain.setTexture("Tex4", textures[4]);
+            matTerrain.setTexture("Tex5", textures[5]);
+            matTerrain.setTexture("Tex6", textures[6]);
+            matTerrain.setTexture("Tex7", textures[7]);
+            matTerrain.setTexture("Tex8", textures[8]);
+            matTerrain.setTexture("Tex9", textures[9]);
+            matTerrain.setTexture("Tex10", textures[10]);
+            matTerrain.setTexture("Tex11", textures[11]);
+            matTerrain.setTexture("Tex12", textures[12]);
+            matTerrain.setTexture("Tex13", textures[13]);
 
             heightMap = new WorldHeightMap(ImageToAwt.convert(heightMapImage.getImage(), false, false, 0), 0.1f);
             heightMap.load(false, false);
 
             terrain = new TerrainQuad("terrain", 64, heightMap.getSize(), heightMap.getHeightMap());
-            terrain.setMaterial(material);
+            terrain.setMaterial(matTerrain);
             terrain.setLocalTranslation(width / 2f, 0f, height / 2f);
 
             selectedTiles = new ArrayList<SelectionTile>();
@@ -237,9 +241,17 @@ public class WorldMap {
             DirectionalLight dlight = new DirectionalLight();
             dlight.setColor(ColorRGBA.White);
             dlight.setDirection(sunDirection);
-
             scene.addLight(dlight);
+
+            selectedTilesOverlay = new Geometry("overlay");
+            matOverlay = new Material(assetManager, "Common/MatDefs/Misc/SolidColor.j3md");
+            matOverlay.setColor("Color", ColorRGBA.Blue);
+            selectedTilesOverlay.setMaterial(matOverlay);
+            matOverlay.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
+            
+            
             scene.attachChild(terrain);
+//            scene.attachChild(selectedTilesOverlay);
             rootScene.attachChild(scene);
 
             terrain.addControl(new RigidBodyControl(0));
@@ -258,9 +270,15 @@ public class WorldMap {
 
     // Returns for a tile the real opengl center coordinates
     public Vector3f getGLTileCenter(int x, int z) {
-
         float newx = 0.5f * (1f - 1f / (float) width) + (x * (1f + 1f / (float) width));
         float newz = 0.5f * (1f - 1f / (float) height) + (z * (1f + 1f / (float) height));
+        return new Vector3f(newx, heightMap.getInterpolatedHeight(newx, newz), newz);
+    }
+
+    // Return for a tile the opengl coordinates of the upper left corner
+    public Vector3f getGLTileCorner(int x, int z) {
+        float newx = (x * (1f + 1f / (float) width));
+        float newz = (z * (1f + 1f / (float) height));
         return new Vector3f(newx, heightMap.getInterpolatedHeight(newx, newz), newz);
     }
 
@@ -277,7 +295,7 @@ public class WorldMap {
         selectTile(x, z, 1f);
     }
 
-    // Process all the selected tiles into key 1 texture to make them visible
+ // Process all the selected tiles into key 1 texture to make them visible
     private void showSelectedTiles() {
 
         ByteBuffer b1 = key1Image.getImage().getData(0);
@@ -302,8 +320,12 @@ public class WorldMap {
 
 
         selectedTilesChanged = false;
+        key1Image_overlay = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf1));
+        matTerrain.setTexture("Key1", key1Image_overlay);
 
     }
+
+
 
     // Deselects the selected tiles (removes highlighting)
     public void deselectTiles() {
@@ -342,6 +364,16 @@ public class WorldMap {
         a.units.add(new ArmyUnit(10));
 
         return a;
+
+    }
+
+    public WorldCity createCity(int x, int z, int player) {
+        Spatial m = (Spatial) assetManager.loadModel("Models/Sign Post/Sign Post.mesh.xml");
+        WorldCity c = new WorldCity(x, z, player, "Buxtehude");
+
+        worldCities.add(c);
+        scene.attachChild(m);
+        return c;
 
     }
 
