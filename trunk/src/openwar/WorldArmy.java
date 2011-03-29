@@ -40,15 +40,15 @@ public class WorldArmy {
 
 
 
-        control = new CharacterControl(new CapsuleCollisionShape(0.5f, 1.5f, 1), 1f);
+        control = new CharacterControl(new CapsuleCollisionShape(0.25f, 1.4f, 1), 1f);
         model.addControl(control);
 
         Vector3f vec = map.getGLTileCenter(x, z);
-        vec.addLocal(0, 0.5f, 0);
+        vec.addLocal(0, 1f, 0);
         control.setPhysicsLocation(vec);
 
 
-        model.scale(0.25f);
+        model.scale(0.2f);
         units = new ArrayList<ArmyUnit>();
 
     }
