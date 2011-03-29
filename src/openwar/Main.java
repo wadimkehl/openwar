@@ -55,9 +55,9 @@ public class Main extends SimpleApplication {
                     }
 
                     Vector3f pt = r.getContactPoint();
-                    int x = (int) Math.floor(pt.x);
-                    int z = (int) Math.floor(pt.z);
-
+                    int x = (int) (pt.x - pt.x/map.width);
+                    int z = (int) (pt.z - pt.z/map.height);
+                    System.out.println(pt.x +  "    " +pt.z);
 
                     if (r.getGeometry() instanceof TerrainPatch) {
                         System.out.print("Terrain tile: (");
@@ -98,7 +98,8 @@ public class Main extends SimpleApplication {
                         return;
                     }
                     Vector3f pt = r.getContactPoint();
-
+                    int x = (int) Math.floor(pt.x);
+                    int z = (int) Math.floor(pt.z);
 
 
                 }
@@ -142,18 +143,18 @@ public class Main extends SimpleApplication {
                 app.stop();
             }
 
-
             map.material.setBoolean("useGrid", grid);
 
             map.createArmy(0, 0, 0);
             map.createArmy(16, 16, 0);
 
             map.createArmy(31, 31, 0);
+            map.createArmy(125, 190, 0);
 
             map.createArmy(128, 128, 0);
             map.createArmy(84, 157, 0);
             map.createArmy(112, 26, 0);
-            map.createArmy(255, 255, 0);
+            map.createArmy(254, 254, 0);
 
 
 //            audioRenderer.playSource(new AudioNode(assetManager, "music/lol.ogg", false));

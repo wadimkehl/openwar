@@ -102,6 +102,8 @@ public class WorldMap {
 
         }
     };
+    Application app;
+    int width, height;
     TerrainQuad terrain;
     BulletAppState bulletState;
     Node scene, rootScene;
@@ -109,16 +111,13 @@ public class WorldMap {
     AssetManager assetManager;
     WorldHeightMap heightMap;
     Texture[] textures;
-    Texture key0Image;
-    Texture key1Image, key1Image_overlay;
+    Texture key0Image, key1Image;
     Texture groundTypeImage;
     Texture heightMapImage;
     Texture regionsImage;
     WorldTile[][] worldTiles;
     ArrayList<SelectionTile> selectedTiles;
     boolean selectedTilesChanged = false;
-    Application app;
-    int width, height;
     Vector3f sunDirection = new Vector3f(-0.3f, -0.8f, -1f).normalize();
     ArrayList<WorldArmy> worldArmies;
     ArrayList<WorldCity> worldCities;
@@ -173,8 +172,8 @@ public class WorldMap {
                     r = buf.get(base + 0) & 0xff;
                     g = buf.get(base + 1) & 0xff;
                     b = buf.get(base + 2) & 0xff;
-                    
-                    worldTiles[i][height-1 - j] = new WorldTile(i, height-1 - j, GroundTypeManager.RGBtoGroundType(r, g, b));
+
+                    worldTiles[i][height - 1 - j] = new WorldTile(i, height - 1 - j, GroundTypeManager.RGBtoGroundType(r, g, b));
                 }
             }
 
@@ -259,10 +258,10 @@ public class WorldMap {
 
     // Returns for a tile the real opengl center coordinates
     public Vector3f getGLTileCenter(int x, int z) {
-        return new Vector3f(
-                x  + 0.5f,
-                heightMap.getTrueHeightAtPoint(x, z),
-                z +  0.5f);
+
+        float newx = 0.5f * (1f - 1f / (float) width) + (x * (1f + 1f / (float) width));
+        float newz = 0.5f * (1f - 1f / (float) height) + (z * (1f + 1f / (float) height));
+        return new Vector3f(newx, heightMap.getInterpolatedHeight(newx, newz), newz);
     }
 
     // Select a tile of the terrain (gets highlighting)
@@ -303,8 +302,6 @@ public class WorldMap {
 
 
         selectedTilesChanged = false;
-        key1Image_overlay = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf1));
-        material.setTexture("Key1", key1Image_overlay);
 
     }
 
@@ -312,7 +309,6 @@ public class WorldMap {
     public void deselectTiles() {
         selectedTiles.clear();
         selectedTilesChanged = true;
-        material.setTexture("Key1", key1Image);
 
     }
 
@@ -398,7 +394,7 @@ public class WorldMap {
             return;
         }
 
-        System.out.println(army.posX + "   "  + army.posZ);
+        System.out.println(army.posX + "   " + army.posZ);
         drawReachableArea(army);
 
     }
