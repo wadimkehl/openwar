@@ -74,33 +74,59 @@ public class WorldArmy {
         return calculateMovePoints();
     }
 
+    public int reduceMovePoints(int minus) {
+        for (ArmyUnit u : units) {
+            u.currMovePoints = Math.max(0,u.currMovePoints - minus);
+        }
+        return calculateMovePoints();
+    }
+
     public void update(float tpf) {
 
         if (onRoute) {
 
             // check if goal reached
-            if (route.isEmpty()) {
+            if (route == null || route.isEmpty()) {
                 route = null;
                 onRoute = false;
-                System.out.println("Goal reached");
                 control.setWalkDirection(Vector3f.ZERO);
 
 
             } else {
 
                 PathTile t = route.peek();
+                
+                if (currMovePoints < map.getTileCosts(t.x, t.z))
+                {
+                    return;
+                }
+                
                 Vector3f checkpoint = map.getGLTileCenter(t.x, t.z);
-                Vector3f location = control.getPhysicsLocation().subtractLocal(0, 0.75f, 0);
+                Vector3f location = control.getPhysicsLocation();
+                location.subtractLocal(0, 1f, 0);
 
                 // next checkpoint reached
-                if (checkpoint.distanceSquared(location) < 0.15f) {
+                if (checkpoint.distanceSquared(location) < 0.05f) {
                     route.pop();
                     System.out.println("Checkpoint reached");
                     control.setWalkDirection(Vector3f.ZERO);
-
+                    reduceMovePoints(map.getTileCosts(t.x, t.z));
+                    posX = t.x;
+                    posZ = t.z;
+                    
+                    
+                    if (map.selectedArmy == this)
+                    {
+                        map.selectedTiles.clear();
+                        map.drawReachableArea(this);
+                    }
 
                     if (route.isEmpty()) {
-                        control.setPhysicsLocation(checkpoint.addLocal(0, 0.75f, 0));                   
+                        control.setPhysicsLocation(checkpoint.addLocal(0, 1f, 0));
+                        onRoute = false;
+                        System.out.println("Goal reached");
+                        control.setWalkDirection(Vector3f.ZERO);
+
                         return;
                     }
 
@@ -109,6 +135,7 @@ public class WorldArmy {
                     Vector3f dir = checkpoint.subtractLocal(location);
                     dir.normalizeLocal().multLocal(0.5f * tpf).setY(0);
                     control.setWalkDirection(dir);
+                    control.setViewDirection(dir);
                 }
             }
 
