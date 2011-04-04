@@ -73,7 +73,6 @@ public class Main extends SimpleApplication {
 
                     WorldArmy a = map.getArmy((Spatial) r.getGeometry().getParent());
                     if (a != null) {
-                        a.control.jump();
                         map.selectArmy(a);
                         return;
                     }

@@ -433,7 +433,6 @@ public class WorldMap {
             return;
         }
         selectedArmy = army;
-        System.out.println(army.posX + "   " + army.posZ);
         drawReachableArea(army);
 
     }
@@ -465,10 +464,15 @@ public class WorldMap {
     }
 
     // Run BFS to find the reachable tiles for the army
-    private void drawReachableArea(WorldArmy army) {
+    public void drawReachableArea(WorldArmy army) {
 
         deselectTiles();
         int points = army.calculateMovePoints();
+        if (points <= 0)
+        {
+            selectTile(army.posX,army.posZ,0.3f);
+            return;
+        }
 
         // Holds global distance values discovered yet
         int[][] distance = new int[2 * points][2 * points];
