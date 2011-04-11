@@ -76,7 +76,7 @@ public class WorldArmy {
 
     public int reduceMovePoints(int minus) {
         for (ArmyUnit u : units) {
-            u.currMovePoints = Math.max(0,u.currMovePoints - minus);
+            u.currMovePoints = Math.max(0, u.currMovePoints - minus);
         }
         return calculateMovePoints();
     }
@@ -95,12 +95,11 @@ public class WorldArmy {
             } else {
 
                 PathTile t = route.peek();
-                
-                if (currMovePoints < map.getTileCosts(t.x, t.z))
-                {
+
+                if (currMovePoints < map.getTileCosts(t.x, t.z)) {
                     return;
                 }
-                
+
                 Vector3f checkpoint = map.getGLTileCenter(t.x, t.z);
                 Vector3f location = control.getPhysicsLocation();
                 location.subtractLocal(0, 1f, 0);
@@ -113,10 +112,9 @@ public class WorldArmy {
                     reduceMovePoints(map.getTileCosts(t.x, t.z));
                     posX = t.x;
                     posZ = t.z;
-                    
-                    
-                    if (map.selectedArmy == this)
-                    {
+
+
+                    if (map.selectedArmy == this) {
                         map.selectedTiles.clear();
                         map.drawReachableArea(this);
                     }
@@ -126,6 +124,12 @@ public class WorldArmy {
                         onRoute = false;
                         System.out.println("Goal reached");
                         control.setWalkDirection(Vector3f.ZERO);
+
+
+                        WorldCity c = map.getCity(posX, posZ);
+                        if (c != null) {
+                            c.garrisonArmy(this);
+                        }
 
                         return;
                     }
