@@ -31,9 +31,11 @@ import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
 import com.jme3.terrain.geomipmap.TerrainPatch;
 import de.lessvoid.nifty.Nifty;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 public class Main extends SimpleApplication {
-
+    
+    ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(4);
     public Nifty nifty;
     public BulletAppState bulletState = new BulletAppState();
     public ScreenshotAppState screenshotState = new ScreenshotAppState();
@@ -174,6 +176,8 @@ public class Main extends SimpleApplication {
             map.createArmy(84, 157, 0);
             map.createArmy(112, 26, 0);
             map.createArmy(254, 254, 0);
+            
+            map.createCity(128,130, 0);
 
 
 //            audioRenderer.playSource(new AudioNode(assetManager, "music/lol.ogg", false));

@@ -128,6 +128,7 @@ public class WorldMap {
     ArrayList<WorldCity> worldCities;
     WorldArmy selectedArmy;
     WorldCity selectedCity;
+    WorldArmy armyToDelete = null;
 
     public WorldMap(
             Application app, AssetManager assetman, BulletAppState bullet, Node scene) {
@@ -352,6 +353,11 @@ public class WorldMap {
             c.update(tpf);
         }
 
+        if (armyToDelete != null) {
+            removeArmy(armyToDelete);
+            armyToDelete = null;
+        }
+
 
         if (selectedTilesChanged) {
             showSelectedTiles();
@@ -374,12 +380,20 @@ public class WorldMap {
 
     }
 
+    public void removeArmy(WorldArmy a) {
+
+        worldArmies.remove(a);
+        scene.detachChild(a.model);
+
+
+    }
+
     public WorldCity createCity(int x, int z, int player) {
         Spatial m = (Spatial) assetManager.loadModel("Models/Sign Post/Sign Post.mesh.xml");
-        WorldCity c = new WorldCity(x, z, player, "Buxtehude");
+        WorldCity c = new WorldCity(x, z, player, m, "Buxtehude", this);
 
         worldCities.add(c);
-        scene.attachChild(m);
+        scene.attachChild(c.model);
         return c;
 
     }
@@ -468,9 +482,8 @@ public class WorldMap {
 
         deselectTiles();
         int points = army.calculateMovePoints();
-        if (points <= 0)
-        {
-            selectTile(army.posX,army.posZ,0.3f);
+        if (points <= 0) {
+            selectTile(army.posX, army.posZ, 0.3f);
             return;
         }
 
@@ -648,9 +661,10 @@ public class WorldMap {
     }
 
     public void marchTo(WorldArmy a, int x, int z) {
-        
-        Stack<PathTile> p = findPath(new Tile(a.posX,a.posZ),new Tile(x,z));
-        if (p != null)
+
+        Stack<PathTile> p = findPath(new Tile(a.posX, a.posZ), new Tile(x, z));
+        if (p != null) {
             selectedArmy.setRoute(p);
+        }
     }
 }
