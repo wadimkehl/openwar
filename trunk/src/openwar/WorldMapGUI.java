@@ -10,4 +10,10 @@ package openwar;
  */
 public class WorldMapGUI {
     
+    public WorldMapGUI(){
+        
+    }
+    
+    
+    
 }
