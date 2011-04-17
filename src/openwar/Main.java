@@ -34,170 +34,12 @@ import de.lessvoid.nifty.Nifty;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 public class Main extends SimpleApplication {
-    
+
     ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(4);
     public Nifty nifty;
     public BulletAppState bulletState = new BulletAppState();
     public ScreenshotAppState screenshotState = new ScreenshotAppState();
-    public AppState worldMapState = new AbstractAppState() {
-
-        Application app;
-        Node sceneNode;
-        boolean grid = true;
-        WorldMap map;
-        private ActionListener actionListener = new ActionListener() {
-
-            @Override
-            public void onAction(String name, boolean pressed, float tpf) {
-
-                if (name.equals("mouse_left") && !pressed) {
-                    CollisionResult r = getNiftyMousePick(map.scene);
-                    if (r == null) {
-                        return;
-                    }
-
-                    Vector3f pt = r.getContactPoint();
-                    int x = (int) (pt.x - pt.x / map.width);
-                    int z = (int) (pt.z - pt.z / map.height);
-
-                    if (r.getGeometry() instanceof TerrainPatch) {
-                        System.out.print("Terrain tile: (");
-                        System.out.print(x);
-                        System.out.print(",");
-                        System.out.print(z);
-                        System.out.print(")  Type: ");
-                        System.out.println(GroundTypeManager.getGroundTypeString(map.worldTiles[x][z].groundType));
-                        map.deselectTiles();
-                        map.selectTile(x, z);
-                        return;
-
-                    }
-
-                    WorldArmy a = map.getArmy((Spatial) r.getGeometry().getParent());
-                    if (a != null) {
-                        map.selectArmy(a);
-                        return;
-                    }
-
-                    WorldCity c = map.getCity((Spatial) r.getGeometry().getParent());
-                    if (c != null) {
-                        map.selectCity(c);
-                        return;
-                    }
-
-
-
-                }
-
-
-
-                if (name.equals("mouse_right") && !pressed) {
-
-                    CollisionResult r = getNiftyMousePick(map.scene);
-                    if (r == null) {
-                        return;
-                    }
-                    Vector3f pt = r.getContactPoint();
-                    int x = (int) (pt.x - pt.x / map.width);
-                    int z = (int) (pt.z - pt.z / map.height);
-
-
-                    // Check if we ordered a march command
-                    if (map.selectedArmy != null) {
-
-                        if (r.getGeometry() instanceof TerrainPatch) {
-                            map.marchTo(map.selectedArmy, x, z);
-                            return;
-                        }
-
-                        WorldArmy a = map.getArmy((Spatial) r.getGeometry().getParent());
-                        if (a != null) {
-                            map.marchTo(map.selectedArmy, a);
-                            return;
-                        }
-
-                        WorldCity c = map.getCity((Spatial) r.getGeometry().getParent());
-                        if (c != null) {
-                            map.marchTo(map.selectedArmy, c);
-                            return;
-                        }
-                    }
-                }
-
-
-                if (name.equals(
-                        "grid") && !pressed) {
-                    grid = !grid;
-                    map.matTerrain.setBoolean("useGrid", grid);
-                    map.deselectTiles();
-                }
-
-                if (name.equals(
-                        "cursor") && !pressed) {
-                    app.getInputManager().setCursorVisible(flyCam.isEnabled());
-                    flyCam.setEnabled(!flyCam.isEnabled());
-
-                }
-            }
-        };
-
-        @Override
-        public void initialize(AppStateManager stateManager, Application app) {
-
-            this.app = app;
-
-            flyCam.setMoveSpeed(50);
-
-            inputManager.addMapping("ScreenShot", new KeyTrigger(KeyInput.KEY_P));
-            inputManager.addMapping("grid", new KeyTrigger(KeyInput.KEY_G));
-            inputManager.addMapping("mouse_left", new MouseButtonTrigger(0));
-            inputManager.addMapping("mouse_right", new MouseButtonTrigger(1));
-            inputManager.addMapping("cursor", new KeyTrigger(KeyInput.KEY_X));
-            inputManager.addListener(actionListener, "grid");
-            inputManager.addListener(actionListener, "mouse_left");
-            inputManager.addListener(actionListener, "mouse_right");
-            inputManager.addListener(actionListener, "cursor");
-
-            sceneNode = new Node("WorldMap");
-            map = new WorldMap(app, assetManager, bulletState, sceneNode);
-            if (!map.create()) {
-                app.stop();
-            }
-
-            map.matTerrain.setBoolean("useGrid", grid);
-
-            map.createArmy(0, 0, 0);
-            map.createArmy(16, 16, 0);
-
-            map.createArmy(31, 31, 0);
-            map.createArmy(125, 190, 0);
-
-            map.createArmy(128, 128, 0);
-            map.createArmy(84, 157, 0);
-            map.createArmy(112, 26, 0);
-            map.createArmy(254, 254, 0);
-            
-            map.createCity(128,130, 0);
-
-
-//            audioRenderer.playSource(new AudioNode(assetManager, "music/lol.ogg", false));
-
-            rootNode.attachChild(sceneNode);
-            getCamera().setLocation(new Vector3f(map.width / 2, 9, map.height / 2));
-            getCamera().setDirection(new Vector3f(0f, -.9f, -1f).normalizeLocal());
-
-            nifty.fromXml("data/ui/worldmap/worldmap.xml", "start");
-
-            initialized = true;
-        }
-
-        @Override
-        public void update(float tpf) {
-
-            map.update(tpf);
-
-        }
-    };
+    public WorldMapAppState worldMapState = new WorldMapAppState();
 
     public static void main(String[] args) {
         Main app = new Main();
@@ -219,16 +61,17 @@ public class Main extends SimpleApplication {
     public void simpleInitApp() {
 
         assetManager.registerLocator("data/", FileLocator.class.getName());
-        this.stateManager.attach(bulletState);
-        this.stateManager.attach(worldMapState);
-        this.stateManager.attach(screenshotState);
+
 
         guiNode.detachAllChildren();
         NiftyJmeDisplay niftyDisplay =
                 new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
         nifty = niftyDisplay.getNifty();
-
         guiViewPort.addProcessor(niftyDisplay);
+
+        this.stateManager.attach(bulletState);
+        this.stateManager.attach(worldMapState);
+        this.stateManager.attach(screenshotState);
     }
 
 // Calculates a mouse pick with a spatial and returns nearest result or null

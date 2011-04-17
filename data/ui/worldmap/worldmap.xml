@@ -6,9 +6,9 @@
            
         </layer>
         
-        <layer id="front_layer"  childLayout="center">
+        <layer id="front_layer"  childLayout="center" width="50%" height="50%" >
             
-            <panel id="map_panel" color="#ff0000ff" >
+            <panel id="map_panel" color="#882a" width="50%" height="50%">
                 
             
             </panel>
