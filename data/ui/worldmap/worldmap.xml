@@ -5,5 +5,14 @@
         <layer id="back_layer"  childLayout="center">
            
         </layer>
+        
+        <layer id="front_layer"  childLayout="center">
+            
+            <panel id="map_panel" color="#ff0000ff" >
+                
+            
+            </panel>
+           
+        </layer>
     </screen>
 </nifty>
