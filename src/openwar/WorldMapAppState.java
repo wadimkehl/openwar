@@ -175,7 +175,7 @@ public class WorldMapAppState extends AbstractAppState {
         app.getCamera().setLocation(new Vector3f(map.width / 2, 9, map.height / 2));
         app.getCamera().setDirection(new Vector3f(0f, -.9f, -1f).normalizeLocal());
 
-        app.nifty.fromXml("data/ui/worldmap/worldmap.xml", "start");
+        app.nifty.fromXml("ui/worldmap/worldmap.xml", "start");
 
         initialized = true;
     }
