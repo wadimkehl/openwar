@@ -18,6 +18,52 @@ public class GroundTypeManager {
     public GroundTypeManager() {
     }
 
+    static public boolean CreateKeyTextures(Image im, ByteBuffer buf0, ByteBuffer buf1, ByteBuffer buf2) {
+        int w = im.getWidth();
+        int h = im.getHeight();
+
+        byte[] data0 = new byte[w * h * 4];
+        byte[] data1 = new byte[w * h * 4];
+        byte[] data2 = new byte[w * h * 4];
+
+
+        ByteBuffer buffer = im.getData(0);
+
+
+        // jME loads the image y-flipped, so start at the bottom
+
+        for (int y = h - 1; y >= 0; y--) {
+            for (int x = 0; x < w; x++) {
+                int base = (y * w + x) * 4;
+                int r, g, b;
+
+                r = buffer.get() & 0xff;
+                g = buffer.get() & 0xff;
+                b = buffer.get() & 0xff;
+
+
+                if (!computeKeys(r, g, b, base, data0, data1, data2)) {
+                    // System.err.print("Unknown tile at (" + ((Object) x).toString() + "," + ((Object) y).toString() + "): ");
+                    // System.err.println(((Object) r).toString() + " " + ((Object) g).toString() + " " + ((Object) b).toString());
+                    //return false;
+                }
+            }
+
+        }
+
+
+        for (int i = 0; i < w * h * 4; i++) {
+            buf0.put(data0[i]);
+            buf1.put(data1[i]);
+            buf2.put(data2[i]);
+
+        }
+
+        return true;
+
+
+    }
+
     static public boolean CreateKeyTextures(Image im, ByteBuffer buf0, ByteBuffer buf1) {
 
         int w = im.getWidth();
@@ -31,7 +77,7 @@ public class GroundTypeManager {
 
         // jME loads the image y-flipped, so start at the bottom
 
-        for (int y = h-1; y >= 0; y--) {
+        for (int y = h - 1; y >= 0; y--) {
             for (int x = 0; x < w; x++) {
                 int base = (y * w + x) * 4;
                 int r, g, b;
@@ -119,6 +165,53 @@ public class GroundTypeManager {
 
         }
 
+        return true;
+    }
+
+    static public boolean computeKeys(int r, int g, int b, int base, byte[] data0, byte[] data1, byte[] data2) {
+
+        int groundtype = RGBtoGroundType(r, g, b);
+        switch (groundtype) {
+            case (0):
+                data0[base + 0] = (byte) 255;
+                break;
+            case (1):
+                data0[base + 1] = (byte) 255;
+                break;
+            case (2):
+                data0[base + 2] = (byte) 255;
+                break;
+            case (3):
+                data0[base + 3] = (byte) 255;
+                break;
+            case (4):
+                data1[base + 0] = (byte) 255;
+                break;
+            case (5):
+                data1[base + 1] = (byte) 255;
+                break;
+            case (6):
+                data1[base + 2] = (byte) 255;
+                break;
+            case (7):
+                data1[base + 3] = (byte) 255;
+                break;
+            case (8):
+                data2[base + 0] = (byte) 255;
+                break;
+            case (9):
+                data2[base + 1] = (byte) 255;
+                break;
+            case (10):
+                data2[base + 2] = (byte) 255;
+                break;
+            case (11):
+                data2[base + 3] = (byte) 255;
+                break;
+            default:
+                return false;
+
+        }
         return true;
     }
 
