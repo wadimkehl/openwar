@@ -27,7 +27,7 @@ import com.jme3.terrain.geomipmap.TerrainPatch;
 public class WorldMapAppState extends AbstractAppState {
 
     Node sceneNode;
-    boolean grid = true;
+    boolean debug = false;
     WorldMap map;
     Main app;
     private ActionListener actionListener = new ActionListener() {
@@ -104,8 +104,9 @@ public class WorldMapAppState extends AbstractAppState {
                     }
                 }
             } else if (name.equals("grid") && !pressed) {
-                grid = !grid;
-                map.matTerrain.setBoolean("useGrid", grid);
+                debug = !debug;
+                if(debug) map.displayDebugMaterial(0);
+                else map.displayStandardMaterial();
                 map.deselectTiles();
             } else if (name.equals("cursor") && !pressed) {
                 app.getInputManager().setCursorVisible(app.getFlyByCamera().isEnabled());
@@ -121,14 +122,11 @@ public class WorldMapAppState extends AbstractAppState {
 
             if (name.equals("map_strafeup")) {
                 app.getCamera().setLocation(app.getCamera().getLocation().addLocal(0, 0, tpf * -10f));
-            }
-            else        if (name.equals("map_strafedown")) {
+            } else if (name.equals("map_strafedown")) {
                 app.getCamera().setLocation(app.getCamera().getLocation().addLocal(0, 0, tpf * 10f));
-            }
-            else        if (name.equals("map_strafeleft")) {
+            } else if (name.equals("map_strafeleft")) {
                 app.getCamera().setLocation(app.getCamera().getLocation().addLocal(tpf * -10f, 0, 0));
-            }
-            else        if (name.equals("map_straferight")) {
+            } else if (name.equals("map_straferight")) {
                 app.getCamera().setLocation(app.getCamera().getLocation().addLocal(tpf * 10f, 0, 0));
             }
         }
@@ -170,7 +168,7 @@ public class WorldMapAppState extends AbstractAppState {
 
         sceneNode = new Node("WorldMap");
         map = new WorldMap(main, main.getAssetManager(), main.bulletState, sceneNode);
-        if (!map.create()) {
+        if (!map.createWorldMap()) {
             app.stop();
         }
 

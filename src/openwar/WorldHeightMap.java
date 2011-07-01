@@ -47,7 +47,7 @@ public class WorldHeightMap extends ImageBasedHeightMap {
         heightData = new float[(imageWidth * imageHeight)];
 
         int index = 0;
-        for (int h = imageHeight - 1; h >= 0; h--) {
+        for (int h = 0; h < imageHeight; h++) {
             for (int w = 0; w < imageWidth; w++) {
                 int baseIndex = (h * imageWidth + w) * 3;
                 float r = data[baseIndex] & 0xff;
