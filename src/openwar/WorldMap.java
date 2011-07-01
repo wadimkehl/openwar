@@ -248,7 +248,7 @@ public class WorldMap {
             scene.addLight(dlight);
 
             selectedTilesOverlay = new Geometry("overlay");
-            matOverlay = new Material(assetManager, "Common/MatDefs/Misc/SolidColor.j3md");
+            matOverlay = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
             matOverlay.setColor("Color", ColorRGBA.Blue);
             selectedTilesOverlay.setMaterial(matOverlay);
             matOverlay.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
