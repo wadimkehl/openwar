@@ -37,7 +37,7 @@ public class Main extends SimpleApplication {
         app.settings.setTitle("OpenWar");
         app.settings.setVSync(true);
 
-        app.settings.setFrameRate(30);
+        app.settings.setFrameRate(60);
 
         app.start();
 
@@ -50,7 +50,7 @@ public class Main extends SimpleApplication {
         assetManager.registerLocator("data/", FileLocator.class.getName());
 
 
-        guiNode.detachAllChildren();
+//        guiNode.detachAllChildren();
         NiftyJmeDisplay niftyDisplay =
                 new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
         nifty = niftyDisplay.getNifty();
