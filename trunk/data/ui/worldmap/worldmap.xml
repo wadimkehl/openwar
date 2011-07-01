@@ -2,17 +2,23 @@
 <nifty xmlns="http://nifty-gui.sourceforge.net/nifty.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nifty-gui.sourceforge.net/nifty.xsd http://nifty-gui.sourceforge.net/nifty.xsd">
 
     <screen id="start" controller="openwar.WorldMapGUI">
-        <layer id="back_layer"  childLayout="center">
-           
-        </layer>
+
         
-        <layer id="front_layer"  childLayout="center" width="50%" height="50%" >
+        <layer id="front"   childLayout="vertical" >
             
-            <panel id="map_panel" color="#882a" width="50%" height="50%">
+            <panel height="80%"/> 
+            <panel childLayout="center">
                 
-            
+                <text id="test" align="center" valign="center" text="LOL" font="ui/font/palatino.fnt">
+                    
+                    <effect>
+                        <onActive name="textSize" startSize="2.0" endSize="2.0" />
+                    </effect>
+                </text>
+                
             </panel>
-           
+
+                       
         </layer>
     </screen>
 </nifty>
