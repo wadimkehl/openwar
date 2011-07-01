@@ -6,6 +6,7 @@ package openwar;
 
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
+import com.jme3.asset.TextureKey;
 import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.RigidBodyControl;
@@ -112,7 +113,7 @@ public class WorldMap {
     TerrainQuad terrain;
     BulletAppState bulletState;
     Node scene, rootScene;
-    Material matTerrain;
+    Material matTerrain, matTerrainDebug;
     AssetManager assetManager;
     WorldHeightMap heightMap;
     Texture[] textures;
@@ -142,131 +143,120 @@ public class WorldMap {
 
     }
 
-    public boolean create() {
+    public void displayDebugMaterial(int l) {
+         
+        switch(l)
+        {
+            case 0:
+                matTerrainDebug.setTexture("ColorMap", groundTypeImage);
+                break;
+        }
+        
+        terrain.setMaterial(matTerrainDebug);
+
+    }
+
+    public void displayStandardMaterial() {
+        terrain.setMaterial(matTerrain);
+
+    }
+
+    public boolean createTerrain() {
+
+
+        // Load all important information for the world map
+        heightMapImage = assetManager.loadTexture(new TextureKey("map/heights.tga",false));
+        groundTypeImage = assetManager.loadTexture(new TextureKey("map/types.tga",false));
+        //            regionsImage = assetManager.loadTexture("map/regions.tga");
+
+
+        // Create key textures
+        width = groundTypeImage.getImage().getWidth();
+        height = groundTypeImage.getImage().getHeight();
+        ByteBuffer buf0 = ByteBuffer.allocateDirect(width * height * 4);
+        ByteBuffer buf1 = ByteBuffer.allocateDirect(width * height * 4);
+        ByteBuffer buf2 = ByteBuffer.allocateDirect(width * height * 4);
+
+        if (!GroundTypeManager.CreateKeyTextures(groundTypeImage.getImage(), buf0, buf1, buf2)) {
+            return false;
+
+        }
+        key0Image = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf0));
+        key1Image = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf1));
+        key2Image = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf2));
+
+
+        // Create standard material with all textures and needed values
+        matTerrain = new Material(assetManager, "Common/MatDefs/Terrain/TerrainLighting.j3md");
+        textures = new Texture[12];
+        for (int i = 0; i < 12; i++) {
+            textures[i] = assetManager.loadTexture("textures/" + i + ".tga");
+            textures[i].setWrap(Texture.WrapMode.Repeat);
+        }
+        matTerrain.setTexture("DiffuseMap", textures[0]);
+        matTerrain.setFloat("DiffuseMap_0_scale", 32f);
+        for (int i = 1; i < 12; i++) {
+            matTerrain.setTexture("DiffuseMap_" + i, textures[i]);
+            matTerrain.setFloat("DiffuseMap_" + i + "_scale", 32f);
+        }
+        matTerrain.setTexture("AlphaMap", key0Image);
+        matTerrain.setTexture("AlphaMap_1", key1Image);
+        matTerrain.setTexture("AlphaMap_2", key2Image);
+
+
+        // Create debug material to display types, regions, climates etc.
+        matTerrainDebug = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+
+
+        // Create worldTiles array
+        worldTiles = new WorldTile[width][height];
+        ByteBuffer buf = groundTypeImage.getImage().getData(0);
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                int base = (j * width + i) * 3;
+                int r, g, b;
+                r = buf.get(base + 0) & 0xff;
+                g = buf.get(base + 1) & 0xff;
+                b = buf.get(base + 2) & 0xff;
+                worldTiles[i][j] = new WorldTile(i,j, GroundTypeManager.RGBtoGroundType(r, g, b));
+            }
+        }
+
+
+        // Create mesh data with material and place its north-western edge to the origin
+        heightMap = new WorldHeightMap(ImageToAwt.convert(heightMapImage.getImage(), false, false, 0), 0.1f);
+        heightMap.load(false, false);
+        terrain = new TerrainQuad("terrain", 32, heightMap.getSize(), heightMap.getHeightMap());
+        terrain.setMaterial(matTerrain);
+        terrain.setLocalTranslation(width / 2f, 0f, height / 2f);
+
+        return true;
+    }
+
+    public boolean createWorldMap() {
 
         heightMap = null;
         scene = new Node("worldmap");
         worldArmies = new ArrayList<WorldArmy>();
         worldCities = new ArrayList<WorldCity>();
+        selectedTiles = new ArrayList<SelectionTile>();
+
 
         try {
 
-            heightMapImage = assetManager.loadTexture("map/heights.tga");
-            groundTypeImage = assetManager.loadTexture("map/types.tga");
-//            regionsImage = assetManager.loadTexture("map/regions.tga");
-
-
-            // Create key textures
-            width = groundTypeImage.getImage().getWidth();
-            height = groundTypeImage.getImage().getHeight();
-            ByteBuffer buf0 = ByteBuffer.allocateDirect(width * height * 4);
-            ByteBuffer buf1 = ByteBuffer.allocateDirect(width * height * 4);
-            ByteBuffer buf2 = ByteBuffer.allocateDirect(width * height * 4);
-
-            if (!GroundTypeManager.CreateKeyTextures(groundTypeImage.getImage(), buf0, buf1, buf2)) {
+            if (!createTerrain()) {
                 return false;
-
             }
-            key0Image = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf0));
-            key1Image = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf1));
-            key2Image = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf2));
-
-            // Create graphical structures
-            textures = new Texture[14];
-            textures[0] = assetManager.loadTexture("textures/0.tga");
-            textures[1] = assetManager.loadTexture("textures/1.tga");
-            textures[2] = assetManager.loadTexture("textures/2.tga");
-            textures[3] = assetManager.loadTexture("textures/3.tga");
-            textures[4] = assetManager.loadTexture("textures/4.tga");
-            textures[5] = assetManager.loadTexture("textures/5.tga");
-            textures[6] = assetManager.loadTexture("textures/6.tga");
-            textures[7] = assetManager.loadTexture("textures/7.tga");
-            textures[8] = assetManager.loadTexture("textures/8.tga");
-            textures[9] = assetManager.loadTexture("textures/9.tga");
-            textures[10] = assetManager.loadTexture("textures/0.tga");
-            textures[11] = assetManager.loadTexture("textures/11.tga");
-            textures[12] = assetManager.loadTexture("textures/overlay.png");
-            textures[13] = assetManager.loadTexture("textures/overlay.png");
-            for (int i = 0; i < 14; i++) {
-                textures[i].setWrap(Texture.WrapMode.Repeat);
-            }
-
-//
-//            matTerrain = new Material(assetManager, "materials/terrain/terrain.j3md");
-//            matTerrain.setTexture("Key0", key0Image);
-//            matTerrain.setTexture("Key1", key1Image);
-//            
-//            
-
-//            matTerrain.setTexture("Tex0", textures[0]);
-//            matTerrain.setTexture("Tex1", textures[1]);
-//            matTerrain.setTexture("Tex2", textures[2]);
-//            matTerrain.setTexture("Tex3", textures[3]);
-//            matTerrain.setTexture("Tex4", textures[4]);
-//            matTerrain.setTexture("Tex5", textures[5]);
-//            matTerrain.setTexture("Tex6", textures[6]);
-//            matTerrain.setTexture("Tex7", textures[7]);
-//            matTerrain.setTexture("Tex8", textures[8]);
-//            matTerrain.setTexture("Tex9", textures[9]);
-//            matTerrain.setTexture("Tex10", textures[10]);
-//            matTerrain.setTexture("Tex11", textures[11]);
-//            matTerrain.setTexture("Tex12", textures[12]);
-//            matTerrain.setTexture("Tex13", textures[13]);
-//            
-
-
-            matTerrain = new Material(assetManager, "Common/MatDefs/Terrain/TerrainLighting.j3md");
-
-            matTerrain.setTexture("DiffuseMap", textures[0]);
-            matTerrain.setFloat("DiffuseMap_0_scale", 32f);
-
-            for (int i = 1; i < 12; i++) {
-                matTerrain.setTexture("DiffuseMap_" + i, textures[i]);
-                matTerrain.setFloat("DiffuseMap_" + i + "_scale", 32f);
-            }
-
-            matTerrain.setTexture("AlphaMap", key0Image);
-            matTerrain.setTexture("AlphaMap_1", key1Image);
-            matTerrain.setTexture("AlphaMap_2", key2Image);
-            
-//            matTerrain.setBoolean("useTriPlanarMapping", false);
-
-
-            // Create worldTiles array
-            worldTiles = new WorldTile[width][height];
-            ByteBuffer buf = groundTypeImage.getImage().getData(0);
-            for (int i = 0; i < width; i++) {
-                for (int j = 0; j < height; j++) {
-                    int base = (j * width + i) * 3;
-                    int r, g, b;
-                    r = buf.get(base + 0) & 0xff;
-                    g = buf.get(base + 1) & 0xff;
-                    b = buf.get(base + 2) & 0xff;
-
-                    worldTiles[i][height - 1 - j] = new WorldTile(i, height - 1 - j, GroundTypeManager.RGBtoGroundType(r, g, b));
-                }
-            }
-
-
-
-            heightMap = new WorldHeightMap(ImageToAwt.convert(heightMapImage.getImage(), false, false, 0), 0.1f);
-            heightMap.load(false, false);
-
-            terrain = new TerrainQuad("terrain", 32, heightMap.getSize(), heightMap.getHeightMap());
-            terrain.setMaterial(matTerrain);
-            terrain.setLocalTranslation(width / 2f, 0f, height / 2f);
-
-            selectedTiles = new ArrayList<SelectionTile>();
 
 
 
             FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
-            WaterFilter water = new WaterFilter(scene, sunDirection);
 
+            WaterFilter water = new WaterFilter(scene, sunDirection);
             water.setWaterHeight(-0.1f);
             water.setMaxAmplitude(0.15f);
             water.setWaterTransparency(10f);
-            water.setWaterColor(new ColorRGBA(0.01f,0.5f,0.7f,1f));
+            water.setWaterColor(new ColorRGBA(0.01f, 0.5f, 0.7f, 1f));
             water.setSpeed(0.1f);
             water.setFoamHardness(1.5f);
             water.setFoamExistence(new Vector3f(0.1f, 0.2f, 0.15f));
@@ -396,9 +386,9 @@ public class WorldMap {
         }
 
 
-         if (selectedTilesChanged) {
-        //     showSelectedTiles();
-         }
+        if (selectedTilesChanged) {
+            //     showSelectedTiles();
+        }
 
 
     }
