@@ -7,7 +7,6 @@ package openwar;
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.asset.TextureKey;
-import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.light.DirectionalLight;
@@ -15,26 +14,20 @@ import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState.FaceCullMode;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.BloomFilter;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.jme3.shader.VarType;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import com.jme3.texture.Image;
 import com.jme3.texture.Texture;
 import com.jme3.texture.Texture2D;
-import com.jme3.util.SkyFactory;
-import com.jme3.water.SimpleWaterProcessor;
 import com.jme3.water.WaterFilter;
 import java.nio.ByteBuffer;
-import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Stack;
 import jme3tools.converters.ImageToAwt;
 
@@ -117,10 +110,11 @@ public class WorldMap {
     AssetManager assetManager;
     WorldHeightMap heightMap;
     Texture[] textures;
-    Texture key0Image, key1Image, key2Image, key1Image_overlay;
+    Texture key0Image, key1Image, key2Image;
     Texture groundTypeImage;
     Texture heightMapImage;
     Texture regionsImage;
+    Texture climatesImage;
     WorldTile[][] worldTiles;
     ArrayList<SelectionTile> selectedTiles;
     boolean selectedTilesChanged = false;
@@ -133,8 +127,7 @@ public class WorldMap {
     WorldCity selectedCity;
     WorldArmy armyToDelete = null;
 
-    public WorldMap(
-            Application app, AssetManager assetman, BulletAppState bullet, Node scene) {
+    public WorldMap(Application app, AssetManager assetman, BulletAppState bullet, Node scene) {
         this.app = app;
         this.bulletState = bullet;
         this.assetManager = assetman;
@@ -143,15 +136,22 @@ public class WorldMap {
 
     }
 
+    // Overlays the terrain with the specific images for world map creation
     public void displayDebugMaterial(int l) {
-         
-        switch(l)
-        {
+
+        switch (l) {
+
             case 0:
                 matTerrainDebug.setTexture("ColorMap", groundTypeImage);
                 break;
+            case 1:
+                matTerrainDebug.setTexture("ColorMap", regionsImage);
+                break;
+            case 2:
+                matTerrainDebug.setTexture("ColorMap", climatesImage);
+                break;
         }
-        
+
         terrain.setMaterial(matTerrainDebug);
 
     }
@@ -165,9 +165,10 @@ public class WorldMap {
 
 
         // Load all important information for the world map
-        heightMapImage = assetManager.loadTexture(new TextureKey("map/heights.tga",false));
-        groundTypeImage = assetManager.loadTexture(new TextureKey("map/types.tga",false));
-        //            regionsImage = assetManager.loadTexture("map/regions.tga");
+        heightMapImage = assetManager.loadTexture(new TextureKey("map/heights.tga", false));
+        groundTypeImage = assetManager.loadTexture(new TextureKey("map/types.tga", false));
+        regionsImage = null;
+        climatesImage = null;
 
 
         // Create key textures
@@ -202,6 +203,8 @@ public class WorldMap {
         matTerrain.setTexture("AlphaMap", key0Image);
         matTerrain.setTexture("AlphaMap_1", key1Image);
         matTerrain.setTexture("AlphaMap_2", key2Image);
+        matTerrain.setBoolean("WardIso", true);
+
 
 
         // Create debug material to display types, regions, climates etc.
@@ -218,7 +221,7 @@ public class WorldMap {
                 r = buf.get(base + 0) & 0xff;
                 g = buf.get(base + 1) & 0xff;
                 b = buf.get(base + 2) & 0xff;
-                worldTiles[i][j] = new WorldTile(i,j, GroundTypeManager.RGBtoGroundType(r, g, b));
+                worldTiles[i][j] = new WorldTile(i, j, GroundTypeManager.RGBtoGroundType(r, g, b));
             }
         }
 
@@ -233,6 +236,7 @@ public class WorldMap {
         return true;
     }
 
+    // Create the whole world map
     public boolean createWorldMap() {
 
         heightMap = null;
@@ -263,6 +267,7 @@ public class WorldMap {
             fpp.addFilter(water);
 
             BloomFilter bloom = new BloomFilter();
+            bloom.setExposurePower(3f);
             fpp.addFilter(bloom);
 
 
@@ -280,9 +285,8 @@ public class WorldMap {
             selectedTilesOverlay.setMaterial(matOverlay);
             matOverlay.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
 
-
             scene.attachChild(terrain);
-//            scene.attachChild(selectedTilesOverlay);
+       //     scene.attachChild(selectedTilesOverlay);
             rootScene.attachChild(scene);
 
             terrain.addControl(new RigidBodyControl(0));
@@ -351,8 +355,8 @@ public class WorldMap {
 
 
         selectedTilesChanged = false;
-        key1Image_overlay = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf1));
-        matTerrain.setTexture("Key1", key1Image_overlay);
+//        key1Image_overlay = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf1));
+//        matTerrain.setTexture("Key1", key1Image_overlay);
 
     }
 
@@ -393,7 +397,8 @@ public class WorldMap {
 
     }
 
-    public WorldArmy createArmy(int x, int z, int player) {
+    // Spawns a physical army on the world map
+    public WorldArmy createArmy(int x, int z, int player, ArrayList<ArmyUnit> units) {
 
         Spatial m = (Spatial) assetManager.loadModel("Models/Oto/Oto.mesh.xml");
         WorldArmy a = new WorldArmy(x, z, player, m, this);
@@ -407,6 +412,7 @@ public class WorldMap {
 
     }
 
+    // Removes an army from the world map
     public void removeArmy(WorldArmy a) {
 
         worldArmies.remove(a);
@@ -415,6 +421,7 @@ public class WorldMap {
 
     }
 
+    // Spawns a city on the world map
     public WorldCity createCity(int x, int z, int player) {
         Spatial m = (Spatial) assetManager.loadModel("Models/Sign Post/Sign Post.mesh.xml");
         WorldCity c = new WorldCity(x, z, player, m, "Buxtehude", this);
@@ -429,6 +436,7 @@ public class WorldMap {
         return worldTiles[ensureInTerrainX(x)][ensureInTerrainZ(z)].cost;
     }
 
+    // Returns army object
     public WorldArmy getArmy(Spatial model) {
 
         for (WorldArmy w : worldArmies) {
@@ -439,6 +447,7 @@ public class WorldMap {
         return null;
     }
 
+    // Returns army object
     public WorldArmy getArmy(int x, int z) {
 
         for (WorldArmy w : worldArmies) {
@@ -449,6 +458,7 @@ public class WorldMap {
         return null;
     }
 
+    // Returns city object
     public WorldCity getCity(Spatial model) {
 
         for (WorldCity w : worldCities) {
@@ -459,6 +469,7 @@ public class WorldMap {
         return null;
     }
 
+    // Returns city object
     public WorldCity getCity(int x, int z) {
 
         for (WorldCity w : worldCities) {
@@ -469,6 +480,7 @@ public class WorldMap {
         return null;
     }
 
+    // Marks the army as currently selected
     public void selectArmy(WorldArmy army) {
         if (army == null) {
             return;
@@ -478,6 +490,7 @@ public class WorldMap {
 
     }
 
+    // Marks the army as currently selected
     public void selectCity(WorldCity city) {
         if (city == null) {
             return;

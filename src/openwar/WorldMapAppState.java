@@ -174,17 +174,8 @@ public class WorldMapAppState extends AbstractAppState {
 
 //        map.matTerrain.setBoolean("useGrid", grid);
 
-        map.createArmy(0, 0, 0);
-        map.createArmy(16, 16, 0);
-
-        map.createArmy(31, 31, 0);
-        map.createArmy(125, 190, 0);
-
-        map.createArmy(128, 128, 0);
-        map.createArmy(84, 157, 0);
-        map.createArmy(112, 26, 0);
-        map.createArmy(254, 254, 0);
-
+ 
+        map.createArmy(128, 128, 0, null);
         map.createCity(128, 130, 0);
 
 
