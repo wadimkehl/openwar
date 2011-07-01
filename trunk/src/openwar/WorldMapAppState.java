@@ -12,6 +12,7 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.collision.CollisionResult;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.math.Vector3f;
@@ -71,11 +72,7 @@ public class WorldMapAppState extends AbstractAppState {
 
 
 
-            }
-
-
-
-            if (name.equals("mouse_right") && !pressed) {
+            } else if (name.equals("mouse_right") && !pressed) {
 
                 CollisionResult r = app.getNiftyMousePick(map.scene);
                 if (r == null) {
@@ -106,35 +103,49 @@ public class WorldMapAppState extends AbstractAppState {
                         return;
                     }
                 }
-            }
-
-
-            if (name.equals("grid") && !pressed) {
+            } else if (name.equals("grid") && !pressed) {
                 grid = !grid;
                 map.matTerrain.setBoolean("useGrid", grid);
                 map.deselectTiles();
-            }
-
-            if (name.equals("cursor") && !pressed) {
+            } else if (name.equals("cursor") && !pressed) {
                 app.getInputManager().setCursorVisible(app.getFlyByCamera().isEnabled());
                 app.getFlyByCamera().setEnabled(!app.getFlyByCamera().isEnabled());
 
             }
         }
     };
+    private AnalogListener analogListener = new AnalogListener() {
+
+        @Override
+        public void onAnalog(String name, float value, float tpf) {
+
+            if (name.equals("map_strafeup")) {
+                app.getCamera().setLocation(app.getCamera().getLocation().addLocal(0, 0, tpf * -10f));
+            }
+            else        if (name.equals("map_strafedown")) {
+                app.getCamera().setLocation(app.getCamera().getLocation().addLocal(0, 0, tpf * 10f));
+            }
+            else        if (name.equals("map_strafeleft")) {
+                app.getCamera().setLocation(app.getCamera().getLocation().addLocal(tpf * -10f, 0, 0));
+            }
+            else        if (name.equals("map_straferight")) {
+                app.getCamera().setLocation(app.getCamera().getLocation().addLocal(tpf * 10f, 0, 0));
+            }
+        }
+    };
 
     public WorldMapAppState() {
     }
-    
+
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
-    this.initialize(stateManager, (Main) app);
+        this.initialize(stateManager, (Main) app);
     }
 
     public void initialize(AppStateManager stateManager, Main main) {
 
         app = main;
-        
+
         app.getFlyByCamera().setMoveSpeed(50);
 
         app.getInputManager().addMapping("ScreenShot", new KeyTrigger(KeyInput.KEY_P));
@@ -146,6 +157,16 @@ public class WorldMapAppState extends AbstractAppState {
         app.getInputManager().addListener(actionListener, "mouse_left");
         app.getInputManager().addListener(actionListener, "mouse_right");
         app.getInputManager().addListener(actionListener, "cursor");
+
+
+        app.getInputManager().addMapping("map_strafeup", new KeyTrigger(KeyInput.KEY_U));
+        app.getInputManager().addMapping("map_strafedown", new KeyTrigger(KeyInput.KEY_J));
+        app.getInputManager().addMapping("map_strafeleft", new KeyTrigger(KeyInput.KEY_H));
+        app.getInputManager().addMapping("map_straferight", new KeyTrigger(KeyInput.KEY_K));
+        app.getInputManager().addListener(analogListener, "map_strafeup");
+        app.getInputManager().addListener(analogListener, "map_strafedown");
+        app.getInputManager().addListener(analogListener, "map_strafeleft");
+        app.getInputManager().addListener(analogListener, "map_straferight");
 
         sceneNode = new Node("WorldMap");
         map = new WorldMap(main, main.getAssetManager(), main.bulletState, sceneNode);
@@ -172,7 +193,7 @@ public class WorldMapAppState extends AbstractAppState {
 //            audioRenderer.playSource(new AudioNode(assetManager, "music/lol.ogg", false));
 
         app.getRootNode().attachChild(sceneNode);
-        app.getCamera().setLocation(new Vector3f(map.width / 2, 9, map.height / 2));
+        app.getCamera().setLocation(new Vector3f(map.width / 2, 15, map.height / 2));
         app.getCamera().lookAtDirection(new Vector3f(0f, -.9f, -1f).normalizeLocal(), Vector3f.UNIT_Y);
 
         app.nifty.fromXml("ui/worldmap/worldmap.xml", "start");

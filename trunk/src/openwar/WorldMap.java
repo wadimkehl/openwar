@@ -222,7 +222,7 @@ public class WorldMap {
             heightMap = new WorldHeightMap(ImageToAwt.convert(heightMapImage.getImage(), false, false, 0), 0.1f);
             heightMap.load(false, false);
 
-            terrain = new TerrainQuad("terrain", 64, heightMap.getSize(), heightMap.getHeightMap());
+            terrain = new TerrainQuad("terrain", 128, heightMap.getSize(), heightMap.getHeightMap());
             terrain.setMaterial(matTerrain);
             terrain.setLocalTranslation(width / 2f, 0f, height / 2f);
 
