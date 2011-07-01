@@ -174,7 +174,7 @@ public class WorldMapAppState extends AbstractAppState {
             app.stop();
         }
 
-        map.matTerrain.setBoolean("useGrid", grid);
+//        map.matTerrain.setBoolean("useGrid", grid);
 
         map.createArmy(0, 0, 0);
         map.createArmy(16, 16, 0);
