@@ -11,14 +11,16 @@ import java.awt.image.BufferedImage;
 /**
  *
  * @author kehl
+ * 
+ * Tries to imitate something like a total war heightmap creation
  */
-public class WorldHeightMap extends ImageBasedHeightMap {
+public class TWWorldHeightMap extends ImageBasedHeightMap {
 
-    public WorldHeightMap(Image colorImage) {
+    public TWWorldHeightMap(Image colorImage) {
         super(colorImage, 1.0f);
     }
 
-    public WorldHeightMap(Image colorImage, float dampen) {
+    public TWWorldHeightMap(Image colorImage, float dampen) {
         super(colorImage, dampen);
         this.colorImage = colorImage;
         this.dampen = dampen;

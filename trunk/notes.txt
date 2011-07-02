@@ -8,3 +8,40 @@ So somewhere we lose one tile each....
 
 ---------------------------------
 Heightmap: 2^n + 1 pixels, Groundtype: 2^n      Heightmap has -1 pixel offset for x and y. Example: heightmap pixel (50,50) is types pixel (51,51)
+
+
+Standard tiles:
+
+
+
+These 12 tiles all differ visually so are therefore mentioned first
+There is a shaderwise (GLSL) restriction to max. 16 textures per pass and because 
+we render the terrain in one pass these 12 textures need to be all the visual tiles
+
+name                tile nr.    Description
+
+beach                   0       beach/coast and standard sandy desert tile             
+desert fertile          1       standard desert tile with agriculture
+desert rough            2       a variant of sand that looks more rough, stony
+desert hilly            3       a tile for elevated and more rough desert terrain
+grass                   4       standard "european" grass
+grass fertile           5       grass that has agriculture on it
+grass rough             6       more rough version, less grass and more stones
+grass hilly             7       to be used for elevated grassy terrain
+grass forest            8       this is the ground for dense forests
+snow                    9       a standard snowy plain
+swamp                   10      as name suggests, swampy terrain
+mountains               11      snow topped mountains
+
+
+There are more ground types and types that share the same visual tile:
+
+desert                  12      looks like tile 0, standard desert tile
+shallow water           13      looks like tile 0, determines sailing speed        
+deep water              14      looks like tile 0, determines sailing speed 
+ocean                   15      looks like tile 0, determines sailing speed 
+impassable              16      looks like tile 11, but can never be walked on
+
+
+Ground types affect: walkability and speed, attrition, fort placement and battle odds
+
