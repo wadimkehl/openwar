@@ -17,13 +17,16 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.BloomFilter;
+import com.jme3.post.filters.FadeFilter;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.TerrainQuad;
+import com.jme3.texture.FrameBuffer;
 import com.jme3.texture.Image;
 import com.jme3.texture.Texture;
 import com.jme3.texture.Texture2D;
+import com.jme3.util.BufferUtils;
 import com.jme3.water.WaterFilter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -97,8 +100,14 @@ public class WorldMap {
         public WorldTile(int x, int z, int type) {
             super(x, z);
             groundType = type;
-            cost = TWGroundTypeManager.getGroundTypeCost(type);
+            cost = GroundTypeManager.getGroundTypeCost(type);
 
+        }
+        
+        @Override
+        public String toString() {
+            return super.toString() + " Type: " 
+                    + GroundTypeManager.getGroundTypeString(groundType);
         }
     };
     Application app;
@@ -126,6 +135,7 @@ public class WorldMap {
     WorldArmy selectedArmy;
     WorldCity selectedCity;
     WorldArmy armyToDelete = null;
+    FilterPostProcessor fpp;
 
     public WorldMap(Application app, AssetManager assetman, BulletAppState bullet, Node scene) {
         this.app = app;
@@ -178,7 +188,7 @@ public class WorldMap {
         ByteBuffer buf1 = ByteBuffer.allocateDirect(width * height * 4);
         ByteBuffer buf2 = ByteBuffer.allocateDirect(width * height * 4);
 
-        if (!TWGroundTypeManager.CreateKeyTextures(groundTypeImage.getImage(), buf0, buf1, buf2)) {
+        if (!GroundTypeManager.CreateKeyTextures(groundTypeImage.getImage(), buf0, buf1, buf2)) {
             return false;
 
         }
@@ -220,7 +230,7 @@ public class WorldMap {
                 r = buf.get(base + 0) & 0xff;
                 g = buf.get(base + 1) & 0xff;
                 b = buf.get(base + 2) & 0xff;
-                worldTiles[i][j] = new WorldTile(i, j, TWGroundTypeManager.RGBtoGroundType(r, g, b));
+                worldTiles[i][j] = new WorldTile(i, j, GroundTypeManager.RGBtoGroundType(r, g, b));
             }
         }
 
@@ -248,12 +258,13 @@ public class WorldMap {
         try {
 
             if (!createTerrain()) {
+                System.out.println("Couldn't create terrain...");
                 return false;
             }
 
 
 
-            FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
+            fpp = new FilterPostProcessor(assetManager);
 
             WaterFilter water = new WaterFilter(scene, sunDirection);
             water.setWaterHeight(-0.1f);
@@ -268,7 +279,6 @@ public class WorldMap {
             BloomFilter bloom = new BloomFilter();
             bloom.setExposurePower(4f);
             fpp.addFilter(bloom);
-
 
             app.getViewPort().addProcessor(fpp);
 
@@ -285,7 +295,7 @@ public class WorldMap {
             matOverlay.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
 
             scene.attachChild(terrain);
-       //     scene.attachChild(selectedTilesOverlay);
+            //     scene.attachChild(selectedTilesOverlay);
             rootScene.attachChild(scene);
 
             terrain.addControl(new RigidBodyControl(0));
@@ -588,16 +598,21 @@ public class WorldMap {
         }
     }
 
+    // These four functions check if a tile can be walked or sailed on
     public boolean walkableTile(Tile t) {
         return walkableTile(t.x, t.z);
     }
 
     public boolean walkableTile(int x, int z) {
-        if (worldTiles[x][z].cost >= 1000) {
-            return false;
-        }
+        return GroundTypeManager.isWalkable(worldTiles[x][z].groundType);
+    }
 
-        return true;
+    public boolean sailableTile(Tile t) {
+        return sailableTile(t.x, t.z);
+    }
+
+    public boolean sailableTile(int x, int z) {
+        return GroundTypeManager.isSailable(worldTiles[x][z].groundType);
     }
 
     // Calculates the shortest path between two tiles with A*
@@ -705,5 +720,10 @@ public class WorldMap {
         if (p != null) {
             selectedArmy.setRoute(p);
         }
+    }
+
+    public void fadeSeason() {
+       
+
     }
 }

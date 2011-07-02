@@ -28,6 +28,8 @@ public class WorldMapGUI implements ScreenController {
 
     @Override
     public void onStartScreen() {
+        
+        //
     }
 
     @Override

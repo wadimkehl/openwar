@@ -99,6 +99,8 @@ public class GroundTypeManager {
                 break;
             default:
                 return false;
+                
+                //TODO: Fix the real values here
 
         }
         return true;
@@ -109,44 +111,51 @@ public class GroundTypeManager {
 
 
         if (r == 255 && g == 255 && b == 255) {
-            return 0;
-        } // t1
-        else if (r == 101 && g == 124 && b == 0) {
-            return 1;
-        } // t2
-        else if (r == 0 && g == 128 && b == 128) {
-            return 2;
-        } // t3
-        else if (r == 96 && g == 160 && b == 64) {
-            return 3;
-        } // t4
+            return 0; //beach
+        }
+        else if ((r == 101 && g == 124 && b == 0) 
+            || (r == 0 && g == 128 && b == 128) 
+            || (r == 96 && g == 160 && b == 64)) {
+            return 4; //all fertile to grass
+            
+        } 
         else if (r == 0 && g == 64 && b == 0) {
-            return 4;
-        } // t5
+            return 8; //dense forest
+        } 
+        
+        
         else if (r == 0 && g == 128 && b == 0) {
-            return 5;
-        } // t6
+            return 6; // sparse forest to grass rough
+        }
         else if (r == 128 && g == 128 && b == 64) {
-            return 6;
-        } // t7
+            return 7; // grass hilly
+        } 
+        
         else if (r == 64 && g == 64 && b == 64) {
-            return 7;
-        } // t8
+            return 16; // impassable
+        } 
+        
         else if (r == 196 && g == 128 && b == 128) {
-            return 8;
-        } // t9
-        else if (r == 98 && g == 65 && b == 65) {
-            return 9;
-        } // t10
-        else if ((r == 64 && g == 0 && b == 0)
-                || (r == 128 && g == 0 && b == 0)
-                || (r == 196 && g == 0 && b == 0)) {
-            return 10;
-        } // t11
-        else if (r == 0 && g == 255 && b == 128) {
             return 11;
+        } // mountains high
+        
+        else if (r == 98 && g == 65 && b == 65) {
+            return 7; // grass hilly
+        } 
+        
+        else if (r == 64 && g == 0 && b == 0)
+                return 15;
+        else if (r == 128 && g == 0 && b == 0)
+            return 14;
+        else if( (r == 196 && g == 0 && b == 0)) {
+            return 13;
+        } 
+        
+        else if (r == 0 && g == 255 && b == 128) {
+            return 10;
+            
         } else if (r == 0 && g == 0 && b == 0) {
-            return 4;
+            return 8;
         }
 
         return -1;
@@ -174,7 +183,7 @@ public class GroundTypeManager {
                 return 11;
 
             default:
-                return -1;
+                return type;
         }
 
 
