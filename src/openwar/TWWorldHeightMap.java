@@ -4,6 +4,7 @@
  */
 package openwar;
 
+import com.jme3.math.FastMath;
 import com.jme3.terrain.heightmap.ImageBasedHeightMap;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -61,7 +62,8 @@ public class TWWorldHeightMap extends ImageBasedHeightMap {
             }
         }
 
-
+        //TODO: fix the mesh coordinates so that water tiles wont come onto land
+        
 
 
         return true;
@@ -69,10 +71,8 @@ public class TWWorldHeightMap extends ImageBasedHeightMap {
 
     public float calculateHeight(float r, float g, float b) {
 
-        if (b > 200f) {
-            return -.25f;
-        }
-        float grayscale = Math.max(0f, (r + g + b) * (dampen / 3f) - b * 0.05f);
-        return grayscale * 0.5f;
+        
+        return Math.max(0f, (r + g + b) * 0.000001f + r*0.022f) - 0.25f;
+       
     }
 }

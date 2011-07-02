@@ -45,3 +45,22 @@ impassable              16      looks like tile 11, but can never be walked on
 
 Ground types affect: walkability and speed, attrition, fort placement and battle odds
 
+Color codes for the ground types map:
+
+
+desert          255 255 0   (desert fertile has no color, only build by cities)
+desert rough    200 200 0
+desert hilly    128 128 0
+grass           0 255 0     (grass fertile has no color, only build by cities)
+grass rough     0 200 0
+grass hilly     0 128 0
+grass forest    0 64  0
+snow            200 200 200
+swamp           0 64 64
+mountains       128 128 128
+beach           255 255 255
+shallow water   0 0 255
+deep water      0 0 128
+ocean           0 0 64
+impassable      0 0 0
+
