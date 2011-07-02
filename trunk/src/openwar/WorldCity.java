@@ -18,15 +18,20 @@ public class WorldCity {
     int posX, posZ;
     int playerNumber;
     String name;
-    String region;
-    boolean hasHarbor;
-    Spatial harbor;
+    WorldRegion region;
     Spatial model;
     WorldMap map;
-    int civLevel=0;
-    int population=0;
-    
+    int civLevel = 0;
+    int population = 0;
     ArrayList<ArmyUnit> units;
+
+    public WorldCity(WorldRegion r, String n, WorldMap m) {
+        
+        region = r;
+        name = n;
+        map = m;
+        units = new ArrayList<ArmyUnit>();
+    }
 
     public WorldCity(int x, int z, int player, Spatial m, String name, WorldMap map) {
         this.posX = x;
@@ -50,14 +55,13 @@ public class WorldCity {
 
     public void update(float tpf) {
     }
-    
-    
-    public void garrisonArmy(WorldArmy a)
-    {
-        for(ArmyUnit u : a.units)
+
+    public void garrisonArmy(WorldArmy a) {
+        for (ArmyUnit u : a.units) {
             units.add(u);
-        
+        }
+
         map.armyToDelete = a;
-        
+
     }
 }

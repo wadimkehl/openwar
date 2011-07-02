@@ -13,14 +13,23 @@ import com.jme3.math.ColorRGBA;
 public class WorldRegion {
     
     ColorRGBA regionColor; // The color for this region from regions.tga
-    String Name;
+    String name;
     int playerOwner;
     boolean hasHarbor;
     WorldCity city;
+    WorldMap map;
     
-    public WorldRegion()
+    public WorldRegion(String n, String c, int r, int g, int b, WorldMap m)
     {
+        name = n;
+        regionColor = new ColorRGBA(r,g,b,0);
+        map = m;
+        city = new WorldCity(this, c, m);
+    }
+    
+    public void update(float tpf) {
         
+        city.update(tpf);
     }
     
 }

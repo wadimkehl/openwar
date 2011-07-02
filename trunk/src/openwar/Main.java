@@ -27,6 +27,7 @@ public class Main extends SimpleApplication {
     public BulletAppState bulletState = new BulletAppState();
     public ScreenshotAppState screenshotState = new ScreenshotAppState();
     public WorldMapAppState worldMapState = new WorldMapAppState();
+    public String locatorRoot = "data/";
 
     public static void main(String[] args) {
         Main app = new Main();
@@ -47,7 +48,7 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleInitApp() {
 
-        assetManager.registerLocator("data/", FileLocator.class.getName());
+        assetManager.registerLocator(locatorRoot, FileLocator.class.getName());
 
 
 //        guiNode.detachAllChildren();

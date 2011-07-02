@@ -99,7 +99,7 @@ public class GroundTypeManager {
                 break;
             default:
                 return false;
-                
+
 
         }
         return true;
@@ -108,54 +108,67 @@ public class GroundTypeManager {
     // Returns for a given ground type pixel its real ground tile number (0-16+)
     static public int RGBtoGroundType(int r, int g, int b) {
 
+        if ((r == 255) && (g == 255) && (b == 0)) {
+            return 0;
+        }
 
-        if (r == 255 && g == 255 && b == 255) {
-            return 0; //beach
+        if ((r == 200) && (g == 200) && (b == 0)) {
+            return 2;
         }
-        else if ((r == 101 && g == 124 && b == 0) 
-            || (r == 0 && g == 128 && b == 128) 
-            || (r == 96 && g == 160 && b == 64)) {
-            return 4; //all fertile to grass
-            
-        } 
-        else if (r == 0 && g == 64 && b == 0) {
-            return 8; //dense forest
-        } 
-        
-        
-        else if (r == 0 && g == 128 && b == 0) {
-            return 6; // sparse forest to grass rough
+
+        if ((r == 128) && (g == 128) && (b == 0)) {
+            return 3;
         }
-        else if (r == 128 && g == 128 && b == 64) {
-            return 7; // grass hilly
-        } 
-        
-        else if (r == 64 && g == 64 && b == 64) {
-            return 16; // impassable
-        } 
-        
-        else if (r == 196 && g == 128 && b == 128) {
-            return 11;
-        } // mountains high
-        
-        else if (r == 98 && g == 65 && b == 65) {
-            return 7; // grass hilly
-        } 
-        
-        else if (r == 64 && g == 0 && b == 0)
-                return 15;
-        else if (r == 128 && g == 0 && b == 0)
-            return 14;
-        else if( (r == 196 && g == 0 && b == 0)) {
-            return 13;
-        } 
-        
-        else if (r == 0 && g == 255 && b == 128) {
-            return 10;
-            
-        } else if (r == 0 && g == 0 && b == 0) {
+
+        if ((r == 0) && (g == 255) && (b == 0)) {
+            return 4;
+        }
+
+        if ((r == 0) && (g == 200) && (b == 0)) {
+            return 6;
+        }
+
+        if ((r == 0) && (g == 128) && (b == 0)) {
+            return 7;
+        }
+
+        if ((r == 0) && (g == 64) && (b == 0)) {
             return 8;
         }
+
+
+        if ((r == 200) && (g == 200) && (b == 200)) {
+            return 9;
+        }
+
+        if ((r == 0) && (g == 64) && (b == 64)) {
+            return 10;
+        }
+
+        if ((r == 128) && (g == 128) && (b == 128)) {
+            return 11;
+        }
+
+        if ((r == 255) && (g == 255) && (b == 255)) {
+            return 12;
+        }
+
+        if ((r == 0) && (g == 0) && (b == 255)) {
+            return 13;
+        }
+
+        if ((r == 0) && (g == 0) && (b == 128)) {
+            return 14;
+        }
+
+        if ((r == 0) && (g == 0) && (b == 64)) {
+            return 15;
+        }
+
+        if ((r == 0) && (g == 0) && (b == 0)) {
+            return 16;
+        }
+
 
         return -1;
 
@@ -187,7 +200,6 @@ public class GroundTypeManager {
 
 
     }
-
 
     // Returns for a given ground type its march costs
     static public int getGroundTypeCost(int type) {
@@ -233,19 +245,20 @@ public class GroundTypeManager {
         }
 
     }
-    
-        
+
     // Tells whether an army can walk on a tile type
-    static public boolean isWalkable(int type)
-    {
-        if (type < 13) return true;
+    static public boolean isWalkable(int type) {
+        if (type < 13) {
+            return true;
+        }
         return false;
     }
-    
+
     // Tells whether a boat can sail on this type
-    static public boolean isSailable(int type)
-    {
-        if ((type > 11 && type <16)) return true;
+    static public boolean isSailable(int type) {
+        if ((type > 11 && type < 16)) {
+            return true;
+        }
         return false;
     }
 

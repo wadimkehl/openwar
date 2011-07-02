@@ -28,11 +28,23 @@ import com.jme3.texture.Texture;
 import com.jme3.texture.Texture2D;
 import com.jme3.util.BufferUtils;
 import com.jme3.water.WaterFilter;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Scanner;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import jme3tools.converters.ImageToAwt;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 /**
  *
@@ -103,14 +115,14 @@ public class WorldMap {
             cost = GroundTypeManager.getGroundTypeCost(type);
 
         }
-        
+
         @Override
         public String toString() {
-            return super.toString() + " Type: " 
+            return super.toString() + " Type: "
                     + GroundTypeManager.getGroundTypeString(groundType);
         }
     };
-    Application app;
+    Main app;
     int width, height;
     TerrainQuad terrain;
     BulletAppState bulletState;
@@ -130,6 +142,7 @@ public class WorldMap {
     Geometry selectedTilesOverlay;
     Material matOverlay;
     Vector3f sunDirection = new Vector3f(-0.3f, -0.8f, -1f).normalize();
+    ArrayList<WorldRegion> worldRegions;
     ArrayList<WorldArmy> worldArmies;
     ArrayList<WorldCity> worldCities;
     WorldArmy selectedArmy;
@@ -137,7 +150,7 @@ public class WorldMap {
     WorldArmy armyToDelete = null;
     FilterPostProcessor fpp;
 
-    public WorldMap(Application app, AssetManager assetman, BulletAppState bullet, Node scene) {
+    public WorldMap(Main app, AssetManager assetman, BulletAppState bullet, Node scene) {
         this.app = app;
         this.bulletState = bullet;
         this.assetManager = assetman;
@@ -175,10 +188,10 @@ public class WorldMap {
 
 
         // Load all important information for the world map
-        heightMapImage = assetManager.loadTexture(new TextureKey("map/base/heights.tga", false));
-        groundTypeImage = assetManager.loadTexture(new TextureKey("map/base/types.tga", false));
-        regionsImage = assetManager.loadTexture(new TextureKey("map/base/regions0.tga", false));;
-        climatesImage = assetManager.loadTexture(new TextureKey("map/base/climates0.tga", false));;
+        heightMapImage = assetManager.loadTexture(new TextureKey("map/heights.tga", false));
+        groundTypeImage = assetManager.loadTexture(new TextureKey("map/types.tga", false));
+        regionsImage = assetManager.loadTexture(new TextureKey("map/regions.tga", false));;
+        climatesImage = assetManager.loadTexture(new TextureKey("map/climates.tga", false));;
 
 
         // Create key textures
@@ -236,13 +249,52 @@ public class WorldMap {
 
 
         // Create mesh data with material and place its north-western edge to the origin
-        heightMap = new TWWorldHeightMap(ImageToAwt.convert(heightMapImage.getImage(), false, false, 0), 0.1f);
+        heightMap = new TWWorldHeightMap(ImageToAwt.convert(heightMapImage.getImage(), false, false, 0), 1);
         heightMap.load(false, false);
         terrain = new TerrainQuad("terrain", 32, heightMap.getSize(), heightMap.getHeightMap());
         terrain.setMaterial(matTerrain);
         terrain.setLocalTranslation(width / 2f, 0f, height / 2f);
 
         return true;
+    }
+
+    public boolean createRegions() {
+        try {
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document dom = db.parse(app.locatorRoot + "map/base/world.xml");
+            Element root = dom.getDocumentElement();
+
+            NodeList nl = root.getElementsByTagName("region");
+            if (nl != null && nl.getLength() > 0) {
+                for (int i = 0; i < nl.getLength(); i++) {
+                    Element el = (Element) nl.item(i);
+                    String name = el.getAttribute("name");
+                    String city = el.getAttribute("city");   
+                    Scanner s = new Scanner(el.getAttribute("color"));
+                    int r = s.nextInt();
+                    int g = s.nextInt();
+                    int b = s.nextInt();
+                    worldRegions.add(new WorldRegion(name,city,r,g,b,this));
+
+                }
+            }
+
+        } catch (SAXException ex) {
+            Logger.getLogger(WorldMap.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        } catch (IOException ex) {
+            Logger.getLogger(WorldMap.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(WorldMap.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+
+
+
+        return true;
+
     }
 
     // Create the whole world map
@@ -252,6 +304,7 @@ public class WorldMap {
         scene = new Node("worldmap");
         worldArmies = new ArrayList<WorldArmy>();
         worldCities = new ArrayList<WorldCity>();
+        worldRegions = new ArrayList<WorldRegion>();
         selectedTiles = new ArrayList<SelectionTile>();
 
 
@@ -261,19 +314,23 @@ public class WorldMap {
                 System.out.println("Couldn't create terrain...");
                 return false;
             }
+            
+             if (!createRegions()) {
+                System.out.println("Couldn't create regions...");
+                return false;
+            }
 
 
 
             fpp = new FilterPostProcessor(assetManager);
 
             WaterFilter water = new WaterFilter(scene, sunDirection);
-            water.setWaterHeight(-0.1f);
-            water.setMaxAmplitude(0.15f);
-            water.setWaterTransparency(10f);
+            water.setMaxAmplitude(0.2f);
+            water.setWaterTransparency(15f);
             water.setWaterColor(new ColorRGBA(0.01f, 0.5f, 0.7f, 1f));
             water.setSpeed(0.1f);
-            water.setFoamHardness(1.5f);
-            water.setFoamExistence(new Vector3f(0.1f, 0.2f, 0.15f));
+            water.setFoamHardness(2f);
+            water.setFoamExistence(new Vector3f(0.1f, 0.2f, 0.18f));
             fpp.addFilter(water);
 
             BloomFilter bloom = new BloomFilter();
@@ -389,8 +446,8 @@ public class WorldMap {
             a.update(tpf);
         }
 
-        for (WorldCity c : worldCities) {
-            c.update(tpf);
+        for (WorldRegion r : worldRegions) {
+            r.update(tpf);
         }
 
         if (armyToDelete != null) {
@@ -723,7 +780,5 @@ public class WorldMap {
     }
 
     public void fadeSeason() {
-       
-
     }
 }
