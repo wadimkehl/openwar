@@ -20,7 +20,7 @@ we render the terrain in one pass these 12 textures need to be all the visual ti
 
 name                tile nr.    Description
 
-beach                   0       beach/coast and standard sandy desert tile             
+desert                  0       standard sandy desert tile             
 desert fertile          1       standard desert tile with agriculture
 desert rough            2       a variant of sand that looks more rough, stony
 desert hilly            3       a tile for elevated and more rough desert terrain
@@ -36,7 +36,7 @@ mountains               11      snow topped mountains
 
 There are more ground types and types that share the same visual tile:
 
-desert                  12      looks like tile 0, standard desert tile
+beach                   12      looks like tile 0, boats can land here
 shallow water           13      looks like tile 0, determines sailing speed        
 deep water              14      looks like tile 0, determines sailing speed 
 ocean                   15      looks like tile 0, determines sailing speed 

@@ -175,10 +175,10 @@ public class WorldMap {
 
 
         // Load all important information for the world map
-        heightMapImage = assetManager.loadTexture(new TextureKey("map/heights0.tga", false));
-        groundTypeImage = assetManager.loadTexture(new TextureKey("map/types0.tga", false));
-        regionsImage = assetManager.loadTexture(new TextureKey("map/regions0.tga", false));;
-        climatesImage = assetManager.loadTexture(new TextureKey("map/climates0.tga", false));;
+        heightMapImage = assetManager.loadTexture(new TextureKey("map/base/heights.tga", false));
+        groundTypeImage = assetManager.loadTexture(new TextureKey("map/base/types.tga", false));
+        regionsImage = assetManager.loadTexture(new TextureKey("map/base/regions0.tga", false));;
+        climatesImage = assetManager.loadTexture(new TextureKey("map/base/climates0.tga", false));;
 
 
         // Create key textures
@@ -201,7 +201,7 @@ public class WorldMap {
         matTerrain = new Material(assetManager, "Common/MatDefs/Terrain/TerrainLighting.j3md");
         textures = new Texture[12];
         for (int i = 0; i < 12; i++) {
-            textures[i] = assetManager.loadTexture("textures/" + i + ".tga");
+            textures[i] = assetManager.loadTexture("map/textures/" + i + ".tga");
             textures[i].setWrap(Texture.WrapMode.Repeat);
         }
         matTerrain.setTexture("DiffuseMap", textures[0]);

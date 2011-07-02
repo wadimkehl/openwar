@@ -100,7 +100,6 @@ public class GroundTypeManager {
             default:
                 return false;
                 
-                //TODO: Fix the real values here
 
         }
         return true;
@@ -171,7 +170,7 @@ public class GroundTypeManager {
         // And now discern if we have tile that shares its visual tile      
         switch (type) {
 
-            // desert and all water tiles
+            // beach and all water tiles
             case 12:
             case 13:
             case 14:
@@ -188,27 +187,14 @@ public class GroundTypeManager {
 
 
     }
-    
-    // Tells whether an army can walk on a tile type
-    static public boolean isWalkable(int type)
-    {
-        if (type > 11) return false;
-        return true;
-    }
-    
-    // Tells whether a boat can sail on this type
-    static public boolean isSailable(int type)
-    {
-        if (type == 0 || (type > 11 && type <16)) return true;
-        return false;
-    }
+
 
     // Returns for a given ground type its march costs
     static public int getGroundTypeCost(int type) {
 
         switch (type) {
             case (0):
-                return 1;
+                return 2;
             case (1):
                 return 2;
             case (2):
@@ -247,13 +233,28 @@ public class GroundTypeManager {
         }
 
     }
+    
+        
+    // Tells whether an army can walk on a tile type
+    static public boolean isWalkable(int type)
+    {
+        if (type < 13) return true;
+        return false;
+    }
+    
+    // Tells whether a boat can sail on this type
+    static public boolean isSailable(int type)
+    {
+        if ((type > 11 && type <16)) return true;
+        return false;
+    }
 
     // Returns for a given ground type its string name
     static public String getGroundTypeString(int type) {
 
         switch (type) {
             case (0):
-                return "beach";
+                return "desert";
             case (1):
                 return "desert fertile";
             case (2):
@@ -277,7 +278,7 @@ public class GroundTypeManager {
             case (11):
                 return "mountains";
             case (12):
-                return "desert";
+                return "beach";
             case (13):
                 return "shallow water";
             case (14):
