@@ -46,12 +46,7 @@ public class WorldMapAppState extends AbstractAppState {
                 int z = (int) (pt.z - pt.z / map.height);
 
                 if (r.getGeometry() instanceof TerrainPatch) {
-                    System.out.print("Terrain tile: (");
-                    System.out.print(x);
-                    System.out.print(",");
-                    System.out.print(z);
-                    System.out.print(")  Type: ");
-                    System.out.println(TWGroundTypeManager.getGroundTypeString(map.worldTiles[x][z].groundType));
+                    System.out.println(map.worldTiles[x][z]);
                     map.deselectTiles();
                     map.selectTile(x, z);
                     return;
@@ -104,20 +99,24 @@ public class WorldMapAppState extends AbstractAppState {
                     }
                 }
             } else if (name.equals("standard") && !pressed) {
-                
-                    map.displayStandardMaterial();
 
-            }else if (name.equals("l0") && !pressed) {
-                
-                    map.displayDebugMaterial(0);
+                map.displayStandardMaterial();
 
-            }else if (name.equals("l1") && !pressed) {
-                
-                    map.displayDebugMaterial(1);
+            } else if (name.equals("l0") && !pressed) {
 
-            }else if (name.equals("l2") && !pressed) {
-                
-                    map.displayDebugMaterial(2);
+                map.displayDebugMaterial(0);
+
+            } else if (name.equals("l1") && !pressed) {
+
+                map.displayDebugMaterial(1);
+
+            } else if (name.equals("l2") && !pressed) {
+
+                map.displayDebugMaterial(2);
+
+            }else if (name.equals("lol") && !pressed) {
+
+                map.fadeSeason();
 
             } else if (name.equals("cursor") && !pressed) {
                 app.getInputManager().setCursorVisible(app.getFlyByCamera().isEnabled());
@@ -165,6 +164,15 @@ public class WorldMapAppState extends AbstractAppState {
         app.getInputManager().addMapping("mouse_left", new MouseButtonTrigger(0));
         app.getInputManager().addMapping("mouse_right", new MouseButtonTrigger(1));
         app.getInputManager().addMapping("cursor", new KeyTrigger(KeyInput.KEY_X));
+
+        app.getInputManager().addMapping("map_strafeup", new KeyTrigger(KeyInput.KEY_U));
+        app.getInputManager().addMapping("map_strafedown", new KeyTrigger(KeyInput.KEY_J));
+        app.getInputManager().addMapping("map_strafeleft", new KeyTrigger(KeyInput.KEY_H));
+        app.getInputManager().addMapping("map_straferight", new KeyTrigger(KeyInput.KEY_K));
+
+        app.getInputManager().addMapping("lol", new KeyTrigger(KeyInput.KEY_0));
+
+
         app.getInputManager().addListener(actionListener, "standard");
         app.getInputManager().addListener(actionListener, "mouse_left");
         app.getInputManager().addListener(actionListener, "mouse_right");
@@ -172,15 +180,9 @@ public class WorldMapAppState extends AbstractAppState {
         app.getInputManager().addListener(actionListener, "l0");
         app.getInputManager().addListener(actionListener, "l1");
         app.getInputManager().addListener(actionListener, "l2");
+                app.getInputManager().addListener(actionListener, "lol");
 
 
-
-
-
-        app.getInputManager().addMapping("map_strafeup", new KeyTrigger(KeyInput.KEY_U));
-        app.getInputManager().addMapping("map_strafedown", new KeyTrigger(KeyInput.KEY_J));
-        app.getInputManager().addMapping("map_strafeleft", new KeyTrigger(KeyInput.KEY_H));
-        app.getInputManager().addMapping("map_straferight", new KeyTrigger(KeyInput.KEY_K));
         app.getInputManager().addListener(analogListener, "map_strafeup");
         app.getInputManager().addListener(analogListener, "map_strafedown");
         app.getInputManager().addListener(analogListener, "map_strafeleft");
@@ -191,12 +193,6 @@ public class WorldMapAppState extends AbstractAppState {
         if (!map.createWorldMap()) {
             app.stop();
         }
-
-//        map.matTerrain.setBoolean("useGrid", grid);
-
-
-        map.createArmy(128, 128, 0, null);
-        map.createCity(128, 130, 0);
 
 
 //            audioRenderer.playSource(new AudioNode(assetManager, "music/lol.ogg", false));
