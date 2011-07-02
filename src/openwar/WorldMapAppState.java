@@ -69,6 +69,10 @@ public class WorldMapAppState extends AbstractAppState {
 
             } else if (name.equals("mouse_right") && !pressed) {
 
+                if (map.selectedArmy == null) {
+                    return;
+                }
+
                 CollisionResult r = app.getNiftyMousePick(map.scene);
                 if (r == null) {
                     return;
@@ -79,25 +83,23 @@ public class WorldMapAppState extends AbstractAppState {
 
 
                 // Check if we ordered a march command
-                if (map.selectedArmy != null) {
-
-                    if (r.getGeometry() instanceof TerrainPatch) {
-                        map.marchTo(map.selectedArmy, x, z);
-                        return;
-                    }
-
-                    WorldArmy a = map.getArmy((Spatial) r.getGeometry().getParent());
-                    if (a != null) {
-                        map.marchTo(map.selectedArmy, a);
-                        return;
-                    }
-
-                    WorldCity c = map.getCity((Spatial) r.getGeometry().getParent());
-                    if (c != null) {
-                        map.marchTo(map.selectedArmy, c);
-                        return;
-                    }
+                if (r.getGeometry() instanceof TerrainPatch) {
+                    map.marchTo(map.selectedArmy, x, z);
+                    return;
                 }
+
+                WorldArmy a = map.getArmy((Spatial) r.getGeometry().getParent());
+                if (a != null) {
+                    map.marchTo(map.selectedArmy, a);
+                    return;
+                }
+
+                WorldCity c = map.getCity((Spatial) r.getGeometry().getParent());
+                if (c != null) {
+                    map.marchTo(map.selectedArmy, c);
+                    return;
+                }
+
             } else if (name.equals("standard") && !pressed) {
 
                 map.displayStandardMaterial();
@@ -114,7 +116,7 @@ public class WorldMapAppState extends AbstractAppState {
 
                 map.displayDebugMaterial(2);
 
-            }else if (name.equals("lol") && !pressed) {
+            } else if (name.equals("lol") && !pressed) {
 
                 map.fadeSeason();
 
@@ -180,7 +182,7 @@ public class WorldMapAppState extends AbstractAppState {
         app.getInputManager().addListener(actionListener, "l0");
         app.getInputManager().addListener(actionListener, "l1");
         app.getInputManager().addListener(actionListener, "l2");
-                app.getInputManager().addListener(actionListener, "lol");
+        app.getInputManager().addListener(actionListener, "lol");
 
 
         app.getInputManager().addListener(analogListener, "map_strafeup");

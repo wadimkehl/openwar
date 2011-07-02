@@ -4,7 +4,6 @@
  */
 package openwar;
 
-import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
 import com.jme3.asset.TextureKey;
 import com.jme3.bullet.BulletAppState;
@@ -17,34 +16,25 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.BloomFilter;
-import com.jme3.post.filters.FadeFilter;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.TerrainQuad;
-import com.jme3.texture.FrameBuffer;
 import com.jme3.texture.Image;
 import com.jme3.texture.Texture;
 import com.jme3.texture.Texture2D;
-import com.jme3.util.BufferUtils;
 import com.jme3.water.WaterFilter;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import jme3tools.converters.ImageToAwt;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
 /**
  *
@@ -108,9 +98,11 @@ public class WorldMap {
 
         int groundType;
         int cost;
+        WorldRegion region;
 
-        public WorldTile(int x, int z, int type) {
+        public WorldTile(int x, int z, int type, WorldRegion r) {
             super(x, z);
+            region = r;
             groundType = type;
             cost = GroundTypeManager.getGroundTypeCost(type);
 
@@ -118,8 +110,9 @@ public class WorldMap {
 
         @Override
         public String toString() {
-            return super.toString() + " Type: "
-                    + GroundTypeManager.getGroundTypeString(groundType);
+            return super.toString()
+                    + " Type: " + GroundTypeManager.getGroundTypeString(groundType)
+                    + "     Region: " + region.name;
         }
     };
     Main app;
@@ -187,16 +180,7 @@ public class WorldMap {
     public boolean createTerrain() {
 
 
-        // Load all important information for the world map
-        heightMapImage = assetManager.loadTexture(new TextureKey("map/heights.tga", false));
-        groundTypeImage = assetManager.loadTexture(new TextureKey("map/types.tga", false));
-        regionsImage = assetManager.loadTexture(new TextureKey("map/regions.tga", false));;
-        climatesImage = assetManager.loadTexture(new TextureKey("map/climates.tga", false));;
-
-
         // Create key textures
-        width = groundTypeImage.getImage().getWidth();
-        height = groundTypeImage.getImage().getHeight();
         ByteBuffer buf0 = ByteBuffer.allocateDirect(width * height * 4);
         ByteBuffer buf1 = ByteBuffer.allocateDirect(width * height * 4);
         ByteBuffer buf2 = ByteBuffer.allocateDirect(width * height * 4);
@@ -233,21 +217,6 @@ public class WorldMap {
         matTerrainDebug = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
 
 
-        // Create worldTiles array
-        worldTiles = new WorldTile[width][height];
-        ByteBuffer buf = groundTypeImage.getImage().getData(0);
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                int base = (j * width + i) * 3;
-                int r, g, b;
-                r = buf.get(base + 0) & 0xff;
-                g = buf.get(base + 1) & 0xff;
-                b = buf.get(base + 2) & 0xff;
-                worldTiles[i][j] = new WorldTile(i, j, GroundTypeManager.RGBtoGroundType(r, g, b));
-            }
-        }
-
-
         // Create mesh data with material and place its north-western edge to the origin
         heightMap = new TWWorldHeightMap(ImageToAwt.convert(heightMapImage.getImage(), false, false, 0), 1);
         heightMap.load(false, false);
@@ -258,39 +227,60 @@ public class WorldMap {
         return true;
     }
 
-    public boolean createRegions() {
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document dom = db.parse(app.locatorRoot + "map/base/world.xml");
-            Element root = dom.getDocumentElement();
+    public boolean createRegions(Element root) {
+       
 
+            // Add the ocean as the 0'th region 
+            worldRegions.add(new WorldRegion("Ocean", "None", 0, 0, 0, this));
+
+            // Run through the file and read all regions
             NodeList nl = root.getElementsByTagName("region");
             if (nl != null && nl.getLength() > 0) {
                 for (int i = 0; i < nl.getLength(); i++) {
                     Element el = (Element) nl.item(i);
                     String name = el.getAttribute("name");
-                    String city = el.getAttribute("city");   
+                    String city = el.getAttribute("city");
                     Scanner s = new Scanner(el.getAttribute("color"));
                     int r = s.nextInt();
                     int g = s.nextInt();
                     int b = s.nextInt();
-                    worldRegions.add(new WorldRegion(name,city,r,g,b,this));
+                    worldRegions.add(new WorldRegion(name, city, r, g, b, this));
 
                 }
             }
+            
+            System.out.println(worldRegions.size());
 
-        } catch (SAXException ex) {
-            Logger.getLogger(WorldMap.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        } catch (IOException ex) {
-            Logger.getLogger(WorldMap.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        } catch (ParserConfigurationException ex) {
-            Logger.getLogger(WorldMap.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
 
+            // Create worldTiles array and read according region from image
+            worldTiles = new WorldTile[width][height];
+            ByteBuffer buf = groundTypeImage.getImage().getData(0);
+            ByteBuffer regs = regionsImage.getImage().getData(0);
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++) {
+                    int base = (j * width + i) * 3;
+                    int r, g, b, r1, g1, b1;
+                    r = buf.get(base + 0) & 0xff;
+                    g = buf.get(base + 1) & 0xff;
+                    b = buf.get(base + 2) & 0xff;
+                    r1 = regs.get(base + 0) & 0xff;
+                    g1 = regs.get(base + 1) & 0xff;
+                    b1 = regs.get(base + 2) & 0xff;
+                    WorldRegion region;
+
+                    // City found, get according region and save it
+                    if ((r1 == 255) && (g1 == 255) && (b1 == 255)) {
+                        region = worldTiles[i][j - 1].region;
+                        region.city.posX = i;
+                        region.city.posZ = j;
+                    } else {
+                        region = getRegionByRGB(r1, g1, b1);
+                    }
+                    worldTiles[i][j] = new WorldTile(i, j, GroundTypeManager.RGBtoGroundType(r, g, b), region);
+                }
+            }
+
+       
 
 
         return true;
@@ -307,16 +297,29 @@ public class WorldMap {
         worldRegions = new ArrayList<WorldRegion>();
         selectedTiles = new ArrayList<SelectionTile>();
 
+        // Load all important information for the world map
+        heightMapImage = assetManager.loadTexture(new TextureKey("map/base/heights.tga", false));
+        groundTypeImage = assetManager.loadTexture(new TextureKey("map/base/types.tga", false));
+        regionsImage = assetManager.loadTexture(new TextureKey("map/base/regions.tga", false));
+        climatesImage = assetManager.loadTexture(new TextureKey("map/base/climates.tga", false));
+        width = groundTypeImage.getImage().getWidth();
+        height = groundTypeImage.getImage().getHeight();
+       
 
         try {
 
-            if (!createTerrain()) {
-                System.out.println("Couldn't create terrain...");
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document dom = db.parse(app.locatorRoot + "map/base/world.xml");
+            Element root = dom.getDocumentElement();
+
+
+            if (!createRegions(root)) {
+                System.out.println("Couldn't create regions...");
                 return false;
             }
-            
-             if (!createRegions()) {
-                System.out.println("Couldn't create regions...");
+            if (!createTerrain()) {
+                System.out.println("Couldn't create terrain...");
                 return false;
             }
 
@@ -777,6 +780,16 @@ public class WorldMap {
         if (p != null) {
             selectedArmy.setRoute(p);
         }
+    }
+
+    public WorldRegion getRegionByRGB(int r, int g, int b) {
+        ColorRGBA col = new ColorRGBA(r, g, b, 0);
+        for (WorldRegion reg : worldRegions) {
+            if (reg.regionColor.equals(col)) {
+                return reg;
+            }
+        }
+        return null;
     }
 
     public void fadeSeason() {
