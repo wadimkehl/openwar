@@ -97,7 +97,7 @@ public class WorldMap {
         public WorldTile(int x, int z, int type) {
             super(x, z);
             groundType = type;
-            cost = GroundTypeManager.getGroundTypeCost(type);
+            cost = TWGroundTypeManager.getGroundTypeCost(type);
 
         }
     };
@@ -108,7 +108,7 @@ public class WorldMap {
     Node scene, rootScene;
     Material matTerrain, matTerrainDebug;
     AssetManager assetManager;
-    WorldHeightMap heightMap;
+    TWWorldHeightMap heightMap;
     Texture[] textures;
     Texture key0Image, key1Image, key2Image;
     Texture groundTypeImage;
@@ -165,10 +165,10 @@ public class WorldMap {
 
 
         // Load all important information for the world map
-        heightMapImage = assetManager.loadTexture(new TextureKey("map/heights.tga", false));
-        groundTypeImage = assetManager.loadTexture(new TextureKey("map/types.tga", false));
-        regionsImage = null;
-        climatesImage = null;
+        heightMapImage = assetManager.loadTexture(new TextureKey("map/heights0.tga", false));
+        groundTypeImage = assetManager.loadTexture(new TextureKey("map/types0.tga", false));
+        regionsImage = assetManager.loadTexture(new TextureKey("map/regions0.tga", false));;
+        climatesImage = assetManager.loadTexture(new TextureKey("map/climates0.tga", false));;
 
 
         // Create key textures
@@ -178,7 +178,7 @@ public class WorldMap {
         ByteBuffer buf1 = ByteBuffer.allocateDirect(width * height * 4);
         ByteBuffer buf2 = ByteBuffer.allocateDirect(width * height * 4);
 
-        if (!GroundTypeManager.CreateKeyTextures(groundTypeImage.getImage(), buf0, buf1, buf2)) {
+        if (!TWGroundTypeManager.CreateKeyTextures(groundTypeImage.getImage(), buf0, buf1, buf2)) {
             return false;
 
         }
@@ -203,11 +203,10 @@ public class WorldMap {
         matTerrain.setTexture("AlphaMap", key0Image);
         matTerrain.setTexture("AlphaMap_1", key1Image);
         matTerrain.setTexture("AlphaMap_2", key2Image);
-        matTerrain.setBoolean("WardIso", true);
 
 
 
-        // Create debug material to display types, regions, climates etc.
+        // Create debug material to display ground types, regions, climates etc.
         matTerrainDebug = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
 
 
@@ -221,13 +220,13 @@ public class WorldMap {
                 r = buf.get(base + 0) & 0xff;
                 g = buf.get(base + 1) & 0xff;
                 b = buf.get(base + 2) & 0xff;
-                worldTiles[i][j] = new WorldTile(i, j, GroundTypeManager.RGBtoGroundType(r, g, b));
+                worldTiles[i][j] = new WorldTile(i, j, TWGroundTypeManager.RGBtoGroundType(r, g, b));
             }
         }
 
 
         // Create mesh data with material and place its north-western edge to the origin
-        heightMap = new WorldHeightMap(ImageToAwt.convert(heightMapImage.getImage(), false, false, 0), 0.1f);
+        heightMap = new TWWorldHeightMap(ImageToAwt.convert(heightMapImage.getImage(), false, false, 0), 0.1f);
         heightMap.load(false, false);
         terrain = new TerrainQuad("terrain", 32, heightMap.getSize(), heightMap.getHeightMap());
         terrain.setMaterial(matTerrain);
@@ -267,7 +266,7 @@ public class WorldMap {
             fpp.addFilter(water);
 
             BloomFilter bloom = new BloomFilter();
-            bloom.setExposurePower(3f);
+            bloom.setExposurePower(4f);
             fpp.addFilter(bloom);
 
 

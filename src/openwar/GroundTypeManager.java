@@ -5,8 +5,6 @@
 package openwar;
 
 import com.jme3.texture.Image;
-import com.jme3.texture.Texture;
-import com.jme3.texture.Texture2D;
 import java.nio.ByteBuffer;
 
 /**
@@ -15,9 +13,7 @@ import java.nio.ByteBuffer;
  */
 public class GroundTypeManager {
 
-    public GroundTypeManager() {
-    }
-
+    // Recieves an image and returns the three key textures in a RGBA byte buffer
     static public boolean CreateKeyTextures(Image im, ByteBuffer buf0, ByteBuffer buf1, ByteBuffer buf2) {
         int w = im.getWidth();
         int h = im.getHeight();
@@ -39,9 +35,9 @@ public class GroundTypeManager {
 
 
                 if (!computeKeys(r, g, b, base, data0, data1, data2)) {
-                    // System.err.print("Unknown tile at (" + ((Object) x).toString() + "," + ((Object) y).toString() + "): ");
-                    // System.err.println(((Object) r).toString() + " " + ((Object) g).toString() + " " + ((Object) b).toString());
-                    //return false;
+                    System.err.println(
+                            "Unknown tile at (" + x + "," + y + "): " + r + " " + g + " " + b);
+                    return false;
                 }
             }
 
@@ -63,7 +59,7 @@ public class GroundTypeManager {
     // Fills the key textures at a specific base address with the right blending value
     static public boolean computeKeys(int r, int g, int b, int base, byte[] data0, byte[] data1, byte[] data2) {
 
-        int groundtype = RGBtoGroundType(r, g, b);
+        int groundtype = RGBtoVisualGroundType(r, g, b);
         switch (groundtype) {
             case (0):
                 data0[base + 0] = (byte) 255;
@@ -108,7 +104,7 @@ public class GroundTypeManager {
         return true;
     }
 
-    // Returns for a given ground type pixel its ground tile number (0-11)
+    // Returns for a given ground type pixel its real ground tile number (0-16+)
     static public int RGBtoGroundType(int r, int g, int b) {
 
 
@@ -153,9 +149,49 @@ public class GroundTypeManager {
             return 4;
         }
 
-        return 3;
-        //return -1;
+        return -1;
 
+    }
+
+    // Returns for a given ground type pixel its VISUAL!!! ground tile number (0-11)
+    static public int RGBtoVisualGroundType(int r, int g, int b) {
+
+        // First get the real ground type
+        int type = RGBtoGroundType(r, g, b);
+
+        // And now discern if we have tile that shares its visual tile      
+        switch (type) {
+
+            // desert and all water tiles
+            case 12:
+            case 13:
+            case 14:
+            case 15:
+                return 0;
+
+            // impassable
+            case 16:
+                return 11;
+
+            default:
+                return -1;
+        }
+
+
+    }
+    
+    // Tells whether an army can walk on a tile type
+    static public boolean isWalkable(int type)
+    {
+        if (type > 11) return false;
+        return true;
+    }
+    
+    // Tells whether a boat can sail on this type
+    static public boolean isSailable(int type)
+    {
+        if (type == 0 || (type > 11 && type <16)) return true;
+        return false;
     }
 
     // Returns for a given ground type its march costs
@@ -163,33 +199,44 @@ public class GroundTypeManager {
 
         switch (type) {
             case (0):
-                return 1000;
+                return 1;
             case (1):
-                return 1;
+                return 2;
             case (2):
-                return 1;
+                return 2;
             case (3):
-                return 1;
+                return 3;
             case (4):
                 return 1;
             case (5):
-                return 1000;
+                return 1;
             case (6):
                 return 2;
             case (7):
-                return 2;
+                return 3;
             case (8):
-                return 3;
+                return 4;
             case (9):
-                return 1000;
+                return 4;
             case (10):
-                return 1000;
+                return 5;
             case (11):
+                return 10;
+            case (12):
+                return 2;
+            case (13):
+                return 1;
+            case (14):
                 return 3;
+            case (15):
+                return 8;
+            case (16):
+                return 1000;
+            default:
+                return 1000;
 
         }
 
-        return 1000;
     }
 
     // Returns for a given ground type its string name
@@ -197,32 +244,42 @@ public class GroundTypeManager {
 
         switch (type) {
             case (0):
-                return "0";
+                return "beach";
             case (1):
-                return "1";
+                return "desert fertile";
             case (2):
-                return "2";
+                return "desert rough";
             case (3):
-                return "3";
+                return "desert hilly";
             case (4):
-                return "4";
+                return "grass";
             case (5):
-                return "5";
+                return "grass fertile";
             case (6):
-                return "6";
+                return "grass rough";
             case (7):
-                return "7";
+                return "grass hilly";
             case (8):
-                return "8";
+                return "grass forest";
             case (9):
-                return "9";
+                return "snow";
             case (10):
-                return "10";
+                return "swamp";
             case (11):
-                return "11";
+                return "mountains";
+            case (12):
+                return "desert";
+            case (13):
+                return "shallow water";
+            case (14):
+                return "deep water";
+            case (15):
+                return "ocean";
+            case (16):
+                return "impassable";
 
         }
 
-        return "N/A";
+        return "N/A???";
     }
 }

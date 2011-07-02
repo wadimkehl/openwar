@@ -51,7 +51,7 @@ public class WorldMapAppState extends AbstractAppState {
                     System.out.print(",");
                     System.out.print(z);
                     System.out.print(")  Type: ");
-                    System.out.println(GroundTypeManager.getGroundTypeString(map.worldTiles[x][z].groundType));
+                    System.out.println(TWGroundTypeManager.getGroundTypeString(map.worldTiles[x][z].groundType));
                     map.deselectTiles();
                     map.selectTile(x, z);
                     return;
@@ -103,11 +103,22 @@ public class WorldMapAppState extends AbstractAppState {
                         return;
                     }
                 }
-            } else if (name.equals("grid") && !pressed) {
-                debug = !debug;
-                if(debug) map.displayDebugMaterial(0);
-                else map.displayStandardMaterial();
-                map.deselectTiles();
+            } else if (name.equals("standard") && !pressed) {
+                
+                    map.displayStandardMaterial();
+
+            }else if (name.equals("l0") && !pressed) {
+                
+                    map.displayDebugMaterial(0);
+
+            }else if (name.equals("l1") && !pressed) {
+                
+                    map.displayDebugMaterial(1);
+
+            }else if (name.equals("l2") && !pressed) {
+                
+                    map.displayDebugMaterial(2);
+
             } else if (name.equals("cursor") && !pressed) {
                 app.getInputManager().setCursorVisible(app.getFlyByCamera().isEnabled());
                 app.getFlyByCamera().setEnabled(!app.getFlyByCamera().isEnabled());
@@ -147,14 +158,23 @@ public class WorldMapAppState extends AbstractAppState {
         app.getFlyByCamera().setMoveSpeed(50);
 
         app.getInputManager().addMapping("ScreenShot", new KeyTrigger(KeyInput.KEY_P));
-        app.getInputManager().addMapping("grid", new KeyTrigger(KeyInput.KEY_G));
+        app.getInputManager().addMapping("standard", new KeyTrigger(KeyInput.KEY_1));
+        app.getInputManager().addMapping("l0", new KeyTrigger(KeyInput.KEY_2));
+        app.getInputManager().addMapping("l1", new KeyTrigger(KeyInput.KEY_3));
+        app.getInputManager().addMapping("l2", new KeyTrigger(KeyInput.KEY_4));
         app.getInputManager().addMapping("mouse_left", new MouseButtonTrigger(0));
         app.getInputManager().addMapping("mouse_right", new MouseButtonTrigger(1));
         app.getInputManager().addMapping("cursor", new KeyTrigger(KeyInput.KEY_X));
-        app.getInputManager().addListener(actionListener, "grid");
+        app.getInputManager().addListener(actionListener, "standard");
         app.getInputManager().addListener(actionListener, "mouse_left");
         app.getInputManager().addListener(actionListener, "mouse_right");
         app.getInputManager().addListener(actionListener, "cursor");
+        app.getInputManager().addListener(actionListener, "l0");
+        app.getInputManager().addListener(actionListener, "l1");
+        app.getInputManager().addListener(actionListener, "l2");
+
+
+
 
 
         app.getInputManager().addMapping("map_strafeup", new KeyTrigger(KeyInput.KEY_U));
@@ -174,7 +194,7 @@ public class WorldMapAppState extends AbstractAppState {
 
 //        map.matTerrain.setBoolean("useGrid", grid);
 
- 
+
         map.createArmy(128, 128, 0, null);
         map.createCity(128, 130, 0);
 
