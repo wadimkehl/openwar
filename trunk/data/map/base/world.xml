@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+    
+    
+    <region name="Germany" city="Berlin" color="255 0 0" />
+    <region name="France" city="Paris" color="0 255 0" />
+    <region name="England" city="London" color="0 0 255"/>
+    <region name="Spain" city="Madrid" color ="255 255 0" />
+    <region name="Denmark" city="Kopenhagen" color="0 255 255" />
+
+</root>
