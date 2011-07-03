@@ -12,12 +12,13 @@ import de.lessvoid.nifty.screen.ScreenController;
  *
  * @author kehl
  */
-public class WorldMapGUI implements ScreenController {
-
-    Nifty nifty;
+public class WorldMapUI implements ScreenController{
+    
+    
+     Nifty nifty;
     Screen screen;
     
-    public WorldMapGUI() {
+    public WorldMapUI() {
     }
 
     @Override
@@ -35,4 +36,5 @@ public class WorldMapGUI implements ScreenController {
     @Override
     public void onEndScreen() {
     }
+    
 }
