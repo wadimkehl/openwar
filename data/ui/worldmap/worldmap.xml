@@ -3,6 +3,18 @@
 
     <screen id="start" controller="openwar.WorldMapUI">
 
+
+        <layer id="back" childLayout="vertical">
+        <panel height="80%"/>
+        <panel childLayout="horizontal">           
+            <image filename="ui/worldmap/worldmap.tga" imageMode="subImage:0,0,1024,174" width="*" height="*"/>
+        </panel>
+        </layer>
+        
+        
+        
+        
+        
         
         <layer id="front"   childLayout="vertical" >
             
@@ -16,7 +28,7 @@
                         <onActive name="textSize" startSize="1.0" endSize="1.0" />
                     </effect>
               -->
-               </text>
+                </text>
                 
             </panel>
 

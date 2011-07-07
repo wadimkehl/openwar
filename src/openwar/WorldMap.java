@@ -180,10 +180,10 @@ public class WorldMap {
             textures[i].setWrap(Texture.WrapMode.Repeat);
         }
         matTerrain.setTexture("DiffuseMap", textures[0]);
-        matTerrain.setFloat("DiffuseMap_0_scale", 16f);
+        matTerrain.setFloat("DiffuseMap_0_scale", 4f);
         for (int i = 1; i < 12; i++) {
             matTerrain.setTexture("DiffuseMap_" + i, textures[i]);
-            matTerrain.setFloat("DiffuseMap_" + i + "_scale", 32f);
+            matTerrain.setFloat("DiffuseMap_" + i + "_scale", 4f);
         }
         matTerrain.setTexture("AlphaMap", key0Image);
         matTerrain.setTexture("AlphaMap_1", key1Image);
@@ -434,25 +434,6 @@ public class WorldMap {
     // Process all the selected tiles into key 1 texture to make them visible
     private void showSelectedTiles() {
 
-        ByteBuffer b1 = key1Image.getImage().getData(0);
-        ByteBuffer buf1 = ByteBuffer.allocateDirect(width * height * 4);
-
-        // Draw standard key 1 values
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                int index = ((j * width + i) * 4);
-                buf1.put(index, b1.get(index));
-                buf1.put(index + 1, b1.get(index + 1));
-                buf1.put(index + 2, b1.get(index + 2));
-                buf1.put(index + 3, b1.get(index + 3));
-            }
-        }
-
-        //Set new key 1 texture values (activate overlay0)
-        for (SelectionTile t : selectedTiles) {
-            int index = ((t.z * width + t.x) * 4);
-            buf1.put(index + 3, (byte) (255 * t.intensity));
-        }
 
 
         selectedTilesChanged = false;
