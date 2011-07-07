@@ -45,21 +45,6 @@ import org.w3c.dom.NodeList;
 public class WorldMap {
 
     // Basic (x,z)-Tile
-    public class Tile {
-
-        int x, z;
-
-        public Tile(int x, int z) {
-            this.x = x;
-            this.z = z;
-        }
-
-        @Override
-        public String toString() {
-            return "(" + x + "," + z + ")";
-        }
-    };
-
     // Holds information about selected (highlighted) tiles
     public class SelectionTile extends Tile {
 
@@ -81,19 +66,6 @@ public class WorldMap {
             color = col;
         }
     };
-
-    // Serves for path finding things
-    public class PathTile extends Tile {
-
-        public int distance;
-        public PathTile ancestor;
-
-        public PathTile(int x, int z, int d, PathTile a) {
-            super(x, z);
-            distance = d;
-            ancestor = a;
-        }
-    }
 
     // Holds ground type information
     public class WorldTile extends Tile {
@@ -147,6 +119,7 @@ public class WorldMap {
     WorldCity selectedCity;
     WorldArmy armyToDelete = null;
     FilterPostProcessor fpp;
+    WorldMapPathFinder pathFinder = new WorldMapPathFinder(this);
 
     public WorldMap(Main app, AssetManager assetman, BulletAppState bullet, Node scene) {
         this.app = app;
@@ -616,19 +589,19 @@ public class WorldMap {
 
     }
 
-    private int ensureMinMax(int value, int min, int max) {
+    public int ensureMinMax(int value, int min, int max) {
         return Math.min(max, Math.max(min, value));
 
 
     }
 
-    private int ensureInTerrainX(int value) {
+    public int ensureInTerrainX(int value) {
         return Math.min(width - 1, Math.max(0, value));
 
 
     }
 
-    private int ensureInTerrainZ(int value) {
+    public int ensureInTerrainZ(int value) {
         return Math.min(height - 1, Math.max(0, value));
 
     }
@@ -637,71 +610,10 @@ public class WorldMap {
     public void drawReachableArea(WorldArmy army) {
 
         deselectTiles();
-        int points = army.calculateMovePoints();
-        if (points <= 0) {
-            selectTile(army.posX, army.posZ, 0.3f);
-            return;
-        }
 
-        // Holds global distance values discovered yet
-        int[][] distance = new int[2 * points][2 * points];
-        for (int x = 0; x < 2 * points; x++) {
-            for (int z = 0; z < 2 * points; z++) {
-                distance[x][z] = 10000;
-            }
-        }
-        distance[points][points] = 0;
+        ArrayList<Tile> area = pathFinder.getReachableArea(army);
 
-        // Do BFS for all tiles in question starting from army's position
-        LinkedList<PathTile> q = new LinkedList<PathTile>();
-        q.add(new PathTile(army.posX, army.posZ, 0, null));
-        while (!q.isEmpty()) {
-
-            PathTile t = q.remove();
-            for (int x = -1; x < 2; x++) {
-                for (int z = -1; z < 2; z++) {
-
-                    int new_d = getTileCosts(t.x + x, t.z + z) + t.distance;
-                    if (new_d >= points) {
-                        continue;
-                    }
-                    int offset_x = ensureMinMax(points - army.posX + t.x + x, 0, 2 * points - 1);
-                    int offset_z = ensureMinMax(points - army.posZ + t.z + z, 0, 2 * points - 1);
-                    if (new_d < distance[offset_x][offset_z]) {
-                        distance[offset_x][offset_z] = new_d;
-                        q.add(new PathTile(t.x + x, t.z + z, new_d, t));
-                    }
-                }
-            }
-        }
-
-        // Draw reachable tiles with strong border (closed hull)
-        for (int x = -points; x < points; x++) {
-            for (int z = -points; z < points; z++) {
-
-                if (distance[points + x][points + z] <= points) {
-
-                    boolean isBorder = false;
-                    for (int _x = -1; _x < 2; _x++) {
-                        for (int _z = -1; _z < 2; _z++) {
-                            int new_x = ensureMinMax(points + x + _x, 0, 2 * points - 1);
-                            int new_z = ensureMinMax(points + z + _z, 0, 2 * points - 1);
-                            if ((distance[new_x][new_z] >= points - 1)) {
-                                isBorder = true;
-                            }
-                        }
-                    }
-
-                    if (isBorder) {
-                        selectTile(army.posX + x, army.posZ + z, 0.3f);
-                    } else {
-                        selectTile(army.posX + x, army.posZ + z, 0.3f);
-                    }
-
-                    // TODO: Checks for enemys, buildings, trees, rivers etc.
-                }
-            }
-
+        for (Tile t : area) {
         }
     }
 
@@ -722,93 +634,6 @@ public class WorldMap {
         return GroundTypeManager.isSailable(worldTiles[x][z].groundType);
     }
 
-    // Calculates the shortest path between two tiles with A*
-    // Not really because I dont calculate the heuristic part of the distance
-    public Stack<PathTile> findPath(Tile start, Tile end) {
-
-        if (!walkableTile(start) || !walkableTile(end)) {
-            return null;
-        }
-
-        LinkedList<PathTile> open = new LinkedList<PathTile>();
-        LinkedList<PathTile> closed = new LinkedList<PathTile>();
-        open.add(new PathTile(start.x, start.z, 0, null));
-
-        PathTile p = null;
-        while (!open.isEmpty()) {
-
-            // find in open list best candidate (minimal distance) and remove
-            int min = 100000;
-            PathTile best = null;
-            for (PathTile temp : open) {
-                if (temp.distance < min) {
-                    min = temp.distance;
-                    best = temp;
-                }
-            }
-            open.remove(best);
-
-
-            // check if we reached the goal
-            if (best.x == end.x && best.z == end.z) {
-                p = best;
-                break;
-            }
-
-            // expand the candidate, i.e. run through all neighbors and check 'em
-            for (int i = -1; i < 2; i++) {
-                for (int j = -1; j < 2; j++) {
-                    int newx = ensureInTerrainX(best.x + i);
-                    int newz = ensureInTerrainZ(best.z + j);
-
-                    // check if already in closed list -> ignore
-                    boolean alreadyClosed = false;
-                    for (PathTile temp : closed) {
-                        if (temp.x == newx && temp.z == newz) {
-                            alreadyClosed = true;
-                        }
-                    }
-                    if (alreadyClosed) {
-                        continue;
-                    }
-
-                    int new_distance = best.distance + worldTiles[newx][newz].cost;
-
-                    // check if in open list
-                    boolean alreadyOpen = false;
-                    for (PathTile temp : open) {
-                        if (temp.x == newx && temp.z == newz) {
-                            alreadyOpen = true;
-
-                            // check if we found a shorter path
-                            if (new_distance < temp.distance) {
-                                temp.ancestor = best;
-                                temp.distance = new_distance;
-                            }
-                        }
-                    }
-
-                    if (!alreadyOpen) {
-                        open.add(new PathTile(newx, newz, new_distance, best));
-                    }
-
-                }
-            }
-
-            // And finally add to closed list
-            closed.add(best);
-
-        }
-
-        // Build the path recursively
-        Stack<PathTile> path = new Stack<PathTile>();
-        path.push(p);
-        while (path.peek().ancestor != null) {
-            path.push(path.peek().ancestor);
-        }
-        return path;
-    }
-
     public void marchTo(WorldArmy a, Tile t) {
         marchTo(a, t.x, t.z);
     }
@@ -823,7 +648,7 @@ public class WorldMap {
 
     public void marchTo(WorldArmy a, int x, int z) {
 
-        Stack<PathTile> p = findPath(new Tile(a.posX, a.posZ), new Tile(x, z));
+        Stack<Tile> p = pathFinder.findPath(new Tile(a.posX, a.posZ), new Tile(x, z));
         if (p != null) {
             selectedArmy.setRoute(p);
         }

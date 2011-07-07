@@ -4,7 +4,6 @@
  */
 package openwar;
 
-import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Vector3f;
@@ -12,7 +11,6 @@ import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Spatial;
 import java.util.ArrayList;
 import java.util.Stack;
-import openwar.WorldMap.PathTile;
 
 /**
  *
@@ -27,7 +25,7 @@ public class WorldArmy {
     CharacterControl control;
     WorldMap map;
     ArrayList<ArmyUnit> units;
-    Stack<PathTile> route;
+    Stack<Tile> route;
     boolean onRoute = false;
 
     public WorldArmy() {
@@ -94,7 +92,7 @@ public class WorldArmy {
 
             } else {
 
-                PathTile t = route.peek();
+                Tile t = route.peek();
 
                 if (currMovePoints < map.getTileCosts(t.x, t.z)) {
                     return;
@@ -149,7 +147,7 @@ public class WorldArmy {
 
     }
 
-    public void setRoute(Stack<PathTile> r) {
+    public void setRoute(Stack<Tile> r) {
         route = r;
         onRoute = true;
     }
