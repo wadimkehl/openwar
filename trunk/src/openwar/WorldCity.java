@@ -4,10 +4,10 @@
  */
 package openwar;
 
-import com.jme3.math.Vector3f;
-import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.control.UpdateControl;
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 
 /**
  *
@@ -43,12 +43,19 @@ public class WorldCity {
     public void update(float tpf) {
     }
 
-    public void garrisonArmy(WorldArmy a) {
+    public void garrisonArmy(final WorldArmy a) {
+        
         for (ArmyUnit u : a.units) {
             units.add(u);
         }
+        
 
-        map.armyToDelete = a;
+        map.scene.getControl(UpdateControl.class).enqueue(new Callable() {
+         public Object call() throws Exception {
+             map.removeArmy(a);             
+             return null;
+         }
+     });
 
     }
 }

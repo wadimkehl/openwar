@@ -20,6 +20,7 @@ import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.control.UpdateControl;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import com.jme3.texture.Image;
 import com.jme3.texture.Texture;
@@ -27,13 +28,11 @@ import com.jme3.texture.Texture2D;
 import com.jme3.water.WaterFilter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.Stack;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import jme3tools.converters.ImageToAwt;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -96,7 +95,7 @@ public class WorldMap {
     int width, height;
     TerrainQuad terrain;
     BulletAppState bulletState;
-    Node scene, rootScene;
+    Node scene=new Node("worldmap"), rootScene;
     Material matTerrain, matTerrainDebug;
     AssetManager assetManager;
     TWWorldHeightMap heightMap;
@@ -107,17 +106,16 @@ public class WorldMap {
     Texture regionsImage;
     Texture climatesImage;
     WorldTile[][] worldTiles;
-    ArrayList<SelectionTile> selectedTiles;
+    ArrayList<SelectionTile> selectedTiles=new ArrayList<SelectionTile>();
     boolean selectedTilesChanged = false;
     Geometry selectedTilesOverlay;
     Material matOverlay;
     Vector3f sunDirection = new Vector3f(-0.3f, -0.8f, -1f).normalize();
-    ArrayList<WorldRegion> worldRegions;
-    ArrayList<WorldArmy> worldArmies;
-    ArrayList<WorldCity> worldCities;
+    ArrayList<WorldRegion> worldRegions=new ArrayList<WorldRegion>();
+    ArrayList<WorldArmy> worldArmies= new ArrayList<WorldArmy>();
+    ArrayList<WorldCity> worldCities=new ArrayList<WorldCity>();
     WorldArmy selectedArmy;
     WorldCity selectedCity;
-    WorldArmy armyToDelete = null;
     FilterPostProcessor fpp;
     WorldMapPathFinder pathFinder = new WorldMapPathFinder(this);
 
@@ -126,6 +124,8 @@ public class WorldMap {
         this.bulletState = bullet;
         this.assetManager = assetman;
         this.rootScene = scene;
+        heightMap = null;
+        this.scene.addControl(new UpdateControl());
 
 
     }
@@ -211,7 +211,7 @@ public class WorldMap {
 
         // Create mesh data with material and place its north-western edge to the origin
         heightMap = new TWWorldHeightMap(heightMapImage, factor0, factor1, offset);
-        heightMap.load();
+        heightMap.load(false, true);
         terrain = new TerrainQuad("terrain", 32, heightMap.getSize(), heightMap.getHeightMap());
         terrain.setMaterial(matTerrain);
         terrain.setLocalTranslation(width / 2f, 0f, height / 2f);
@@ -307,12 +307,6 @@ public class WorldMap {
     // Create the whole world map
     public boolean createWorldMap() {
 
-        heightMap = null;
-        scene = new Node("worldmap");
-        worldArmies = new ArrayList<WorldArmy>();
-        worldCities = new ArrayList<WorldCity>();
-        worldRegions = new ArrayList<WorldRegion>();
-        selectedTiles = new ArrayList<SelectionTile>();
 
         // Load all important information for the world map
         heightMapImage = assetManager.loadTexture(new TextureKey("map/base/heights.tga", false));
@@ -464,12 +458,6 @@ public class WorldMap {
         for (WorldRegion r : worldRegions) {
             r.update(tpf);
         }
-
-        if (armyToDelete != null) {
-            removeArmy(armyToDelete);
-            armyToDelete = null;
-        }
-
 
         if (selectedTilesChanged) {
             //     showSelectedTiles();
