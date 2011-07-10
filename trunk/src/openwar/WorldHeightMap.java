@@ -15,22 +15,22 @@ import jme3tools.converters.ImageToAwt;
  * 
  * Tries to imitate something like a total war heightmap creation
  */
-public class TWWorldHeightMap extends ImageBasedHeightMap {
+public class WorldHeightMap extends ImageBasedHeightMap {
     
     float factor0, factor1, offset;
 
-    public TWWorldHeightMap(Image colorImage) {
+    public WorldHeightMap(Image colorImage) {
         super(colorImage, 1.0f);
     }
 
-    public TWWorldHeightMap(Image colorImage, float dampen) {
+    public WorldHeightMap(Image colorImage, float dampen) {
         super(colorImage, dampen);
         this.colorImage = colorImage;
         this.dampen = dampen;
     }
     
     
-    public TWWorldHeightMap(Texture image, float f0, float f1, float offs)
+    public WorldHeightMap(Texture image, float f0, float f1, float offs)
     {
      this(ImageToAwt.convert(image.getImage(), false, false, 0)); 
      factor0 = f0;

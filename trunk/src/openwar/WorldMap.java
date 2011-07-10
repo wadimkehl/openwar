@@ -98,7 +98,7 @@ public class WorldMap {
     Node scene=new Node("worldmap"), rootScene;
     Material matTerrain, matTerrainDebug;
     AssetManager assetManager;
-    TWWorldHeightMap heightMap;
+    WorldHeightMap heightMap;
     Texture[] textures;
     Texture key0Image, key1Image, key2Image;
     Texture groundTypeImage;
@@ -210,7 +210,7 @@ public class WorldMap {
 
 
         // Create mesh data with material and place its north-western edge to the origin
-        heightMap = new TWWorldHeightMap(heightMapImage, factor0, factor1, offset);
+        heightMap = new WorldHeightMap(heightMapImage, factor0, factor1, offset);
         heightMap.load(false, true);
         terrain = new TerrainQuad("terrain", 32, heightMap.getSize(), heightMap.getHeightMap());
         terrain.setMaterial(matTerrain);
