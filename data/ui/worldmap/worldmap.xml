@@ -5,7 +5,7 @@
 
 
         <layer id="back" childLayout="vertical">
-        <panel height="80%"/>
+        <panel height="75%"/>
         <panel childLayout="horizontal">           
             <image filename="ui/worldmap/worldmap.tga" imageMode="subImage:0,0,1024,174" width="*" height="*"/>
         </panel>
