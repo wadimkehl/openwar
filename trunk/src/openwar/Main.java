@@ -51,7 +51,7 @@ public class Main extends SimpleApplication {
         assetManager.registerLocator(locatorRoot, FileLocator.class.getName());
 
 
-       guiNode.detachAllChildren();
+       //guiNode.detachAllChildren();
         NiftyJmeDisplay niftyDisplay =
                 new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
         nifty = niftyDisplay.getNifty();
