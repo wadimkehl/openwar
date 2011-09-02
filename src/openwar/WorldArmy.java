@@ -135,7 +135,7 @@ public class WorldArmy {
                     t = route.peek();
                     checkpoint = map.getGLTileCenter(t.x, t.z);
                     Vector3f dir = checkpoint.subtractLocal(location);
-                    dir.normalizeLocal().multLocal(0.5f * tpf).setY(0);
+                    dir.normalizeLocal().multLocal(0.5f).setY(0);
                     control.setWalkDirection(dir);
                     control.setViewDirection(dir);
                 }
