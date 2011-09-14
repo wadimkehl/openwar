@@ -4,6 +4,7 @@
  */
 package openwar;
 
+import openwar.DB.XMLDataLoader;
 import openwar.world.WorldMapAppState;
 import com.jme3.asset.plugins.*;
 import com.jme3.app.SimpleApplication;
