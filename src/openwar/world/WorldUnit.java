@@ -11,12 +11,12 @@ import com.jme3.texture.Texture;
  *
  * @author kehl
  */
-public class ArmyUnit extends Unit{
+public class WorldUnit extends Unit{
     
     
     int currMovePoints;    
     
-    public ArmyUnit(int maxpoints)
+    public WorldUnit(int maxpoints)
     {
        currMovePoints = maxMovePoints;
     }

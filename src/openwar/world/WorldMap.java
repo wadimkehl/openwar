@@ -469,7 +469,7 @@ public class WorldMap {
     }
 
     // Spawns a physical army on the world map
-    public WorldArmy createArmy(int x, int z, int player, ArrayList<ArmyUnit> units) {
+    public WorldArmy createArmy(int x, int z, int player, ArrayList<WorldUnit> units) {
 
         Spatial m = (Spatial) assetManager.loadModel("Models/Oto/Oto.mesh.xml");
         WorldArmy a = new WorldArmy(x, z, player, m, this);
@@ -477,7 +477,7 @@ public class WorldMap {
         worldArmies.add(a);
         scene.attachChild(m);
         bulletState.getPhysicsSpace().add(a.control);
-        a.units.add(new ArmyUnit(10));
+        a.units.add(new WorldUnit(10));
 
         return a;
 

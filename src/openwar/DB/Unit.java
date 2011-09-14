@@ -14,12 +14,12 @@ import java.util.Map;
  public class Unit
     {
         public String refName;
-        
+        public String name;
         public int maxCount;
         public int maxMovePoints;
 
         public Map<String,Integer> stats;
-        public Texture unitCard;
+        public Texture image;
         
         
     }
