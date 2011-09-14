@@ -2,8 +2,15 @@
 
 <root>
 
-    <faction name="Humans" refname="humans"/>
-    <banner image="banner.png" color="100 100 250" />
+    <faction name="Humans" refname="humans" color="100 100 250"/>
+    <images banner="banner.png" flag="flag.png" icon="icon.png" />
+    
+    <names>
+        <male name="Marcus"/>
+        <male name="Brutus"/>
+        <female name="Daphne"/>
+
+    </names>
 
 
 </root>

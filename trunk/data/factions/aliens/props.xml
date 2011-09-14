@@ -2,7 +2,14 @@
 
 <root>
 
-    <faction name="Aliens" refname="aliens"/>
-    <banner image="banner.png" color="255 50 50" />
+    <faction name="Aliens" refname="aliens" color="255 50 50"/>
+     <images banner="banner.png" flag="flag.png" icon="icon.png" />
+    
+    <names>
+        <male name="M'kthar"/>
+        <male name="Kol"/>
+        <female name="Drr'Itsch"/>
+
+    </names>
 
 </root>

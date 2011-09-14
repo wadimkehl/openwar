@@ -11,6 +11,7 @@ package openwar;
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
+import com.jme3.math.ColorRGBA;
 import java.io.File;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -18,8 +19,10 @@ import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import openwar.DB.Building;
+import openwar.DB.Faction;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 public class DataLoader {
 
@@ -71,9 +74,12 @@ public class DataLoader {
                 } else if (folder == "buildings") {
                     loadBuilding(root);
                 }
+                else if (folder == "factions") {
+                    loadFaction(root);
+                }
             }
         } catch (Exception E) {
-            logger.log(Level.SEVERE, "Error while reading data...");
+            logger.log(Level.WARNING, "Error while reading data...");
         }
     }
 
@@ -89,9 +95,9 @@ public class DataLoader {
             String image = "units" + File.separator + entity.refName + File.separator + unit.getAttribute("image");
             entity.image = assets.loadTexture(image);
             app.DB.units.put(entity.refName, entity);
-            logger.log(Level.INFO, "Unit loaded: " + entity.refName);
+            logger.log(Level.WARNING, "Unit loaded: " + entity.refName);
         } catch (Exception E) {
-            logger.log(Level.INFO, "Unit CANNOT be loaded: " + entity.refName);
+            logger.log(Level.WARNING, "Unit CANNOT be loaded: " + entity.refName);
         }
     }
 
@@ -116,9 +122,49 @@ public class DataLoader {
                 app.DB.buildings.put(entity.refName, entity);
 
             }
-            logger.log(Level.INFO, "Building loaded: " + entity.refName);
+            logger.log(Level.WARNING, "Building loaded: " + entity.refName);
         } catch (Exception E) {
-            logger.log(Level.INFO, "Building CANNOT be loaded: " + entity.refName);
+            logger.log(Level.WARNING, "Building CANNOT be loaded: " + entity.refName);
+        }
+    }
+
+    private void loadFaction(Element root) {
+        Faction entity = new Faction();
+        try {
+            Element faction = (Element) root.getElementsByTagName("faction").item(0);
+            Element images = (Element) root.getElementsByTagName("images").item(0);
+            Element names = (Element) root.getElementsByTagName("names").item(0);
+
+            entity.name = faction.getAttribute("name");
+            entity.refName = faction.getAttribute("refname");
+            Scanner s = new Scanner(faction.getAttribute("color"));
+            float r = s.nextFloat();
+            float g = s.nextFloat();
+            float b = s.nextFloat();
+            entity.color = new ColorRGBA(r, g, b, 255);
+
+            entity.banner = assets.loadTexture("factions" + File.separator
+                    + entity.refName + File.separator + images.getAttribute("banner"));
+            entity.flag = assets.loadTexture("factions" + File.separator
+                    + entity.refName + File.separator + images.getAttribute("flag"));
+            entity.icon = assets.loadTexture("factions" + File.separator
+                    + entity.refName + File.separator + images.getAttribute("icon"));
+
+
+            NodeList males = names.getElementsByTagName("male");
+            NodeList females = names.getElementsByTagName("female");
+
+            for (int i = 0; i < males.getLength(); i++) {
+                Element l = (Element) males.item(i);
+                entity.namesMale.add(l.getAttribute("name"));
+            }
+            for (int i = 0; i < females.getLength(); i++) {
+                Element l = (Element) females.item(i);
+                entity.namesFemale.add(l.getAttribute("name"));
+            }
+            logger.log(Level.WARNING, "Faction loaded: " + entity.refName);
+        } catch (Exception E) {
+            logger.log(Level.WARNING, "Faction CANNOT be loaded: " + entity.refName);
         }
     }
 
