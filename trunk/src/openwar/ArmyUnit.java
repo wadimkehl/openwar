@@ -10,7 +10,7 @@ import com.jme3.texture.Texture;
  *
  * @author kehl
  */
-public class ArmyUnit extends GameDataBase.Unit{
+public class ArmyUnit extends GameDatabase.Unit{
     
     
     int currMovePoints;    
