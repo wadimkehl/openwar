@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package openwar;
+package openwar.world;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.asset.TextureKey;
@@ -33,6 +33,8 @@ import java.util.Scanner;
 import java.util.Stack;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import openwar.GroundTypeManager;
+import openwar.Main;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
