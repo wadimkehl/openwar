@@ -4,10 +4,25 @@
  */
 package openwar.DB;
 
+import com.jme3.math.ColorRGBA;
+import com.jme3.texture.Texture;
+import java.util.ArrayList;
+
 /**
  *
  * @author kehl
  */
 public class Faction {
-    
+
+    public String name;
+    public String refName;
+    public ColorRGBA color;
+    public ArrayList<String> namesMale, namesFemale;
+    public Texture banner, flag, icon;
+
+    public Faction() {
+        namesMale = new ArrayList < String > ();
+        namesFemale = new ArrayList < String > ();
+
+    }
 }
