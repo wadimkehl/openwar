@@ -4,7 +4,7 @@
  */
 package openwar.world;
 
-import openwar.gamedatabase.Unit;
+import openwar.DB.Unit;
 import com.jme3.texture.Texture;
 
 /**
