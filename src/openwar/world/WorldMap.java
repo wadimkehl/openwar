@@ -97,7 +97,7 @@ public class WorldMap {
     int width, height;
     TerrainQuad terrain;
     BulletAppState bulletState;
-    Node scene=new Node("worldmap"), rootScene;
+    Node scene = new Node("worldmap"), rootScene;
     Material matTerrain, matTerrainDebug;
     AssetManager assetManager;
     WorldHeightMap heightMap;
@@ -108,14 +108,14 @@ public class WorldMap {
     Texture regionsImage;
     Texture climatesImage;
     WorldTile[][] worldTiles;
-    ArrayList<SelectionTile> selectedTiles=new ArrayList<SelectionTile>();
+    ArrayList<SelectionTile> selectedTiles = new ArrayList<SelectionTile>();
     boolean selectedTilesChanged = false;
     Geometry selectedTilesOverlay;
     Material matOverlay;
     Vector3f sunDirection = new Vector3f(-0.3f, -0.8f, -1f).normalize();
-    ArrayList<WorldRegion> worldRegions=new ArrayList<WorldRegion>();
-    ArrayList<WorldArmy> worldArmies= new ArrayList<WorldArmy>();
-    ArrayList<WorldCity> worldCities=new ArrayList<WorldCity>();
+    ArrayList<WorldRegion> worldRegions = new ArrayList<WorldRegion>();
+    ArrayList<WorldArmy> worldArmies = new ArrayList<WorldArmy>();
+    ArrayList<WorldCity> worldCities = new ArrayList<WorldCity>();
     WorldArmy selectedArmy;
     WorldCity selectedCity;
     FilterPostProcessor fpp;
@@ -290,14 +290,16 @@ public class WorldMap {
                 continue;
             }
 
-            worldCities.add(r.city);
-
-            Spatial m = app.DB.buildings.get("city").levels.get(0).model;
+            Spatial m = app.DB.buildings.get("city").levels.get(0).model.deepClone();
             m.setShadowMode(ShadowMode.CastAndReceive);
             Vector3f vec = getGLTileCenter(r.city.posX, r.city.posZ);
             m.setLocalTranslation(vec);
             r.city.model = m;
             scene.attachChild(m);
+
+
+            worldCities.add(r.city);
+
 
         }
 
