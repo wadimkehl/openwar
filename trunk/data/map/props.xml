@@ -3,32 +3,39 @@
 <root>
     
     <terrain>
-    <heightmap factor0="0.00000" factor1="0.022" offset="-0.25"/>
-    <sun color="255 255 255" direction="-0.3 -0.9 -1" />
+        <heightmap factor0="0.00000" factor1="0.022" offset="-0.25"/>
+        <sun color="255 255 255" direction="-0.3 -0.9 -1" />
     </terrain>
     
     <climates>
-    <climate name="Arid" color="255 0 0"/>    
-    <climate name="Humid" color="0 255 0" />
-    <climate name="Tundra" color="0 0 255"/>    
+        <climate name="Arid" refname="arid" color="255 0 0"/>    
+        <climate name="Humid" refname="arid" color="0 255 0" />
+        <climate name="Tundra" refname="arid" color="0 0 255"/>    
     </climates>
     
-    <region name="Germany" city="Berlin" color="255 0 0" />
-    <region name="France" city="Paris" color="0 255 0" />
-    <region name="Portugal" city="Lisabon" color="0 0 255"/>
-    <region name="Spain" city="Madrid" color ="255 255 0" />
-    <region name="Sweden" city="Stockholm" color="0 255 255" />
+    <region name="Germany" refname="germany" city="Berlin" color="255 0 0" />
+    <region name="France" refname="france" city="Paris" color="0 255 0" />
+    <region name="Portugal" refname="portugal" city="Lisabon" color="0 0 255"/>
+    <region name="Spain" refname="spain" city="Madrid" color ="255 255 0" />
+    <region name="Sweden" refname="sweden" city="Stockholm" color="0 255 255" />
     
     <faction refname="humans" gold="1000" playable="true">
-        <ownedRegion name="Germany"/>
+        <ownedRegion refname="germany"/>
+        <ownedRegion refname="france"/>
+        <ownedRegion refname="portugal"/>
+    </faction>
     
+    <faction refname="aliens" gold="1000" playable="false">
+        <ownedRegion refname="spain"/>
+        <ownedRegion refname="sweden"/>
     </faction>
     
     
-    <city name="Berlin" level="0" population="1000">
+    <city refname="germany" level="0" population="1000">
         <building refname="irrigation" level="0" />
-        <unit refname="militia" count="100" armor="0" exp="0" arms="0"/>
-    
+        <unit refname="militia" count="100"/>
+        <unit refname="militia" count="100"/>
+   
     </city>
 
 </root>

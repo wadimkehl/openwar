@@ -2,9 +2,8 @@
 
 <root>
 
-    <unit name="Bowmen" refname="bowmen"/>
+    <unit name="Bowmen" refname="bowmen" maxcount="100" maxmovepoints="10" image="unitcard.png" />
     <stats att_melee="1" att_assault="1" att_range="5" armor="1" shield="0" melee="1" ranged="1" />
-    <card image="unitcard.png"/>
 
 
 </root>

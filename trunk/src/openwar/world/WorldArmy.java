@@ -24,7 +24,7 @@ public class WorldArmy {
     Spatial model;
     CharacterControl control;
     WorldMap map;
-    ArrayList<ArmyUnit> units;
+    ArrayList<WorldUnit> units;
     Stack<Tile> route;
     boolean onRoute = false;
 
@@ -51,14 +51,14 @@ public class WorldArmy {
 
 
         model.scale(0.2f);
-        units = new ArrayList<ArmyUnit>();
+        units = new ArrayList<WorldUnit>();
 
     }
 
     public int calculateMovePoints() {
 
         int points = 10000;
-        for (ArmyUnit u : units) {
+        for (WorldUnit u : units) {
             points = Math.min(u.currMovePoints, points);
         }
         return currMovePoints = points;
@@ -66,14 +66,14 @@ public class WorldArmy {
     }
 
     public int resetMovePoints() {
-        for (ArmyUnit u : units) {
+        for (WorldUnit u : units) {
             u.resetMovePoints();
         }
         return calculateMovePoints();
     }
 
     public int reduceMovePoints(int minus) {
-        for (ArmyUnit u : units) {
+        for (WorldUnit u : units) {
             u.currMovePoints = Math.max(0, u.currMovePoints - minus);
         }
         return calculateMovePoints();

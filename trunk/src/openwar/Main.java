@@ -20,6 +20,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
 import de.lessvoid.nifty.Nifty;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import openwar.DB.GameDatabase;
 
 public class Main extends SimpleApplication {
 
@@ -29,6 +30,7 @@ public class Main extends SimpleApplication {
     public ScreenshotAppState screenshotState = new ScreenshotAppState();
     public WorldMapAppState worldMapState = new WorldMapAppState();
     public String locatorRoot = "data/";
+    public GameDatabase DB = new GameDatabase();
 
     public static void main(String[] args) {
         Main app = new Main();
@@ -38,9 +40,7 @@ public class Main extends SimpleApplication {
         app.setSettings(new AppSettings(true));
         app.settings.setTitle("OpenWar");
         app.settings.setVSync(true);
-
-        app.settings.setFrameRate(60);
-
+        app.settings.setFrameRate(30);
         app.start();
 
 
@@ -52,15 +52,20 @@ public class Main extends SimpleApplication {
         assetManager.registerLocator(locatorRoot, FileLocator.class.getName());
 
 
-       //guiNode.detachAllChildren();
-        NiftyJmeDisplay niftyDisplay =
-                new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
-        nifty = niftyDisplay.getNifty();
-        guiViewPort.addProcessor(niftyDisplay);
-
-        this.stateManager.attach(bulletState);
-        this.stateManager.attach(worldMapState);
-        this.stateManager.attach(screenshotState);
+        DataLoader dl = new DataLoader(this, assetManager);
+        if (!dl.loadAll()) {
+            this.requestClose(false);
+        }
+     
+        //guiNode.detachAllChildren();
+//        NiftyJmeDisplay niftyDisplay =
+//                new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
+//        nifty = niftyDisplay.getNifty();
+//        guiViewPort.addProcessor(niftyDisplay);
+//
+//        this.stateManager.attach(bulletState);
+//        this.stateManager.attach(worldMapState);
+//        this.stateManager.attach(screenshotState);
     }
 
 // Calculates a mouse pick with a spatial and returns nearest result or null
@@ -82,5 +87,11 @@ public class Main extends SimpleApplication {
         }
 
         return null;
+    }
+    
+    @Override
+    public void simpleUpdate(float tpf)
+    {
+        
     }
 }

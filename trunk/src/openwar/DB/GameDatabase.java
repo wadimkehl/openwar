@@ -2,6 +2,7 @@ package openwar.DB;
 
 
 import com.jme3.texture.Texture;
+import java.util.HashMap;
 import java.util.Map;
 
 /*
@@ -17,8 +18,15 @@ import java.util.Map;
 
 public class GameDatabase {
      
-    static public Map<String, Unit> units;
-    static public Map<String, Faction> factions;
-    static public Map<String, Building> buildings;
+     public HashMap<String, Unit> units;
+     public HashMap<String, Faction> factions;
+     public HashMap<String, Building> buildings;
+    
+    public GameDatabase()
+    {
+            units = new HashMap<String, Unit>();
+    factions= new HashMap<String, Faction>();
+    buildings= new HashMap<String, Building>();
+    }
     
 }

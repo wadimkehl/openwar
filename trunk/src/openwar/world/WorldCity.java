@@ -22,7 +22,7 @@ public class WorldCity {
     WorldMap map;
     int level = 0;
     int population = 0;
-    ArrayList<ArmyUnit> units;
+    ArrayList<WorldUnit> units;
     ArrayList<WorldBuilding> buildings;
 
     public WorldCity(WorldRegion r, String n, WorldMap m) {
@@ -30,7 +30,7 @@ public class WorldCity {
         region = r;
         name = n;
         map = m;
-        units = new ArrayList<ArmyUnit>();
+        units = new ArrayList<WorldUnit>();
         buildings = new ArrayList<WorldBuilding>();
     }
 
@@ -45,7 +45,7 @@ public class WorldCity {
 
     public void garrisonArmy(final WorldArmy a) {
         
-        for (ArmyUnit u : a.units) {
+        for (WorldUnit u : a.units) {
             units.add(u);
         }
         
