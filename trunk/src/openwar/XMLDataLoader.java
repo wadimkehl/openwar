@@ -24,13 +24,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-public class DataLoader {
+public class XMLDataLoader {
 
     AssetManager assets;
     Main app;
-    private static final Logger logger = Logger.getLogger(DataLoader.class.getName());
+    private static final Logger logger = Logger.getLogger(XMLDataLoader.class.getName());
 
-    public DataLoader(Main appl, AssetManager man) {
+    public XMLDataLoader(Main appl, AssetManager man) {
         app = appl;
         assets = man;
     }

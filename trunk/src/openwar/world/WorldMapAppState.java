@@ -54,13 +54,15 @@ public class WorldMapAppState extends AbstractAppState {
 
                 }
 
-                WorldArmy a = map.getArmy((Spatial) r.getGeometry().getParent());
+                // TODO: BLENDER exports spatial into two cascaded nodes!
+                Spatial s = (Spatial) r.getGeometry().getParent().getParent();
+                WorldArmy a = map.getArmy(s);
                 if (a != null) {
                     map.selectArmy(a);
                     return;
                 }
 
-                WorldCity c = map.getCity((Spatial) r.getGeometry().getParent());
+                WorldCity c = map.getCity(s);
                 if (c != null) {
                     map.selectCity(c);
                     return;
@@ -89,13 +91,15 @@ public class WorldMapAppState extends AbstractAppState {
                     return;
                 }
 
-                WorldArmy a = map.getArmy((Spatial) r.getGeometry().getParent());
+                // TODO: BLENDER exports spatial into two cascaded nodes!
+                Spatial s = (Spatial) r.getGeometry().getParent().getParent();
+                WorldArmy a = map.getArmy(s);
                 if (a != null) {
                     map.marchTo(map.selectedArmy, a);
                     return;
                 }
 
-                WorldCity c = map.getCity((Spatial) r.getGeometry().getParent());
+                WorldCity c = map.getCity(s);
                 if (c != null) {
                     map.marchTo(map.selectedArmy, c);
                     return;

@@ -20,8 +20,6 @@ import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
 import de.lessvoid.nifty.Nifty;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import openwar.DB.GameDatabase;
 
 public class Main extends SimpleApplication {
@@ -53,7 +51,7 @@ public class Main extends SimpleApplication {
         assetManager.registerLocator(locatorRoot, FileLocator.class.getName());
 
 
-        DataLoader dl = new DataLoader(this, assetManager);
+        XMLDataLoader dl = new XMLDataLoader(this, assetManager);
         dl.loadAll();
      
         //guiNode.detachAllChildren();
