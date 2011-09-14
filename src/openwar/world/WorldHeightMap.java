@@ -42,8 +42,8 @@ public class WorldHeightMap extends ImageBasedHeightMap {
     @Override
     public float calculateHeight(float r, float g, float b) {
 
-        
-        return Math.max(0f, (r + g + b) * factor0 + r*factor1) + offset;
+        float value = (r + g + b) * factor0 + r*factor1;
+        return Math.max(0f,value)  + offset;
        
     }
 }
