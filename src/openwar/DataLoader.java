@@ -41,14 +41,14 @@ public class DataLoader {
             // go into meta folder
             File f = new File(app.locatorRoot + folder);
             if (!f.isDirectory()) {
-                logger.log(Level.SEVERE, "Can't find " + folder + " directory...");
+                logger.log(Level.SEVERE, "Cannot find {0} directory...", folder);
                 throw new Exception();
             }
 
             // run through each folder
             for (File u : f.listFiles()) {
                 if (!f.isDirectory()) {
-                    logger.log(Level.WARNING, "Entity unloadable in " + f.getName());
+                    logger.log(Level.WARNING, "Entity unloadable in {0}", f.getName());
                     continue;
                 }
                 // search props.xml
@@ -59,7 +59,7 @@ public class DataLoader {
                     }
                 }
                 if (props == null) {
-                    logger.log(Level.WARNING, "Can't find props.xml in " + u.getName());
+                    logger.log(Level.WARNING, "Cannot find props.xml in {0}", u.getName());
                     continue;
                 }
 
@@ -69,12 +69,11 @@ public class DataLoader {
                 Document dom = db.parse(props.getCanonicalPath());
                 Element root = dom.getDocumentElement();
 
-                if (folder == "units") {
+                if ("units".equals(folder)) {
                     loadUnit(root);
-                } else if (folder == "buildings") {
+                } else if ("buildings".equals(folder)) {
                     loadBuilding(root);
-                }
-                else if (folder == "factions") {
+                } else if ("factions".equals(folder)) {
                     loadFaction(root);
                 }
             }
@@ -95,9 +94,9 @@ public class DataLoader {
             String image = "units" + File.separator + entity.refName + File.separator + unit.getAttribute("image");
             entity.image = assets.loadTexture(image);
             app.DB.units.put(entity.refName, entity);
-            logger.log(Level.WARNING, "Unit loaded: " + entity.refName);
+            logger.log(Level.WARNING, "Unit loaded: {0}", entity.refName);
         } catch (Exception E) {
-            logger.log(Level.WARNING, "Unit CANNOT be loaded: " + entity.refName);
+            logger.log(Level.WARNING, "Unit CANNOT be loaded: {0}", entity.refName);
         }
     }
 
@@ -112,19 +111,22 @@ public class DataLoader {
 
             for (int i = 0; i < entity.maxLevel; i++) {
                 Element l = (Element) levels.getElementsByTagName("level").item(i);
-                String s = "buildings" + File.separator + entity.refName
-                        + File.separator + l.getAttribute("image");
+                String s = "buildings" + File.separator + entity.refName + File.separator;
                 entity.addLevel(Integer.parseInt(l.getAttribute("level")),
                         l.getAttribute("name"), l.getAttribute("refname"),
                         Integer.parseInt(l.getAttribute("cost")),
                         Integer.parseInt(l.getAttribute("turns")),
-                        assets.loadTexture(s));
+                        assets.loadTexture(s + l.getAttribute("image")),
+                        null);
+                if (!"".equals(l.getAttribute("model"))) {
+                    entity.levels.get(i).model = assets.loadModel(s + l.getAttribute("model"));
+                }
                 app.DB.buildings.put(entity.refName, entity);
 
             }
-            logger.log(Level.WARNING, "Building loaded: " + entity.refName);
+            logger.log(Level.WARNING, "Building loaded: {0}", entity.refName);
         } catch (Exception E) {
-            logger.log(Level.WARNING, "Building CANNOT be loaded: " + entity.refName);
+            logger.log(Level.WARNING, "Building CANNOT be loaded: {0}", entity.refName);
         }
     }
 
@@ -162,9 +164,9 @@ public class DataLoader {
                 Element l = (Element) females.item(i);
                 entity.namesFemale.add(l.getAttribute("name"));
             }
-            logger.log(Level.WARNING, "Faction loaded: " + entity.refName);
+            logger.log(Level.WARNING, "Faction loaded: {0}", entity.refName);
         } catch (Exception E) {
-            logger.log(Level.WARNING, "Faction CANNOT be loaded: " + entity.refName);
+            logger.log(Level.WARNING, "Faction CANNOT be loaded: {0}", entity.refName);
         }
     }
 

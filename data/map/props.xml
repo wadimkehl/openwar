@@ -3,14 +3,14 @@
 <root>
     
     <terrain>
-        <heightmap factor0="0.00000" factor1="0.022" offset="-0.25"/>
+        <heightmap factor0="0.00000" factor1="0.015" offset="-0.2"/>
         <sun color="255 255 255" direction="-0.3 -0.9 -1" />
     </terrain>
     
     <climates>
         <climate name="Arid" refname="arid" color="255 0 0"/>    
-        <climate name="Humid" refname="arid" color="0 255 0" />
-        <climate name="Tundra" refname="arid" color="0 0 255"/>    
+        <climate name="Humid" refname="humid" color="0 255 0" />
+        <climate name="Tundra" refname="tundra" color="0 0 255"/>    
     </climates>
     
     <region name="Germany" refname="germany" city="Berlin" color="255 0 0" />

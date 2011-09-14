@@ -4,6 +4,7 @@
  */
 package openwar.DB;
 
+import com.jme3.scene.Spatial;
 import com.jme3.texture.Texture;
 import java.util.HashMap;
 
@@ -15,12 +16,13 @@ public class Building {
 
     public class Level {
 
-        int level;
-        String name;
-        String refName;
-        int cost;
-        int turns;
-        Texture image;
+        public int level;
+        public String name;
+        public String refName;
+        public int cost;
+        public int turns;
+        public Texture image;
+        public Spatial model;
 
         public Level() {
         }
@@ -34,7 +36,7 @@ public class Building {
         levels = new HashMap<Integer, Level>();
     }
 
-    public void addLevel(int l, String n, String r, int c, int t, Texture i) {
+    public void addLevel(int l, String n, String r, int c, int t, Texture i, Spatial m) {
         Level lev = new Level();
         lev.level = l;
         lev.name = n;
@@ -42,6 +44,8 @@ public class Building {
         lev.cost = c;
         lev.turns = t;
         lev.image = i;
+        lev.model = m;
+        levels.put(l, lev);
     }
 
     
