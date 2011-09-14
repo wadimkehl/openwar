@@ -292,9 +292,8 @@ public class WorldMap {
 
             worldCities.add(r.city);
 
-            Spatial m = (Spatial) assetManager.loadModel("Models/Sign Post/Sign Post.mesh.xml");
+            Spatial m = app.DB.buildings.get("city").levels.get(0).model;
             m.setShadowMode(ShadowMode.CastAndReceive);
-            m.setLocalScale(0.5f);
             Vector3f vec = getGLTileCenter(r.city.posX, r.city.posZ);
             m.setLocalTranslation(vec);
             r.city.model = m;

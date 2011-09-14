@@ -20,6 +20,8 @@ import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
 import de.lessvoid.nifty.Nifty;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import openwar.DB.GameDatabase;
 
 public class Main extends SimpleApplication {
@@ -34,7 +36,6 @@ public class Main extends SimpleApplication {
 
     public static void main(String[] args) {
         Main app = new Main();
-
 
         app.setShowSettings(true);
         app.setSettings(new AppSettings(true));
@@ -53,19 +54,17 @@ public class Main extends SimpleApplication {
 
 
         DataLoader dl = new DataLoader(this, assetManager);
-        if (!dl.loadAll()) {
-            this.requestClose(false);
-        }
+        dl.loadAll();
      
         //guiNode.detachAllChildren();
-//        NiftyJmeDisplay niftyDisplay =
-//                new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
-//        nifty = niftyDisplay.getNifty();
-//        guiViewPort.addProcessor(niftyDisplay);
-//
-//        this.stateManager.attach(bulletState);
-//        this.stateManager.attach(worldMapState);
-//        this.stateManager.attach(screenshotState);
+        NiftyJmeDisplay niftyDisplay =
+                new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
+        nifty = niftyDisplay.getNifty();
+        guiViewPort.addProcessor(niftyDisplay);
+
+        this.stateManager.attach(bulletState);
+        this.stateManager.attach(worldMapState);
+        this.stateManager.attach(screenshotState);
     }
 
 // Calculates a mouse pick with a spatial and returns nearest result or null
