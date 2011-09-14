@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+
+    <unit name="Militia" refname="militia"/>
+    <stats att_melee="5" att_assault="2" armor="2" shield="0" melee="1"/>
+    <card image="unitcard.png"/>
+
+</root>

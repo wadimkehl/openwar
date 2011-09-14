@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+
+    <faction name="Aliens" refname="aliens"/>
+    <banner image="banner.png" color="255 50 50" />
+
+</root>

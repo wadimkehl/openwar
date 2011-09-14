@@ -17,17 +17,17 @@
     <region name="France" city="Paris" color="0 255 0" />
     <region name="Portugal" city="Lisabon" color="0 0 255"/>
     <region name="Spain" city="Madrid" color ="255 255 0" />
-    <region name="Swedeb" city="Stockholm" color="0 255 255" />
+    <region name="Sweden" city="Stockholm" color="0 255 255" />
     
-    <faction name="Knights" gold="100" playable="true">
+    <faction refname="humans" gold="1000" playable="true">
         <ownedRegion name="Germany"/>
     
     </faction>
     
     
     <city name="Berlin" level="0" population="1000">
-        <building name="low irrigation" />
-        <unit name="german militia" count="100" armor="0" exp="0" arms="0"/>
+        <building refname="irrigation" level="0" />
+        <unit refname="militia" count="100" armor="0" exp="0" arms="0"/>
     
     </city>
 

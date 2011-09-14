@@ -10,17 +10,13 @@ import com.jme3.texture.Texture;
  *
  * @author kehl
  */
-public class ArmyUnit {
+public class ArmyUnit extends GameDataBase.Unit{
     
     
-    int maxMovePoints;
-    int currMovePoints;
-    Texture unitCard;
-    
+    int currMovePoints;    
     
     public ArmyUnit(int maxpoints)
     {
-        
        currMovePoints = maxMovePoints = maxpoints;
     }
     
