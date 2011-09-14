@@ -321,7 +321,7 @@ public class WorldMap {
 
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
-            Document dom = db.parse(app.locatorRoot + "map/base/world.xml");
+            Document dom = db.parse(app.locatorRoot + "map/props.xml");
             Element root = dom.getDocumentElement();
 
 

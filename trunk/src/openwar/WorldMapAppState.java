@@ -133,13 +133,13 @@ public class WorldMapAppState extends AbstractAppState {
         public void onAnalog(String name, float value, float tpf) {
 
             if (name.equals("map_strafeup")) {
-                app.getCamera().setLocation(app.getCamera().getLocation().addLocal(0, 0, tpf * -10f));
+                app.getCamera().setLocation(app.getCamera().getLocation().addLocal(0, 0, tpf * -50f));
             } else if (name.equals("map_strafedown")) {
-                app.getCamera().setLocation(app.getCamera().getLocation().addLocal(0, 0, tpf * 10f));
+                app.getCamera().setLocation(app.getCamera().getLocation().addLocal(0, 0, tpf * 50f));
             } else if (name.equals("map_strafeleft")) {
-                app.getCamera().setLocation(app.getCamera().getLocation().addLocal(tpf * -10f, 0, 0));
+                app.getCamera().setLocation(app.getCamera().getLocation().addLocal(tpf * -50f, 0, 0));
             } else if (name.equals("map_straferight")) {
-                app.getCamera().setLocation(app.getCamera().getLocation().addLocal(tpf * 10f, 0, 0));
+                app.getCamera().setLocation(app.getCamera().getLocation().addLocal(tpf * 50f, 0, 0));
             }
         }
     };

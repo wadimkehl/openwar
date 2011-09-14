@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+
+    <faction name="Humans" refname="humans"/>
+    <banner image="banner.png" color="100 100 250" />
+
+
+</root>
