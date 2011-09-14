@@ -2,22 +2,23 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package openwar;
+package openwar.world;
 
+import openwar.gamedatabase.Unit;
 import com.jme3.texture.Texture;
 
 /**
  *
  * @author kehl
  */
-public class ArmyUnit extends GameDatabase.Unit{
+public class ArmyUnit extends Unit{
     
     
     int currMovePoints;    
     
     public ArmyUnit(int maxpoints)
     {
-       currMovePoints = maxMovePoints = maxpoints;
+       currMovePoints = maxMovePoints;
     }
     
     public void resetMovePoints()

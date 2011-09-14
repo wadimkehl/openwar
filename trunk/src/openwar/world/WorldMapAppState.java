@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package openwar;
+package openwar.world;
 
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
@@ -19,6 +19,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.TerrainPatch;
+import openwar.Main;
 
 /**
  *
