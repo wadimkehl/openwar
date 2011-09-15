@@ -1,6 +1,7 @@
 package openwar.DB;
 
 import com.jme3.texture.Texture;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +19,12 @@ public class GameDatabase {
     public HashMap<String, GenericFaction> genFactions;
     public HashMap<String, GenericBuilding> genBuildings;
     public openwar.DB.Map map;
+    
+    public ArrayList<Region> regions;
+    public HashMap<String,Region> hashedRegions;
+    
+    public ArrayList<Settlement> settlements;
+    public HashMap<String,Settlement> hashedSettlements; // String is refname of region!
 
     public GameDatabase() {
         genUnits = new HashMap<String, GenericUnit>();

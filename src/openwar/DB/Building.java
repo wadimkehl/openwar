@@ -2,15 +2,15 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package openwar.world;
+package openwar.DB;
 
 /**
  *
  * @author kehl
  */
-public class WorldFaction {
+public class Building {
     
-    String name;
-    int gold;
+    public String refName;
+    public int level;
     
 }

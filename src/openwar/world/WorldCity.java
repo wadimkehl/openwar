@@ -15,47 +15,43 @@ import java.util.concurrent.Callable;
  */
 public class WorldCity {
 
-    int posX, posZ;
-    String name;
-    WorldRegion region;
-    Spatial model;
-    WorldMap map;
-    int level = 0;
-    int population = 0;
-    ArrayList<WorldUnit> units;
-    ArrayList<WorldBuilding> buildings;
-
-    public WorldCity(WorldRegion r, String n, WorldMap m) {
-        
-        region = r;
-        name = n;
-        map = m;
-        units = new ArrayList<WorldUnit>();
-        buildings = new ArrayList<WorldBuilding>();
-    }
-
-    @Override
-    public String toString()
-    {
-        return name;
-    }
-
-    public void update(float tpf) {
-    }
-
-    public void garrisonArmy(final WorldArmy a) {
-        
-        for (WorldUnit u : a.units) {
-            units.add(u);
-        }
-        
-
-        map.scene.getControl(UpdateControl.class).enqueue(new Callable() {
-         public Object call() throws Exception {
-             map.removeArmy(a);             
-             return null;
-         }
-     });
-
-    }
+//    int posX, posZ;
+//    String name;
+//    Spatial model;
+//    WorldMap map;
+//    int level = 0;
+//    int population = 0;
+//
+//    public WorldCity(WorldRegion r, String n, WorldMap m) {
+//        
+//        region = r;
+//        name = n;
+//        map = m;
+//        
+//    }
+//
+//    @Override
+//    public String toString()
+//    {
+//        return name;
+//    }
+//
+//    public void update(float tpf) {
+//    }
+//
+//    public void garrisonArmy(final WorldArmy a) {
+//        
+//        //for (WorldUnit u : a.units) {
+//        //    units.add(u);
+//        //}
+//        
+//
+//        map.scene.getControl(UpdateControl.class).enqueue(new Callable() {
+//         public Object call() throws Exception {
+//             map.removeArmy(a);             
+//             return null;
+//         }
+//     });
+//
+//    }
 }

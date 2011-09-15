@@ -11,6 +11,7 @@ import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Spatial;
 import java.util.ArrayList;
 import java.util.Stack;
+import openwar.DB.Unit;
 
 /**
  *
@@ -24,7 +25,7 @@ public class WorldArmy {
     Spatial model;
     CharacterControl control;
     WorldMap map;
-    ArrayList<WorldUnit> units;
+    ArrayList<Unit> units;
     Stack<Tile> route;
     boolean onRoute = false;
 
@@ -51,14 +52,14 @@ public class WorldArmy {
 
 
         model.scale(0.2f);
-        units = new ArrayList<WorldUnit>();
+        units = new ArrayList<Unit>();
 
     }
 
     public int calculateMovePoints() {
 
         int points = 10000;
-        for (WorldUnit u : units) {
+        for (Unit u : units) {
             points = Math.min(u.currMovePoints, points);
         }
         return currMovePoints = points;
@@ -66,14 +67,14 @@ public class WorldArmy {
     }
 
     public int resetMovePoints() {
-        for (WorldUnit u : units) {
+        for (Unit u : units) {
             u.resetMovePoints();
         }
         return calculateMovePoints();
     }
 
     public int reduceMovePoints(int minus) {
-        for (WorldUnit u : units) {
+        for (Unit u : units) {
             u.currMovePoints = Math.max(0, u.currMovePoints - minus);
         }
         return calculateMovePoints();
@@ -126,7 +127,7 @@ public class WorldArmy {
 
                         WorldCity c = map.getCity(posX, posZ);
                         if (c != null) {
-                            c.garrisonArmy(this);
+                            //c.garrisonArmy(this);
                         }
 
                         return;
