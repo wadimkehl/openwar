@@ -590,6 +590,55 @@ public class WorldMap {
         return "N/A";
     }
 
+    public int RGBtoGroundType(int r, int g, int b) {
+        return RGBtoGroundType(new Vector3f(r, g, b));
+    }
+
+    public int RGBtoGroundType(Vector3f col) {
+        for (openwar.DB.GenericTile t : app.DB.map.tiles.values()) {
+            if (t.color.equals(col)) {
+                return t.type;
+            }
+        }
+        return -1;
+    }
+
+    public int getGroundTypeCost(int type) {
+        openwar.DB.GenericTile t = app.DB.map.tiles.get(type);
+        if (t != null) {
+            return t.cost;
+        }
+
+        return -1;
+    }
+
+    public boolean isWalkable(int type) {
+        openwar.DB.GenericTile t = app.DB.map.tiles.get(type);
+        if (t != null) {
+            return t.walkable;
+        }
+
+        return false;
+    }
+
+    public boolean isSailable(int type) {
+        openwar.DB.GenericTile t = app.DB.map.tiles.get(type);
+        if (t != null) {
+            return t.sailable;
+        }
+        return false;
+    }
+
+    public String getGroundTypeString(int type) {
+
+        openwar.DB.GenericTile t = app.DB.map.tiles.get(type);
+        if (t != null) {
+            return t.name;
+        }
+
+        return "N/A";
+    }
+
     public void fadeSeason() {
     }
 }

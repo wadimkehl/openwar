@@ -203,6 +203,58 @@ public class XMLDataLoader {
             Element terrain = (Element) root.getElementsByTagName("terrain").item(0);
             Element climates = (Element) root.getElementsByTagName("climates").item(0);
             Element regions = (Element) root.getElementsByTagName("regions").item(0);
+            Element textures = (Element) root.getElementsByTagName("textures").item(0);
+
+            NodeList texs = textures.getChildNodes();
+            for (int i = 0; i < texs.getLength(); i++) {
+                Element l = (Element) texs.item(i);
+                
+                if("tiletexture".equals(l.getNodeName()))
+                {
+                    app.DB.map.tileTextures[Integer.parseInt(l.getAttribute("id"))]
+                            = assets.loadTexture("map" + File.separator + "textures"
+                            + File.separator + l.getAttribute("texture"));
+                }
+                else if("basetexture".equals(l.getNodeName()))
+                {
+                    if("regions".equals(l.getAttribute("name")))
+                    app.DB.map.regionsTex 
+                            = assets.loadTexture("map" + File.separator + "base"
+                            + File.separator + l.getAttribute("texture"));
+                    if("types".equals(l.getAttribute("name")))
+                    app.DB.map.typesTex 
+                            = assets.loadTexture("map" + File.separator + "base"
+                            + File.separator + l.getAttribute("texture"));
+                    if("climates".equals(l.getAttribute("name")))
+                    app.DB.map.climatesTex
+                            = assets.loadTexture("map" + File.separator + "base"
+                            + File.separator + l.getAttribute("texture"));
+                    if("heights".equals(l.getAttribute("name")))
+                    app.DB.map.heightmapTex
+                            = assets.loadTexture("map" + File.separator + "base"
+                            + File.separator + l.getAttribute("texture"));
+                }
+
+            }
+
+
+            NodeList t = terrain.getElementsByTagName("tile");
+            for (int i = 0; i < t.getLength(); i++) {
+                GenericTile tile = new GenericTile();
+                Element l = (Element) t.item(i);
+                tile.name = l.getAttribute("name");
+                tile.type = Integer.parseInt(l.getAttribute("type"));
+                Scanner s = new Scanner(l.getAttribute("color"));
+                tile.color = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
+                tile.cost = Integer.parseInt(l.getAttribute("cost"));
+                tile.walkable = Boolean.parseBoolean(l.getAttribute("walkable"));
+                tile.sailable = Boolean.parseBoolean(l.getAttribute("sailable"));
+                tile.textureid = Integer.parseInt(l.getAttribute("textureid"));
+                app.DB.map.tiles.put(tile.type, tile);
+            }
+
+
+
 
             Element hm = (Element) terrain.getElementsByTagName("heightmap").item(0);
             entity.terrain.heightmap.factor0 = Float.parseFloat(hm.getAttribute("factor0"));
@@ -211,8 +263,7 @@ public class XMLDataLoader {
 
             Element sun = (Element) terrain.getElementsByTagName("sun").item(0);
             Scanner s = new Scanner(sun.getAttribute("color"));
-            entity.terrain.sun.color =
-                    new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
+            entity.terrain.sun.color = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
             s = new Scanner(sun.getAttribute("direction"));
             s.useLocale(Locale.ENGLISH);
             entity.terrain.sun.direction =
