@@ -55,13 +55,14 @@ public class Map {
     public ArrayList<Climate> climates;
     public HashMap<Integer,GenericTile> tiles;
     public Texture heightmapTex,regionsTex,climatesTex,typesTex;
-    public Texture[] tileTextures;
+    public ArrayList<Texture> tileTextures;
+    public int tilesCount;
 
     public Map() {
         terrain = new Terrain();
         climates = new ArrayList<Climate>();
         tiles = new HashMap<Integer,GenericTile>();
-        tileTextures = new Texture[12];
+        tileTextures = new ArrayList<Texture>();
     }
 
     public void addClimate(String n, String r, Vector3f c) {
