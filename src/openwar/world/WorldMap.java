@@ -28,16 +28,10 @@ import com.jme3.texture.Texture2D;
 import com.jme3.water.WaterFilter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Locale;
-import java.util.Scanner;
 import java.util.Stack;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+
 import openwar.GroundTypeManager;
 import openwar.Main;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 /**
  *
@@ -112,7 +106,6 @@ public class WorldMap {
     boolean selectedTilesChanged = false;
     Geometry selectedTilesOverlay;
     Material matOverlay;
-    Vector3f sunDirection = new Vector3f(-0.3f, -0.8f, -1f).normalize();
     ArrayList<WorldRegion> worldRegions = new ArrayList<WorldRegion>();
     ArrayList<WorldArmy> worldArmies = new ArrayList<WorldArmy>();
     ArrayList<WorldCity> worldCities = new ArrayList<WorldCity>();
@@ -157,7 +150,7 @@ public class WorldMap {
 
     }
 
-    public boolean createTerrain(Element root) {
+    public boolean createTerrain() {
 
 
         // Create key textures
@@ -197,22 +190,12 @@ public class WorldMap {
         matTerrainDebug = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
 
 
-        // Read heightmap coefficients
-        Element el = (Element) root.getElementsByTagName("terrain").item(0);
-        el = (Element) el.getElementsByTagName("heightmap").item(0);
-        Scanner s = new Scanner(el.getAttribute("factor0"));
-        s.useLocale(Locale.ENGLISH);
-        float factor0 = s.nextFloat();
-        s = new Scanner(el.getAttribute("factor1"));
-        s.useLocale(Locale.ENGLISH);
-        float factor1 = s.nextFloat();
-        s = new Scanner(el.getAttribute("offset"));
-        s.useLocale(Locale.ENGLISH);
-        float offset = s.nextFloat();
-
-
         // Create mesh data with material and place its north-western edge to the origin
-        heightMap = new WorldHeightMap(heightMapImage, factor0, factor1, offset);
+        heightMap = new WorldHeightMap(heightMapImage,
+                app.DB.map.terrain.heightmap.factor0,
+                app.DB.map.terrain.heightmap.factor1,
+                app.DB.map.terrain.heightmap.offset);
+
         heightMap.load(false, true);
         terrain = new TerrainQuad("terrain", 32, heightMap.getSize(), heightMap.getHeightMap());
         terrain.setMaterial(matTerrain);
@@ -221,26 +204,16 @@ public class WorldMap {
         return true;
     }
 
-    public boolean createRegions(Element root) {
+    public boolean createRegions() {
 
 
         // Add the ocean as the 0'th region 
         worldRegions.add(new WorldRegion("Ocean", null, 0, 0, 0, this));
 
-        // Run through the file and read all regions
-        NodeList nl = root.getElementsByTagName("region");
-        if (nl != null && nl.getLength() > 0) {
-            for (int i = 0; i < nl.getLength(); i++) {
-                Element el = (Element) nl.item(i);
-                String name = el.getAttribute("name");
-                String city = el.getAttribute("city");
-                Scanner s = new Scanner(el.getAttribute("color"));
-                int r = s.nextInt();
-                int g = s.nextInt();
-                int b = s.nextInt();
-                worldRegions.add(new WorldRegion(name, city, r, g, b, this));
-
-            }
+        // Run through all regions in DB
+        for (openwar.DB.Map.Region r : app.DB.map.regions) {
+            worldRegions.add(new WorldRegion(r.name, r.settlement, 
+                    (int)r.color.x, (int) r.color.y, (int) r.color.z, this));
         }
 
 
@@ -266,7 +239,7 @@ public class WorldMap {
 
                 // City found, get according region and save it
                 if ((r1 == 255) && (g1 == 255) && (b1 == 255)) {
-                    region = worldTiles[i][j - 1].region;
+                    region = worldTiles[i][j].region;
                     region.city.posX = i;
                     region.city.posZ = j;
                 } else {
@@ -282,7 +255,7 @@ public class WorldMap {
 
     }
 
-    public boolean createEntities(Element root) {
+    public boolean createEntities() {
 
         for (WorldRegion r : worldRegions) {
 
@@ -290,7 +263,7 @@ public class WorldMap {
                 continue;
             }
 
-            Spatial m = app.DB.buildings.get("city").levels.get(0).model.deepClone();
+            Spatial m = app.DB.buildings.get("city").levels.get(0).model.clone();
             m.setShadowMode(ShadowMode.CastAndReceive);
             Vector3f vec = getGLTileCenter(r.city.posX, r.city.posZ);
             m.setLocalTranslation(vec);
@@ -313,50 +286,35 @@ public class WorldMap {
 
         // Load all important information for the world map
         heightMapImage = assetManager.loadTexture(new TextureKey("map/base/heights.tga", false));
-        groundTypeImage = assetManager.loadTexture(new TextureKey("map/base/types.tga", false));
-        regionsImage = assetManager.loadTexture(new TextureKey("map/base/regions.tga", false));
-        climatesImage = assetManager.loadTexture(new TextureKey("map/base/climates.tga", false));
+        groundTypeImage = assetManager.loadTexture(new TextureKey("map/base/types.tga", true));
+        regionsImage = assetManager.loadTexture(new TextureKey("map/base/regions.tga", true));
+        climatesImage = assetManager.loadTexture(new TextureKey("map/base/climates.tga", true));
         width = groundTypeImage.getImage().getWidth();
         height = groundTypeImage.getImage().getHeight();
 
 
         try {
 
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document dom = db.parse(app.locatorRoot + "map/props.xml");
-            Element root = dom.getDocumentElement();
 
-
-            if (!createRegions(root)) {
+            if (!createRegions()) {
                 System.out.println("Couldn't create regions...");
                 return false;
             }
-            if (!createTerrain(root)) {
+            if (!createTerrain()) {
                 System.out.println("Couldn't create terrain...");
                 return false;
             }
-            if (!createEntities(root)) {
+            if (!createEntities()) {
                 System.out.println("Couldn't create entities...");
                 return false;
             }
 
-            Element el = (Element) root.getElementsByTagName("terrain").item(0);
-            el = (Element) el.getElementsByTagName("sun").item(0);
-            Scanner s = new Scanner(el.getAttribute("color"));
-            float r = s.nextFloat();
-            float g = s.nextFloat();
-            float b = s.nextFloat();
-            s = new Scanner(el.getAttribute("direction"));
-            s.useLocale(Locale.ENGLISH);
-            float x = s.nextFloat();
-            float y = s.nextFloat();
-            float z = s.nextFloat();
-            sunDirection = new Vector3f(x, y, z);
-
             DirectionalLight dlight = new DirectionalLight();
-            dlight.setColor(new ColorRGBA(r / 255f, g / 255f, b / 255f, 1));
-            dlight.setDirection(sunDirection);
+            dlight.setColor(new ColorRGBA(
+                    app.DB.map.terrain.sun.color.x / 255f, 
+                    app.DB.map.terrain.sun.color.y/ 255f,
+                    app.DB.map.terrain.sun.color.z / 255f, 1));
+            dlight.setDirection(app.DB.map.terrain.sun.direction);
             scene.addLight(dlight);
 
             fpp = new FilterPostProcessor(assetManager);
