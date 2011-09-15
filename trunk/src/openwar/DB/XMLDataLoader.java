@@ -51,7 +51,7 @@ public class XMLDataLoader {
 
             // if we load the map, check in meta folder for props.xml
             if ("map".equals(folder)) {
-               // search props.xml
+                // search props.xml
                 File props = null;
                 for (File l : f.listFiles()) {
                     if ("props.xml".equals(l.getName())) {
@@ -62,7 +62,7 @@ public class XMLDataLoader {
                     logger.log(Level.WARNING, "Cannot find props.xml in {0}", f.getName());
                     return;
                 }
-                
+
                 // open props file and load everything into the database
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                 DocumentBuilder db = dbf.newDocumentBuilder();
@@ -101,7 +101,7 @@ public class XMLDataLoader {
                     loadBuilding(root);
                 } else if ("factions".equals(folder)) {
                     loadFaction(root);
-                } 
+                }
             }
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Error while reading {0} data...", folder);
@@ -230,13 +230,27 @@ public class XMLDataLoader {
             c = regions.getElementsByTagName("region");
             for (int i = 0; i < c.getLength(); i++) {
                 Element r = (Element) c.item(i);
-                s = new Scanner(r.getAttribute("color"));
-                Vector3f color = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
-                entity.addRegion(r.getAttribute("name"), r.getAttribute("refname"),
-                        color,r.getAttribute("owner"));
-                
+
+                Region reg = new Region();
+                Settlement se = new Settlement();
+                reg.name = r.getAttribute("name");
+                reg.refName = r.getAttribute("refname");
+                reg.color = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
+                reg.owner = r.getAttribute("owner");
+                reg.settlement = se;
+                app.DB.regions.add(reg);
+                app.DB.hashedRegions.put(reg.refName, reg);
+
                 Element sett = (Element) r.getElementsByTagName("settlement").item(0);
+                se.name = sett.getAttribute("name");
+                se.posX = Integer.parseInt(sett.getAttribute("posx"));
+                se.posZ = Integer.parseInt(sett.getAttribute("posz"));
+                se.level = Integer.parseInt(sett.getAttribute("level"));
+                se.population = Integer.parseInt(sett.getAttribute("population"));
+                app.DB.settlements.add(se);
+                app.DB.hashedSettlements.put(reg.refName, se);
                 
+
 
             }
 

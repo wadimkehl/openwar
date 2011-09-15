@@ -106,7 +106,6 @@ public class WorldMap {
     boolean selectedTilesChanged = false;
     Geometry selectedTilesOverlay;
     Material matOverlay;
-    ArrayList<WorldRegion> worldRegions = new ArrayList<WorldRegion>();
     ArrayList<WorldArmy> worldArmies = new ArrayList<WorldArmy>();
     ArrayList<WorldCity> worldCities = new ArrayList<WorldCity>();
     WorldArmy selectedArmy;
@@ -263,7 +262,7 @@ public class WorldMap {
                 continue;
             }
 
-            Spatial m = app.DB.buildings.get("city").levels.get(0).model.clone();
+            Spatial m = app.DB.genBuildings.get("city").levels.get(0).model.clone();
             m.setShadowMode(ShadowMode.CastAndReceive);
             Vector3f vec = getGLTileCenter(r.city.posX, r.city.posZ);
             m.setLocalTranslation(vec);
