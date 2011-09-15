@@ -9,8 +9,11 @@ import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.control.UpdateControl;
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.concurrent.Callable;
+import openwar.DB.Settlement;
 import openwar.DB.Unit;
 
 /**
@@ -125,9 +128,9 @@ public class WorldArmy {
                         control.setWalkDirection(Vector3f.ZERO);
 
 
-                        WorldCity c = map.getCity(posX, posZ);
-                        if (c != null) {
-                            //c.garrisonArmy(this);
+                        Settlement s = map.getSettlement(posX, posZ);
+                        if (s != null) {
+                            garrisonArmy(s);
                         }
 
                         return;
@@ -151,5 +154,22 @@ public class WorldArmy {
     public void setRoute(Stack<Tile> r) {
         route = r;
         onRoute = true;
+    }
+    
+    public void garrisonArmy(Settlement s) {
+        
+        for (Unit u : units) {
+            units.add(u);
+        }
+        
+       final WorldArmy a = this;
+
+        map.scene.getControl(UpdateControl.class).enqueue(new Callable() {
+            @Override
+         public Object call() throws Exception {
+             map.removeArmy(a);             
+             return null;
+         }
+     });
     }
 }

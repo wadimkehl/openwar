@@ -235,6 +235,7 @@ public class XMLDataLoader {
                 Settlement se = new Settlement();
                 reg.name = r.getAttribute("name");
                 reg.refName = r.getAttribute("refname");
+                s = new Scanner(r.getAttribute("color"));
                 reg.color = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
                 reg.owner = r.getAttribute("owner");
                 reg.settlement = se;
@@ -249,7 +250,7 @@ public class XMLDataLoader {
                 se.population = Integer.parseInt(sett.getAttribute("population"));
                 app.DB.settlements.add(se);
                 app.DB.hashedSettlements.put(reg.refName, se);
-                
+
 
 
             }

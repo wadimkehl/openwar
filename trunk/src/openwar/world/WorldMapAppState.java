@@ -19,6 +19,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.TerrainPatch;
+import openwar.DB.Settlement;
 import openwar.Main;
 
 /**
@@ -62,9 +63,9 @@ public class WorldMapAppState extends AbstractAppState {
                     return;
                 }
 
-                WorldCity c = map.getCity(s);
+                Settlement c = map.getSettlement(s);
                 if (c != null) {
-                    map.selectCity(c);
+                    map.selectSettlement(c);
                     return;
                 }
 
@@ -99,7 +100,7 @@ public class WorldMapAppState extends AbstractAppState {
                     return;
                 }
 
-                WorldCity c = map.getCity(s);
+                Settlement c = map.getSettlement(s);
                 if (c != null) {
                     map.marchTo(map.selectedArmy, c);
                     return;

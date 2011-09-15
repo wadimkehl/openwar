@@ -18,8 +18,7 @@ public class Settlement {
     public boolean capital;
     public ArrayList<Building> buildings;
     public ArrayList<Unit> units;
-        Spatial model;
-
+    public Spatial model;
 
     public Settlement() {
         buildings = new ArrayList<Building>();
