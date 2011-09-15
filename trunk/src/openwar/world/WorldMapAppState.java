@@ -197,7 +197,7 @@ public class WorldMapAppState extends AbstractAppState {
         app.getInputManager().addListener(analogListener, "map_straferight");
 
         sceneNode = new Node("WorldMap");
-        map = new WorldMap(main, main.getAssetManager(), main.bulletState, sceneNode);
+        map = new WorldMap(main, sceneNode);
         if (!map.createWorldMap()) {
             app.stop();
         }

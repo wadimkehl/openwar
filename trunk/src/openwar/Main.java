@@ -34,12 +34,13 @@ public class Main extends SimpleApplication {
     public WorldMapAppState worldMapState = new WorldMapAppState();
     public String locatorRoot = "data/";
     public GameDatabase DB = new GameDatabase();
+    public XMLDataLoader DataLoader;
 
     public static void main(String[] args) {
         Main app = new Main();
-        Logger.getLogger("").setLevel(Level.SEVERE);
+        Logger.getLogger("").setLevel(Level.WARNING);
 
-        app.setShowSettings(true);
+        app.setShowSettings(false);
         app.setSettings(new AppSettings(true));
         app.settings.setTitle("OpenWar");
         app.settings.setVSync(true);
@@ -54,9 +55,8 @@ public class Main extends SimpleApplication {
 
         assetManager.registerLocator(locatorRoot, FileLocator.class.getName());
 
-
-        XMLDataLoader dl = new XMLDataLoader(this, assetManager);
-        dl.loadAll();
+        DataLoader = new XMLDataLoader(this);
+        DataLoader.loadAll();
 
         //guiNode.detachAllChildren();
         NiftyJmeDisplay niftyDisplay =

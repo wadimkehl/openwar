@@ -11,6 +11,7 @@ package openwar.DB;
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
+import com.jme3.asset.TextureKey;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import java.io.File;
@@ -33,9 +34,9 @@ public class XMLDataLoader {
     Main app;
     private static final Logger logger = Logger.getLogger(XMLDataLoader.class.getName());
 
-    public XMLDataLoader(Main appl, AssetManager man) {
+    public XMLDataLoader(Main appl) {
         app = appl;
-        assets = man;
+        assets = appl.getAssetManager();
     }
 
     private void loadMultiData(String folder) {
@@ -198,44 +199,42 @@ public class XMLDataLoader {
     }
 
     private void loadMap(Element root) {
-        Map entity = new Map();
         try {
+            Element textures = (Element) root.getElementsByTagName("textures").item(0);
             Element terrain = (Element) root.getElementsByTagName("terrain").item(0);
             Element climates = (Element) root.getElementsByTagName("climates").item(0);
             Element regions = (Element) root.getElementsByTagName("regions").item(0);
-            Element textures = (Element) root.getElementsByTagName("textures").item(0);
 
-            NodeList texs = textures.getChildNodes();
-            for (int i = 0; i < texs.getLength(); i++) {
-                Element l = (Element) texs.item(i);
-                
-                if("tiletexture".equals(l.getNodeName()))
-                {
-                    app.DB.map.tileTextures[Integer.parseInt(l.getAttribute("id"))]
-                            = assets.loadTexture("map" + File.separator + "textures"
-                            + File.separator + l.getAttribute("texture"));
-                }
-                else if("basetexture".equals(l.getNodeName()))
-                {
-                    if("regions".equals(l.getAttribute("name")))
-                    app.DB.map.regionsTex 
-                            = assets.loadTexture("map" + File.separator + "base"
-                            + File.separator + l.getAttribute("texture"));
-                    if("types".equals(l.getAttribute("name")))
-                    app.DB.map.typesTex 
-                            = assets.loadTexture("map" + File.separator + "base"
-                            + File.separator + l.getAttribute("texture"));
-                    if("climates".equals(l.getAttribute("name")))
-                    app.DB.map.climatesTex
-                            = assets.loadTexture("map" + File.separator + "base"
-                            + File.separator + l.getAttribute("texture"));
-                    if("heights".equals(l.getAttribute("name")))
-                    app.DB.map.heightmapTex
-                            = assets.loadTexture("map" + File.separator + "base"
-                            + File.separator + l.getAttribute("texture"));
-                }
 
+            app.DB.map.tilesCount = Integer.parseInt(textures.getAttribute("tiletextures"));
+            NodeList tiletexs = textures.getElementsByTagName("tile");
+            NodeList basetexs = textures.getElementsByTagName("base");
+
+
+            for (int i = 0; i < tiletexs.getLength(); i++) {
+                Element l = (Element) tiletexs.item(i);
+                app.DB.map.tileTextures.add(Integer.parseInt(l.getAttribute("id")),
+                        assets.loadTexture("map" + File.separator + "textures"
+                        + File.separator + l.getAttribute("texture")));
             }
+
+
+            for (int i = 0; i < basetexs.getLength(); i++) {
+                Element l = (Element) basetexs.item(i);
+                String path = "map" + File.separator + "base"
+                        + File.separator + l.getAttribute("texture");
+                if ("regions".equals(l.getAttribute("name"))) {
+                    app.DB.map.regionsTex = assets.loadTexture(new TextureKey(path, true));
+                } else if ("types".equals(l.getAttribute("name"))) {
+                    app.DB.map.typesTex = assets.loadTexture(new TextureKey(path, true));
+                } else if ("climates".equals(l.getAttribute("name"))) {
+                    app.DB.map.climatesTex = assets.loadTexture(new TextureKey(path, true));
+                } else if ("heights".equals(l.getAttribute("name"))) {
+                    app.DB.map.heightmapTex = assets.loadTexture(new TextureKey(path, true));
+
+                }
+            }
+
 
 
             NodeList t = terrain.getElementsByTagName("tile");
@@ -257,23 +256,23 @@ public class XMLDataLoader {
 
 
             Element hm = (Element) terrain.getElementsByTagName("heightmap").item(0);
-            entity.terrain.heightmap.factor0 = Float.parseFloat(hm.getAttribute("factor0"));
-            entity.terrain.heightmap.factor1 = Float.parseFloat(hm.getAttribute("factor1"));
-            entity.terrain.heightmap.offset = Float.parseFloat(hm.getAttribute("offset"));
+            app.DB.map.terrain.heightmap.factor0 = Float.parseFloat(hm.getAttribute("factor0"));
+            app.DB.map.terrain.heightmap.factor1 = Float.parseFloat(hm.getAttribute("factor1"));
+            app.DB.map.terrain.heightmap.offset = Float.parseFloat(hm.getAttribute("offset"));
 
             Element sun = (Element) terrain.getElementsByTagName("sun").item(0);
             Scanner s = new Scanner(sun.getAttribute("color"));
-            entity.terrain.sun.color = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
+            app.DB.map.terrain.sun.color = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
             s = new Scanner(sun.getAttribute("direction"));
             s.useLocale(Locale.ENGLISH);
-            entity.terrain.sun.direction =
+            app.DB.map.terrain.sun.direction =
                     new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
 
             NodeList c = climates.getElementsByTagName("climate");
             for (int i = 0; i < c.getLength(); i++) {
                 Element l = (Element) c.item(i);
                 s = new Scanner(l.getAttribute("color"));
-                entity.addClimate(l.getAttribute("name"), l.getAttribute("refname"),
+                app.DB.map.addClimate(l.getAttribute("name"), l.getAttribute("refname"),
                         new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat()));
 
             }
@@ -306,7 +305,6 @@ public class XMLDataLoader {
 
             }
 
-            app.DB.map = entity;
             logger.log(Level.WARNING, "*Map loaded*");
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Map CANNOT be loaded");
