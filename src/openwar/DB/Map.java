@@ -5,7 +5,9 @@
 package openwar.DB;
 
 import com.jme3.math.Vector3f;
+import com.jme3.texture.Texture;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
@@ -51,10 +53,15 @@ public class Map {
 
     public Terrain terrain;
     public ArrayList<Climate> climates;
+    public HashMap<Integer,GenericTile> tiles;
+    public Texture heightmapTex,regionsTex,climatesTex,typesTex;
+    public Texture[] tileTextures;
 
     public Map() {
         terrain = new Terrain();
         climates = new ArrayList<Climate>();
+        tiles = new HashMap<Integer,GenericTile>();
+        tileTextures = new Texture[12];
     }
 
     public void addClimate(String n, String r, Vector3f c) {
