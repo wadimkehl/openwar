@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import openwar.DB.GenericBuilding;
-import openwar.DB.Faction;
+import openwar.DB.GenericFaction;
 import openwar.Main;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -109,7 +109,7 @@ public class XMLDataLoader {
     }
 
     private void loadUnit(Element root) {
-        Unit entity = new Unit();
+        GenericUnit entity = new GenericUnit();
         try {
             Element unit = (Element) root.getElementsByTagName("unit").item(0);
             Element stats = (Element) root.getElementsByTagName("stats").item(0);
@@ -119,7 +119,7 @@ public class XMLDataLoader {
             entity.maxMovePoints = Integer.parseInt(unit.getAttribute("maxmovepoints"));
             String image = "units" + File.separator + entity.refName + File.separator + unit.getAttribute("image");
             entity.image = assets.loadTexture(image);
-            app.DB.units.put(entity.refName, entity);
+            app.DB.genUnits.put(entity.refName, entity);
             logger.log(Level.WARNING, "*Unit loaded: {0} *", entity.refName);
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Unit CANNOT be loaded: {0}", entity.refName);
@@ -147,7 +147,7 @@ public class XMLDataLoader {
                 if (!"".equals(l.getAttribute("model"))) {
                     entity.levels.get(i).model = assets.loadModel(s + l.getAttribute("model"));
                 }
-                app.DB.buildings.put(entity.refName, entity);
+                app.DB.genBuildings.put(entity.refName, entity);
 
             }
             logger.log(Level.WARNING, "*Building loaded: {0} *", entity.refName);
@@ -157,7 +157,7 @@ public class XMLDataLoader {
     }
 
     private void loadFaction(Element root) {
-        Faction entity = new Faction();
+        GenericFaction entity = new GenericFaction();
         try {
             Element faction = (Element) root.getElementsByTagName("faction").item(0);
             Element images = (Element) root.getElementsByTagName("images").item(0);
@@ -190,7 +190,7 @@ public class XMLDataLoader {
                 Element l = (Element) females.item(i);
                 entity.namesFemale.add(l.getAttribute("name"));
             }
-            app.DB.factions.put(entity.refName, entity);
+            app.DB.genFactions.put(entity.refName, entity);
             logger.log(Level.WARNING, "*Faction loaded: {0} *", entity.refName);
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Faction CANNOT be loaded: {0}", entity.refName);

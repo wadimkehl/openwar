@@ -11,7 +11,7 @@ import java.util.Map;
  *
  * @author kehl
  */
- public class Unit
+ public class GenericUnit
     {
         public String refName;
         public String name;
