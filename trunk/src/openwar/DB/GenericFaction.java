@@ -13,7 +13,7 @@ import java.util.ArrayList;
  *
  * @author kehl
  */
-public class Faction {
+public class GenericFaction {
 
     public String name;
     public String refName;
@@ -21,7 +21,7 @@ public class Faction {
     public ArrayList<String> namesMale, namesFemale;
     public Texture banner, flag, icon;
 
-    public Faction() {
+    public GenericFaction() {
         namesMale = new ArrayList < String > ();
         namesFemale = new ArrayList < String > ();
 
