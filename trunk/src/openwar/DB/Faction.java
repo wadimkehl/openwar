@@ -5,6 +5,7 @@
 package openwar.DB;
 
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector3f;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
 
@@ -16,7 +17,7 @@ public class Faction {
 
     public String name;
     public String refName;
-    public ColorRGBA color;
+    public Vector3f color;
     public ArrayList<String> namesMale, namesFemale;
     public Texture banner, flag, icon;
 

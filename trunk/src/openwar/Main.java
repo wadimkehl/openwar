@@ -21,6 +21,8 @@ import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
 import de.lessvoid.nifty.Nifty;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import openwar.DB.GameDatabase;
 
 public class Main extends SimpleApplication {
@@ -35,6 +37,7 @@ public class Main extends SimpleApplication {
 
     public static void main(String[] args) {
         Main app = new Main();
+        Logger.getLogger("").setLevel(Level.SEVERE);
 
         app.setShowSettings(true);
         app.setSettings(new AppSettings(true));
@@ -54,7 +57,7 @@ public class Main extends SimpleApplication {
 
         XMLDataLoader dl = new XMLDataLoader(this, assetManager);
         dl.loadAll();
-     
+
         //guiNode.detachAllChildren();
         NiftyJmeDisplay niftyDisplay =
                 new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
@@ -86,10 +89,8 @@ public class Main extends SimpleApplication {
 
         return null;
     }
-    
+
     @Override
-    public void simpleUpdate(float tpf)
-    {
-        
+    public void simpleUpdate(float tpf) {
     }
 }

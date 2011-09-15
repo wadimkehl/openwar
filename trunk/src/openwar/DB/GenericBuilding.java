@@ -12,7 +12,7 @@ import java.util.HashMap;
  *
  * @author kehl
  */
-public class Building {
+public class GenericBuilding {
 
     public class Level {
 
@@ -32,7 +32,7 @@ public class Building {
     public int maxLevel;
     public HashMap<Integer, Level> levels;
 
-    public Building() {
+    public GenericBuilding() {
         levels = new HashMap<Integer, Level>();
     }
 

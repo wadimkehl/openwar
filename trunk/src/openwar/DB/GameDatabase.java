@@ -16,11 +16,13 @@ public class GameDatabase {
 
     public HashMap<String, Unit> units;
     public HashMap<String, Faction> factions;
-    public HashMap<String, Building> buildings;
+    public HashMap<String, GenericBuilding> buildings;
+    public openwar.DB.Map map;
 
     public GameDatabase() {
         units = new HashMap<String, Unit>();
         factions = new HashMap<String, Faction>();
-        buildings = new HashMap<String, Building>();
+        buildings = new HashMap<String, GenericBuilding>();
+        map = new openwar.DB.Map();
     }
 }
