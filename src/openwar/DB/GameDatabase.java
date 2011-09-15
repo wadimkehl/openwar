@@ -19,17 +19,23 @@ public class GameDatabase {
     public HashMap<String, GenericFaction> genFactions;
     public HashMap<String, GenericBuilding> genBuildings;
     public openwar.DB.Map map;
-    
     public ArrayList<Region> regions;
-    public HashMap<String,Region> hashedRegions;
-    
+    public HashMap<String, Region> hashedRegions;
     public ArrayList<Settlement> settlements;
-    public HashMap<String,Settlement> hashedSettlements; // String is refname of region!
+    public HashMap<String, Settlement> hashedSettlements; // String is refname of region!
 
     public GameDatabase() {
         genUnits = new HashMap<String, GenericUnit>();
         genFactions = new HashMap<String, GenericFaction>();
         genBuildings = new HashMap<String, GenericBuilding>();
         map = new openwar.DB.Map();
+
+        regions = new ArrayList<Region>();
+        settlements = new ArrayList<Settlement>();
+
+        hashedRegions = new HashMap<String, Region>();
+        hashedSettlements = new HashMap<String, Settlement>();
+
+
     }
 }

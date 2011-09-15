@@ -29,6 +29,9 @@ import com.jme3.water.WaterFilter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Stack;
+import openwar.DB.Region;
+import openwar.DB.Settlement;
+import openwar.DB.Unit;
 
 import openwar.GroundTypeManager;
 import openwar.Main;
@@ -67,10 +70,10 @@ public class WorldMap {
 
         int groundType;
         int cost;
-        WorldRegion region;
+        String region;
         String climate;
 
-        public WorldTile(int x, int z, int type, WorldRegion r, String c) {
+        public WorldTile(int x, int z, int type, String r, String c) {
             super(x, z);
             region = r;
             groundType = type;
@@ -83,7 +86,7 @@ public class WorldMap {
         public String toString() {
             return super.toString()
                     + " Type: " + GroundTypeManager.getGroundTypeString(groundType)
-                    + "     Region: " + region.name
+                    + "     Region: " + app.DB.hashedRegions.get(region).name
                     + "     Climate: " + climate;
         }
     };
@@ -107,9 +110,8 @@ public class WorldMap {
     Geometry selectedTilesOverlay;
     Material matOverlay;
     ArrayList<WorldArmy> worldArmies = new ArrayList<WorldArmy>();
-    ArrayList<WorldCity> worldCities = new ArrayList<WorldCity>();
     WorldArmy selectedArmy;
-    WorldCity selectedCity;
+    Settlement selectedSettlement;
     FilterPostProcessor fpp;
     WorldMapPathFinder pathFinder = new WorldMapPathFinder(this);
 
@@ -205,17 +207,6 @@ public class WorldMap {
 
     public boolean createRegions() {
 
-
-        // Add the ocean as the 0'th region 
-        worldRegions.add(new WorldRegion("Ocean", null, 0, 0, 0, this));
-
-        // Run through all regions in DB
-        for (openwar.DB.Map.Region r : app.DB.map.regions) {
-            worldRegions.add(new WorldRegion(r.name, r.settlement, 
-                    (int)r.color.x, (int) r.color.y, (int) r.color.z, this));
-        }
-
-
         // Create worldTiles array and read according region and climate from images
         worldTiles = new WorldTile[width][height];
         ByteBuffer buf = groundTypeImage.getImage().getData(0);
@@ -234,19 +225,13 @@ public class WorldMap {
                 r2 = clis.get(base + 0) & 0xff;
                 g2 = clis.get(base + 1) & 0xff;
                 b2 = clis.get(base + 2) & 0xff;
-                WorldRegion region;
 
-                // City found, get according region and save it
-                if ((r1 == 255) && (g1 == 255) && (b1 == 255)) {
-                    region = worldTiles[i][j].region;
-                    region.city.posX = i;
-                    region.city.posZ = j;
-                } else {
-                    region = getRegionByRGB(r1, g1, b1);
-                }
                 int type = GroundTypeManager.RGBtoGroundType(r, g, b);
                 String climate = getClimateByRGB(r2, g2, b2);
-                worldTiles[i][j] = new WorldTile(i, j, type, region, climate);
+                Region region = getRegionByRGB(new Vector3f(r1, g1, b1));
+                if (region != null) {
+                    worldTiles[i][height - 1 - j] = new WorldTile(i, height - 1 - j, type, region.refName, climate);
+                }
             }
         }
 
@@ -256,7 +241,7 @@ public class WorldMap {
 
     public boolean createEntities() {
 
-        for (WorldRegion r : worldRegions) {
+        for (Region r : app.DB.regions) {
 
             if ("Ocean".equals(r.name)) {
                 continue;
@@ -264,13 +249,10 @@ public class WorldMap {
 
             Spatial m = app.DB.genBuildings.get("city").levels.get(0).model.clone();
             m.setShadowMode(ShadowMode.CastAndReceive);
-            Vector3f vec = getGLTileCenter(r.city.posX, r.city.posZ);
+            Vector3f vec = getGLTileCenter(r.settlement.posX, r.settlement.posZ);
             m.setLocalTranslation(vec);
-            r.city.model = m;
+            r.settlement.model = m;
             scene.attachChild(m);
-
-
-            worldCities.add(r.city);
 
 
         }
@@ -310,8 +292,8 @@ public class WorldMap {
 
             DirectionalLight dlight = new DirectionalLight();
             dlight.setColor(new ColorRGBA(
-                    app.DB.map.terrain.sun.color.x / 255f, 
-                    app.DB.map.terrain.sun.color.y/ 255f,
+                    app.DB.map.terrain.sun.color.x / 255f,
+                    app.DB.map.terrain.sun.color.y / 255f,
                     app.DB.map.terrain.sun.color.z / 255f, 1));
             dlight.setDirection(app.DB.map.terrain.sun.direction);
             scene.addLight(dlight);
@@ -398,7 +380,7 @@ public class WorldMap {
     public void deselectAll() {
         deselectTiles();
         selectedArmy = null;
-        selectedCity = null;
+        selectedSettlement = null;
     }
 
     // Deselects the selected tiles (removes highlighting)
@@ -415,9 +397,7 @@ public class WorldMap {
             a.update(tpf);
         }
 
-        for (WorldRegion r : worldRegions) {
-            r.update(tpf);
-        }
+
 
         if (selectedTilesChanged) {
             //     showSelectedTiles();
@@ -427,7 +407,7 @@ public class WorldMap {
     }
 
     // Spawns a physical army on the world map
-    public WorldArmy createArmy(int x, int z, int player, ArrayList<WorldUnit> units) {
+    public WorldArmy createArmy(int x, int z, int player, ArrayList<Unit> units) {
 
         Spatial m = (Spatial) assetManager.loadModel("Models/Oto/Oto.mesh.xml");
         WorldArmy a = new WorldArmy(x, z, player, m, this);
@@ -435,7 +415,6 @@ public class WorldMap {
         worldArmies.add(a);
         scene.attachChild(m);
         bulletState.getPhysicsSpace().add(a.control);
-        a.units.add(new WorldUnit(10));
 
         return a;
 
@@ -476,23 +455,21 @@ public class WorldMap {
         return null;
     }
 
-    // Returns city object
-    public WorldCity getCity(Spatial model) {
+    public Settlement getSettlement(Spatial model) {
 
-        for (WorldCity w : worldCities) {
-            if (w.model == model) {
-                return w;
+        for (Settlement s : app.DB.settlements) {
+            if (s.model == model) {
+                return s;
             }
         }
         return null;
     }
 
-    // Returns city object
-    public WorldCity getCity(int x, int z) {
+    public Settlement getSettlement(int x, int z) {
 
-        for (WorldCity w : worldCities) {
-            if (w.posX == x && w.posZ == z) {
-                return w;
+        for (Settlement s : app.DB.settlements) {
+            if (s.posX == x && s.posZ == z) {
+                return s;
             }
         }
         return null;
@@ -509,12 +486,12 @@ public class WorldMap {
     }
 
     // Marks the army as currently selected
-    public void selectCity(WorldCity city) {
-        if (city == null) {
+    public void selectSettlement(Settlement s) {
+        if (s == null) {
             return;
         }
-        selectedCity = city;
-        System.out.println(city.name);
+        selectedSettlement = s;
+        System.out.println(s.name);
 
     }
 
@@ -567,8 +544,8 @@ public class WorldMap {
         marchTo(a, t.x, t.z);
     }
 
-    public void marchTo(WorldArmy a, WorldCity c) {
-        marchTo(a, c.posX, c.posZ);
+    public void marchTo(WorldArmy a, Settlement s) {
+        marchTo(a, s.posX, s.posZ);
     }
 
     public void marchTo(WorldArmy a, WorldArmy goal) {
@@ -583,10 +560,9 @@ public class WorldMap {
         }
     }
 
-    public WorldRegion getRegionByRGB(int r, int g, int b) {
-        ColorRGBA col = new ColorRGBA(r, g, b, 0);
-        for (WorldRegion reg : worldRegions) {
-            if (reg.regionColor.equals(col)) {
+    public Region getRegionByRGB(Vector3f col) {
+        for (Region reg : app.DB.regions) {
+            if (reg.color.equals(col)) {
                 return reg;
             }
         }
