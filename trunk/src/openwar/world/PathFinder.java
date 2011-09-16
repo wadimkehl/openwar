@@ -12,7 +12,7 @@ import java.util.Stack;
  *
  * @author kehl
  */
-public class WorldMapPathFinder {
+public class PathFinder {
 
     // Serves for path finding things
     public class PathTile extends Tile {
@@ -28,7 +28,7 @@ public class WorldMapPathFinder {
     }
     WorldMap map;
 
-    public WorldMapPathFinder(WorldMap m) {
+    public PathFinder(WorldMap m) {
         this.map = m;
     }
 
@@ -118,7 +118,7 @@ public class WorldMapPathFinder {
         return path;
     }
 
-    public ArrayList<Tile> getReachableArea(WorldArmy army) {
+    public ArrayList<Tile> getReachableArea(Army army) {
         ArrayList<Tile> area = new ArrayList<Tile>();
 
         int points = army.calculateMovePoints();

@@ -44,8 +44,8 @@ public class WorldMapAppState extends AbstractAppState {
                 }
 
                 Vector3f pt = r.getContactPoint();
-                int x = (int) (pt.x - pt.x / map.width);
-                int z = (int) (pt.z - pt.z / map.height);
+                int x = (int) (pt.x);
+                int z = (int) (pt.z);
 
                 if (r.getGeometry() instanceof TerrainPatch) {
                     System.out.println(map.worldTiles[x][z]);
@@ -57,7 +57,7 @@ public class WorldMapAppState extends AbstractAppState {
 
                 // TODO: BLENDER exports spatial into two cascaded nodes!
                 Spatial s = (Spatial) r.getGeometry().getParent().getParent();
-                WorldArmy a = map.getArmy(s);
+                Army a = map.getArmy(s);
                 if (a != null) {
                     map.selectArmy(a);
                     return;
@@ -94,7 +94,7 @@ public class WorldMapAppState extends AbstractAppState {
 
                 // TODO: BLENDER exports spatial into two cascaded nodes!
                 Spatial s = (Spatial) r.getGeometry().getParent().getParent();
-                WorldArmy a = map.getArmy(s);
+                Army a = map.getArmy(s);
                 if (a != null) {
                     map.marchTo(map.selectedArmy, a);
                     return;

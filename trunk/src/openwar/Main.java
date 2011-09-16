@@ -9,6 +9,7 @@ import openwar.world.WorldMapAppState;
 import com.jme3.asset.plugins.*;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.ScreenshotAppState;
+import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
@@ -57,8 +58,12 @@ public class Main extends SimpleApplication {
 
         DataLoader = new XMLDataLoader(this);
         DataLoader.loadAll();
-
-        //guiNode.detachAllChildren();
+        
+        //AudioNode music = new AudioNode(assetManager, "music/lol.ogg", true);
+       // music.play();
+        
+        
+        guiNode.detachAllChildren();
         NiftyJmeDisplay niftyDisplay =
                 new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
         nifty = niftyDisplay.getNifty();
@@ -79,14 +84,10 @@ public class Main extends SimpleApplication {
         Vector3f t1 = cam.getWorldCoordinates(mouse, 1f);
         CollisionResults results = new CollisionResults();
         Ray ray = new Ray(t0, t1.subtractLocal(t0).normalizeLocal());
-
         s.collideWith(ray, results);
-
-
         if (results.size() > 0) {
             return results.getClosestCollision();
         }
-
         return null;
     }
 

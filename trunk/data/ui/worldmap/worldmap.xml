@@ -4,7 +4,7 @@
     <screen id="start" controller="openwar.WorldMapUI">
 
 
-        <layer id="back" childLayout="vertical">
+        <layer id="main" childLayout="vertical">
         <panel height="75%"/>
         <panel childLayout="horizontal">           
             <image filename="ui/worldmap/worldmap.tga" imageMode="subImage:0,0,1024,174" width="*" height="*"/>
@@ -16,18 +16,18 @@
         
         
         
-        <layer id="front"   childLayout="vertical" >
+        <layer id="main_buttons"   childLayout="vertical" >
             
             <panel height="80%"/> 
             <panel childLayout="center">
                 
                 <text id="test" align="center" valign="center" text="LOL" font="ui/font/palatino.fnt">
             
-            <!--
+            
                     <effect>
-                        <onActive name="textSize" startSize="1.0" endSize="1.0" />
+                        <onHover name="textSize" startSize="1.0" endSize="1.5" />
                     </effect>
-              -->
+              
                 </text>
                 
             </panel>
