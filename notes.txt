@@ -1,12 +1,3 @@
-
-------------------------------------
-BUG??!?!?
-With a 256x256 terrain, there are only 255x255 tiles, therefore this x + x/width  <-- accounts for that missing last tile
-and getGLTileCenter calculates according to that problem with additional 0.5f offset.
-So somewhere we lose one tile each....
-
-
----------------------------------
 Heightmap: 2^n + 1 pixels, Groundtype: 2^n      Heightmap has -1 pixel offset for x and y. Example: heightmap pixel (50,50) is types pixel (51,51)
 
 

@@ -282,24 +282,26 @@ public class XMLDataLoader {
                 Element r = (Element) c.item(i);
 
                 Region reg = new Region();
-                Settlement se = new Settlement();
                 reg.name = r.getAttribute("name");
                 reg.refName = r.getAttribute("refname");
                 s = new Scanner(r.getAttribute("color"));
                 reg.color = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
                 reg.owner = r.getAttribute("owner");
-                reg.settlement = se;
                 app.DB.regions.add(reg);
                 app.DB.hashedRegions.put(reg.refName, reg);
 
-                Element sett = (Element) r.getElementsByTagName("settlement").item(0);
-                se.name = sett.getAttribute("name");
-                se.posX = Integer.parseInt(sett.getAttribute("posx"));
-                se.posZ = Integer.parseInt(sett.getAttribute("posz"));
-                se.level = Integer.parseInt(sett.getAttribute("level"));
-                se.population = Integer.parseInt(sett.getAttribute("population"));
-                app.DB.settlements.add(se);
-                app.DB.hashedSettlements.put(reg.refName, se);
+                if (r.getElementsByTagName("settlement").getLength() > 0) {
+                    Element sett = (Element) r.getElementsByTagName("settlement").item(0);
+                    Settlement se = new Settlement();
+                    se.name = sett.getAttribute("name");
+                    se.posX = Integer.parseInt(sett.getAttribute("posx"));
+                    se.posZ = Integer.parseInt(sett.getAttribute("posz"));
+                    se.level = Integer.parseInt(sett.getAttribute("level"));
+                    se.population = Integer.parseInt(sett.getAttribute("population"));
+                    reg.settlement = se;
+                    app.DB.settlements.add(se);
+                    app.DB.hashedSettlements.put(reg.refName, se);
+                }
 
 
 

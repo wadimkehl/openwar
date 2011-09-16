@@ -99,17 +99,17 @@ public class WorldMap {
     Material matTerrain, matTerrainDebug;
     AssetManager assetManager;
     WorldHeightMap heightMap;
-    Texture key0Image, key1Image, key2Image;
+    Texture key0Image, key1Image, key2Image, gridImage;
     WorldTile[][] worldTiles;
     ArrayList<SelectionTile> selectedTiles = new ArrayList<SelectionTile>();
     boolean selectedTilesChanged = false;
     Geometry selectedTilesOverlay;
     Material matOverlay;
-    ArrayList<WorldArmy> worldArmies = new ArrayList<WorldArmy>();
-    WorldArmy selectedArmy;
+    ArrayList<Army> Armies = new ArrayList<Army>();
+    Army selectedArmy;
     Settlement selectedSettlement;
     FilterPostProcessor fpp;
-    WorldMapPathFinder pathFinder = new WorldMapPathFinder(this);
+    PathFinder pathFinder = new PathFinder(this);
     private static final Logger logger = Logger.getLogger(WorldMap.class.getName());
 
     public WorldMap(Main app, Node scene) {
@@ -129,7 +129,7 @@ public class WorldMap {
         switch (l) {
 
             case 0:
-                matTerrainDebug.setTexture("ColorMap", app.DB.map.typesTex);
+                matTerrainDebug.setTexture("ColorMap", gridImage);
                 break;
             case 1:
                 matTerrainDebug.setTexture("ColorMap", app.DB.map.regionsTex);
@@ -183,12 +183,32 @@ public class WorldMap {
         key1Image = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf1));
         key2Image = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf2));
 
+        // Create grid texture
+        int grid_res = 16;
+        ByteBuffer buf = ByteBuffer.allocateDirect(grid_res*grid_res*4);
+        for (int y = 0; y < grid_res; y++) {
+            for (int x = 0; x < grid_res; x++) {
+                if (x == 0 || y == 0 || x == grid_res-1 || y == grid_res-1) {
+                    buf.putInt(Integer.parseInt("00FF00FF",16));
+                } else {
+                    buf.putInt(Integer.parseInt("000000",16));
+
+                }
+
+            }
+        }
+        gridImage = assetManager.loadTexture("map/base/grid.png");
+        gridImage = new Texture2D(new Image(Image.Format.RGBA8, grid_res, grid_res, buf));
+        gridImage.setWrap(Texture.WrapMode.Repeat);
+
+
 
         // Create standard material with all textures and needed values
-        matTerrain = new Material(assetManager, "Common/MatDefs/Terrain/TerrainLighting.j3md");
+        matTerrain = new Material(assetManager, "materials/TerrainLighting.j3md");
+        matTerrain.setTexture("GridMap", gridImage);
+        matTerrain.setFloat("GridMap_scale", Math.min(width, height));
         matTerrain.setTexture("DiffuseMap", app.DB.map.tileTextures.get(0));
         app.DB.map.tileTextures.get(0).setWrap(Texture.WrapMode.Repeat);
-
         matTerrain.setFloat("DiffuseMap_0_scale", 4f);
         for (int i = 1; i < app.DB.map.tilesCount; i++) {
             matTerrain.setTexture("DiffuseMap_" + i, app.DB.map.tileTextures.get(i));
@@ -204,7 +224,6 @@ public class WorldMap {
 
         // Create debug material to display ground types, regions, climates etc.
         matTerrainDebug = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-
 
         // Create mesh data with material and place its north-western edge to the origin
         heightMap = new WorldHeightMap(app.DB.map.heightmapTex,
@@ -349,16 +368,14 @@ public class WorldMap {
 
     // Returns for a tile the real opengl center coordinates
     public Vector3f getGLTileCenter(int x, int z) {
-        float newx = 0.5f * (1f - 1f / (float) width) + (x * (1f + 1f / (float) width));
-        float newz = 0.5f * (1f - 1f / (float) height) + (z * (1f + 1f / (float) height));
+        float newx = x + 0.5f;
+        float newz = z + 0.5f;
         return new Vector3f(newx, heightMap.getInterpolatedHeight(newx, newz), newz);
     }
 
     // Return for a tile the opengl coordinates of the upper left corner
     public Vector3f getGLTileCorner(int x, int z) {
-        float newx = (x * (1f + 1f / (float) width));
-        float newz = (z * (1f + 1f / (float) height));
-        return new Vector3f(newx, heightMap.getInterpolatedHeight(newx, newz), newz);
+        return new Vector3f(x, heightMap.getInterpolatedHeight(x, z), z);
     }
 
     // Select a tile of the terrain (gets highlighting)
@@ -400,7 +417,7 @@ public class WorldMap {
     public void update(float tpf) {
 
 
-        for (WorldArmy a : worldArmies) {
+        for (Army a : Armies) {
             a.update(tpf);
         }
 
@@ -414,12 +431,12 @@ public class WorldMap {
     }
 
     // Spawns a physical army on the world map
-    public WorldArmy createArmy(int x, int z, int player, ArrayList<Unit> units) {
+    public Army createArmy(int x, int z, int player, ArrayList<Unit> units) {
 
         Spatial m = (Spatial) assetManager.loadModel("Models/Oto/Oto.mesh.xml");
-        WorldArmy a = new WorldArmy(x, z, player, m, this);
+        Army a = new Army(x, z, player, m, this);
 
-        worldArmies.add(a);
+        Armies.add(a);
         scene.attachChild(m);
         bulletState.getPhysicsSpace().add(a.control);
 
@@ -428,9 +445,9 @@ public class WorldMap {
     }
 
     // Removes an army from the world map
-    public void removeArmy(WorldArmy a) {
+    public void removeArmy(Army a) {
 
-        worldArmies.remove(a);
+        Armies.remove(a);
         scene.detachChild(a.model);
 
 
@@ -441,9 +458,9 @@ public class WorldMap {
     }
 
     // Returns army object
-    public WorldArmy getArmy(Spatial model) {
+    public Army getArmy(Spatial model) {
 
-        for (WorldArmy w : worldArmies) {
+        for (Army w : Armies) {
             if (w.model == model) {
                 return w;
             }
@@ -452,9 +469,9 @@ public class WorldMap {
     }
 
     // Returns army object
-    public WorldArmy getArmy(int x, int z) {
+    public Army getArmy(int x, int z) {
 
-        for (WorldArmy w : worldArmies) {
+        for (Army w : Armies) {
             if (w.posX == x && w.posZ == z) {
                 return w;
             }
@@ -483,7 +500,7 @@ public class WorldMap {
     }
 
     // Marks the army as currently selected
-    public void selectArmy(WorldArmy army) {
+    public void selectArmy(Army army) {
         if (army == null) {
             return;
         }
@@ -520,7 +537,7 @@ public class WorldMap {
     }
 
     // Run BFS to find the reachable tiles for the army
-    public void drawReachableArea(WorldArmy army) {
+    public void drawReachableArea(Army army) {
 
         deselectTiles();
 
@@ -547,19 +564,19 @@ public class WorldMap {
         return app.DB.map.tiles.get(worldTiles[x][z].groundType).sailable;
     }
 
-    public void marchTo(WorldArmy a, Tile t) {
+    public void marchTo(Army a, Tile t) {
         marchTo(a, t.x, t.z);
     }
 
-    public void marchTo(WorldArmy a, Settlement s) {
+    public void marchTo(Army a, Settlement s) {
         marchTo(a, s.posX, s.posZ);
     }
 
-    public void marchTo(WorldArmy a, WorldArmy goal) {
+    public void marchTo(Army a, Army goal) {
         marchTo(a, goal.posX, goal.posZ);
     }
 
-    public void marchTo(WorldArmy a, int x, int z) {
+    public void marchTo(Army a, int x, int z) {
 
         Stack<Tile> p = pathFinder.findPath(new Tile(a.posX, a.posZ), new Tile(x, z));
         if (p != null) {

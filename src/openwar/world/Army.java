@@ -20,7 +20,7 @@ import openwar.DB.Unit;
  *
  * @author kehl
  */
-public class WorldArmy {
+public class Army {
 
     int posX, posZ;
     int playerNumber;
@@ -32,10 +32,10 @@ public class WorldArmy {
     Stack<Tile> route;
     boolean onRoute = false;
 
-    public WorldArmy() {
+    public Army() {
     }
 
-    WorldArmy(int x, int z, int player, Spatial m, WorldMap map) {
+    public Army(int x, int z, int player, Spatial m, WorldMap map) {
         posX = x;
         posZ = z;
         playerNumber = player;
@@ -162,7 +162,7 @@ public class WorldArmy {
             units.add(u);
         }
         
-       final WorldArmy a = this;
+       final Army a = this;
 
         map.scene.getControl(UpdateControl.class).enqueue(new Callable() {
             @Override
