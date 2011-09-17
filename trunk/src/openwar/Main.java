@@ -4,6 +4,8 @@
  */
 package openwar;
 
+import java.io.FileNotFoundException;
+import javax.script.ScriptException;
 import openwar.DB.XMLDataLoader;
 import openwar.world.WorldMapAppState;
 import com.jme3.asset.plugins.*;
@@ -25,17 +27,21 @@ import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
 import de.lessvoid.nifty.Nifty;
 import java.io.File;
+import java.io.FileReader;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.script.Bindings;
+import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import openwar.DB.GameDatabase;
 
 public class Main extends SimpleApplication {
 
-    static public String version = "r1";
-    
+    static public int version = 1;
     public String locatorRoot = "data" + File.separator;
-    ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(4);
+    public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(4);
     public Nifty nifty;
     public BulletAppState bulletState = new BulletAppState();
     public ScreenshotAppState screenshotState = new ScreenshotAppState();
@@ -43,6 +49,7 @@ public class Main extends SimpleApplication {
     public DebugAppState debugState = new DebugAppState();
     static public GameDatabase DB = new GameDatabase();
     public XMLDataLoader DataLoader;
+    public ScriptEngine scriptEngine;
 
     public static void main(String[] args) {
         Main app = new Main();
@@ -50,7 +57,7 @@ public class Main extends SimpleApplication {
 
         app.setShowSettings(true);
         app.setSettings(new AppSettings(true));
-        app.settings.setTitle("openwar    " + version);
+        app.settings.setTitle("openwar    r" + version);
         app.settings.setFrameRate(30);
         app.start();
 
@@ -62,8 +69,21 @@ public class Main extends SimpleApplication {
 
         assetManager.registerLocator(locatorRoot, FileLocator.class.getName());
 
+        ScriptEngineManager factory = new ScriptEngineManager();
+        scriptEngine = factory.getEngineByName("groovy");
+        Bindings bindings = scriptEngine.createBindings();
+        bindings.put("game", this);
+        scriptEngine.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
+
         DataLoader = new XMLDataLoader(this);
         DataLoader.loadAll();
+        
+         try {
+            scriptEngine.eval("onBuildingBuilt('humans','Berlin','irrigation',2)");
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
 
         //AudioNode music = new AudioNode(assetManager, "music/lol.ogg", true);
         // music.play();
@@ -93,7 +113,7 @@ public class Main extends SimpleApplication {
         getInputManager().addMapping("map_strafedown", new KeyTrigger(KeyInput.KEY_J));
         getInputManager().addMapping("map_strafeleft", new KeyTrigger(KeyInput.KEY_H));
         getInputManager().addMapping("map_straferight", new KeyTrigger(KeyInput.KEY_K));
-     
+
         getInputManager().addMapping("texture_types", new KeyTrigger(KeyInput.KEY_1));
         getInputManager().addMapping("texture_regions", new KeyTrigger(KeyInput.KEY_2));
         getInputManager().addMapping("texture_climates", new KeyTrigger(KeyInput.KEY_3));
@@ -102,6 +122,9 @@ public class Main extends SimpleApplication {
         getInputManager().addMapping("nextType", new KeyTrigger(KeyInput.KEY_N));
         getInputManager().addMapping("cursor", new KeyTrigger(KeyInput.KEY_X));
         getInputManager().addMapping("dump", new KeyTrigger(KeyInput.KEY_RETURN));
+
+
+        getInputManager().addMapping("show_grid", new KeyTrigger(KeyInput.KEY_G));
 
 
 

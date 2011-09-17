@@ -8,11 +8,8 @@ import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.collision.CollisionResult;
-import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
-import com.jme3.input.controls.KeyTrigger;
-import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -28,16 +25,16 @@ import openwar.Main;
 public class WorldMapAppState extends AbstractAppState {
 
     public Node sceneNode;
-    public boolean debug = false;
+    public boolean showGrid = false;
     public WorldMap map;
-    public Main app;
+    public Main game;
     public ActionListener actionListener = new ActionListener() {
 
         @Override
         public void onAction(String name, boolean pressed, float tpf) {
 
             if (name.equals("mouse_left") && !pressed) {
-                CollisionResult r = app.getNiftyMousePick(map.scene);
+                CollisionResult r = game.getNiftyMousePick(map.scene);
                 if (r == null) {
                     return;
                 }
@@ -76,7 +73,7 @@ public class WorldMapAppState extends AbstractAppState {
                     return;
                 }
 
-                CollisionResult r = app.getNiftyMousePick(map.scene);
+                CollisionResult r = game.getNiftyMousePick(map.scene);
                 if (r == null) {
                     return;
                 }
@@ -106,9 +103,11 @@ public class WorldMapAppState extends AbstractAppState {
                 }
 
             } else if (name.equals("lol") && !pressed) {
-
                 map.fadeSeason();
 
+            } else if (name.equals("show_grid") && !pressed) {
+                showGrid = !showGrid;
+                map.showGrid(showGrid);
             }
         }
     };
@@ -118,13 +117,13 @@ public class WorldMapAppState extends AbstractAppState {
         public void onAnalog(String name, float value, float tpf) {
 
             if (name.equals("map_strafeup")) {
-                app.getCamera().setLocation(app.getCamera().getLocation().addLocal(0, 0, tpf * -50f));
+                game.getCamera().setLocation(game.getCamera().getLocation().addLocal(0, 0, tpf * -50f));
             } else if (name.equals("map_strafedown")) {
-                app.getCamera().setLocation(app.getCamera().getLocation().addLocal(0, 0, tpf * 50f));
+                game.getCamera().setLocation(game.getCamera().getLocation().addLocal(0, 0, tpf * 50f));
             } else if (name.equals("map_strafeleft")) {
-                app.getCamera().setLocation(app.getCamera().getLocation().addLocal(tpf * -50f, 0, 0));
+                game.getCamera().setLocation(game.getCamera().getLocation().addLocal(tpf * -50f, 0, 0));
             } else if (name.equals("map_straferight")) {
-                app.getCamera().setLocation(app.getCamera().getLocation().addLocal(tpf * 50f, 0, 0));
+                game.getCamera().setLocation(game.getCamera().getLocation().addLocal(tpf * 50f, 0, 0));
             }
         }
     };
@@ -139,30 +138,31 @@ public class WorldMapAppState extends AbstractAppState {
 
     public void initialize(AppStateManager stateManager, Main main) {
 
-        app = main;
-
- 
-
-        app.getInputManager().addListener(actionListener, "mouse_left");
-        app.getInputManager().addListener(actionListener, "mouse_right");
+        game = main;
 
 
-        app.getInputManager().addListener(analogListener, "map_strafeup");
-        app.getInputManager().addListener(analogListener, "map_strafedown");
-        app.getInputManager().addListener(analogListener, "map_strafeleft");
-        app.getInputManager().addListener(analogListener, "map_straferight");
+
+        game.getInputManager().addListener(actionListener, "mouse_left");
+        game.getInputManager().addListener(actionListener, "mouse_right");
+        game.getInputManager().addListener(actionListener, "show_grid");
+
+
+        game.getInputManager().addListener(analogListener, "map_strafeup");
+        game.getInputManager().addListener(analogListener, "map_strafedown");
+        game.getInputManager().addListener(analogListener, "map_strafeleft");
+        game.getInputManager().addListener(analogListener, "map_straferight");
 
         sceneNode = new Node("WorldMap");
         map = new WorldMap(main, sceneNode);
         if (!map.createWorldMap()) {
-            app.stop();
+            game.stop();
         }
 
-        app.getRootNode().attachChild(sceneNode);
-        app.getCamera().setLocation(new Vector3f(map.width / 2, 15, map.height / 2));
-        app.getCamera().lookAtDirection(new Vector3f(0f, -.9f, -1f).normalizeLocal(), Vector3f.UNIT_Y);
+        game.getRootNode().attachChild(sceneNode);
+        game.getCamera().setLocation(new Vector3f(map.width / 2, 15, map.height / 2));
+        game.getCamera().lookAtDirection(new Vector3f(0f, -.9f, -1f).normalizeLocal(), Vector3f.UNIT_Y);
 
-        app.nifty.fromXml("ui" + File.separator + "worldmap" + File.separator + "ui.xml", "start");
+        game.nifty.fromXml("ui" + File.separator + "worldmap" + File.separator + "ui.xml", "start");
 
         initialized = true;
     }
@@ -171,6 +171,10 @@ public class WorldMapAppState extends AbstractAppState {
     public void update(float tpf) {
 
         map.update(tpf);
+        
+        Vector3f loc = game.getCamera().getLocation();
+        loc.x = Math.max(Math.min(map.width, loc.x),0);
+        loc.z = Math.max(Math.min(map.height+map.height/2, loc.z),map.height/2);
 
     }
 }

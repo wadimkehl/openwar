@@ -13,6 +13,7 @@ import com.jme3.asset.TextureKey;
 import com.jme3.math.Vector3f;
 import com.jme3.texture.Image.Format;
 import java.io.File;
+import java.io.FileReader;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -27,24 +28,35 @@ import org.w3c.dom.NodeList;
 public class XMLDataLoader {
 
     AssetManager assets;
-    Main app;
+    Main game;
     private static final Logger logger = Logger.getLogger(XMLDataLoader.class.getName());
 
     public XMLDataLoader(Main appl) {
-        app = appl;
+        game = appl;
         assets = appl.getAssetManager();
     }
 
-    private void loadMultiData(String folder) {
+    private void loadData(String folder) {
 
         try {
             // go into meta folder
-            File f = new File(app.locatorRoot + folder);
+            File f = new File(game.locatorRoot + folder);
             if (!f.isDirectory()) {
                 logger.log(Level.SEVERE, "Cannot find {0} directory...", folder);
                 throw new Exception();
             }
 
+            // if we load the scripts, we just read every file
+            if ("scripts".equals(folder)) {
+                for (File l : f.listFiles()) {
+                    if (l.isFile()) {
+                        game.scriptEngine.eval(new FileReader(game.locatorRoot
+                                + f.getName() + File.separator + l.getName()));
+
+                    }
+                }
+                return;
+            }
 
             // if we load the map, check in meta folder for props.xml
             if ("map".equals(folder)) {
@@ -74,6 +86,11 @@ public class XMLDataLoader {
                     logger.log(Level.WARNING, "Entity unloadable in {0}", f.getName());
                     continue;
                 }
+
+                if (".svn".equals(u.getName())) {
+                    continue;
+                }
+
                 // search props.xml
                 File props = null;
                 for (File l : u.listFiles()) {
@@ -237,8 +254,6 @@ public class XMLDataLoader {
             Main.DB.typesTex.getImage().setFormat(Format.RGB8);
             Main.DB.climatesTex.getImage().setFormat(Format.RGB8);
 
-
-
             NodeList t = terrain.getElementsByTagName("tile");
             for (int i = 0; i < t.getLength(); i++) {
                 GenericTile tile = new GenericTile();
@@ -255,8 +270,6 @@ public class XMLDataLoader {
             }
 
 
-
-
             Element hm = (Element) terrain.getElementsByTagName("heightmap").item(0);
             Main.DB.heightmapParams = new Vector3f();
             Main.DB.heightmapParams.x = Float.parseFloat(hm.getAttribute("factor0"));
@@ -268,7 +281,7 @@ public class XMLDataLoader {
             Main.DB.sun_color = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
             s = new Scanner(sun.getAttribute("direction"));
             s.useLocale(Locale.ENGLISH);
-            Main.DB.sun_direction= new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
+            Main.DB.sun_direction = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
 
             NodeList c = climates.getElementsByTagName("climate");
             for (int i = 0; i < c.getLength(); i++) {
@@ -323,16 +336,19 @@ public class XMLDataLoader {
     public boolean loadAll() {
 
         try {
-            
+
             logger.log(Level.WARNING, "Loading factions");
-            loadMultiData("factions");
+            loadData("factions");
             logger.log(Level.WARNING, "Loading units");
-            loadMultiData("units");
+            loadData("units");
             logger.log(Level.WARNING, "Loading buildings");
-            loadMultiData("buildings");
-            
+            loadData("buildings");
+
             logger.log(Level.WARNING, "Loading map");
-            loadMultiData("map");
+            loadData("map");
+
+            logger.log(Level.WARNING, "Loading scripts");
+            loadData("scripts");
 
         } catch (Exception E) {
             return false;
