@@ -3,32 +3,32 @@
 <root>
 
     <textures tiletextures="12">           
-        <base name="regions" texture="regions.tga"/>
+        <base name="regions" texture="regions_dump.png"/>
         <base name="heights" texture="heights.tga"/>
-        <base name="climates" texture="climates.tga"/>
-        <base name="types" texture="types.tga"/>            
-        <tile id="0" texture="0.tga" />
-        <tile id="1" texture="1.tga" />
-        <tile id="2" texture="2.tga" />
-        <tile id="3" texture="3.tga" />
-        <tile id="4" texture="4.tga" />
-        <tile id="5" texture="5.tga" />
-        <tile id="6" texture="6.tga" />
-        <tile id="7" texture="7.tga" />
-        <tile id="8" texture="8.tga" />
-        <tile id="9" texture="9.tga" />
-        <tile id="10" texture="10.tga" />
-        <tile id="11" texture="11.tga" />      
+        <base name="climates" texture="climates_dump.png"/>
+        <base name="types" texture="types_dump.png"/>            
+        <tile id="0" texture="0.tga" scale="8.0"/>
+        <tile id="1" texture="1.tga" scale="8.0"/>
+        <tile id="2" texture="2.tga" scale="8.0"/>
+        <tile id="3" texture="3.tga" scale="8.0"/>
+        <tile id="4" texture="4.tga" scale="8.0"/>
+        <tile id="5" texture="5.tga" scale="8.0"/>
+        <tile id="6" texture="6.tga" scale="8.0"/>
+        <tile id="7" texture="7.tga" scale="8.0"/>
+        <tile id="8" texture="8.tga" scale="8.0"/>
+        <tile id="9" texture="9.tga" scale="8.0"/>
+        <tile id="10" texture="10.tga" scale="8.0"/>
+        <tile id="11" texture="11.tga" scale="8.0"/>      
     </textures>
         
     <terrain>
       
         <tile type="0" name="desert"            color="255 255 0"   walkable="true" sailable="false" cost="2" textureid="0"/> 
-        <tile type="1" name="desert fertile"    color="266 266 266" walkable="true" sailable="false" cost="2" textureid="1"/> 
+        <tile type="1" name="desert fertile"    color="255 255 100" walkable="true" sailable="false" cost="2" textureid="1"/> 
         <tile type="2" name="desert rough"      color="200 200 0"   walkable="true" sailable="false" cost="2" textureid="2"/> 
         <tile type="3" name="desert hilly"      color="128 128 0"   walkable="true" sailable="false" cost="2" textureid="3"/> 
         <tile type="4" name="grass"             color="0 255 0"     walkable="true" sailable="false" cost="2" textureid="4"/> 
-        <tile type="5" name="grass fertile"     color="266 266 266" walkable="true" sailable="false" cost="2" textureid="5"/> 
+        <tile type="5" name="grass fertile"     color="0 255 100" walkable="true" sailable="false" cost="2" textureid="5"/> 
         <tile type="6" name="grass rough"       color="0 200 0"     walkable="true" sailable="false" cost="2" textureid="6"/> 
         <tile type="7" name="grass hilly"       color="0 128 0"     walkable="true" sailable="false" cost="2" textureid="7"/> 
         <tile type="8" name="grass forest"      color="0 64 0"      walkable="true" sailable="false" cost="2" textureid="8"/> 

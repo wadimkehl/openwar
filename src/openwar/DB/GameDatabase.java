@@ -23,6 +23,8 @@ public class GameDatabase {
     public HashMap<String, Region> hashedRegions;
     public ArrayList<Settlement> settlements;
     public HashMap<String, Settlement> hashedSettlements; // String is refname of region!
+    public ArrayList<Climate> climates;
+    public HashMap<String, Climate> hashedClimates;
 
     public GameDatabase() {
         genUnits = new HashMap<String, GenericUnit>();
@@ -32,8 +34,10 @@ public class GameDatabase {
 
         regions = new ArrayList<Region>();
         settlements = new ArrayList<Settlement>();
+        climates = new ArrayList<Climate>();
 
         hashedRegions = new HashMap<String, Region>();
+        hashedClimates = new HashMap<String, Climate>();
         hashedSettlements = new HashMap<String, Settlement>();
 
 

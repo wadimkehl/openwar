@@ -13,6 +13,9 @@ import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
+import com.jme3.input.KeyInput;
+import com.jme3.input.controls.KeyTrigger;
+import com.jme3.input.controls.MouseButtonTrigger;
 
 import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
@@ -28,13 +31,14 @@ import openwar.DB.GameDatabase;
 
 public class Main extends SimpleApplication {
 
+    public String locatorRoot = "data/";
     ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(4);
     public Nifty nifty;
     public BulletAppState bulletState = new BulletAppState();
     public ScreenshotAppState screenshotState = new ScreenshotAppState();
     public WorldMapAppState worldMapState = new WorldMapAppState();
-    public String locatorRoot = "data/";
-    public GameDatabase DB = new GameDatabase();
+    public DebugAppState debugState = new DebugAppState();
+    static public GameDatabase DB = new GameDatabase();
     public XMLDataLoader DataLoader;
 
     public static void main(String[] args) {
@@ -58,20 +62,47 @@ public class Main extends SimpleApplication {
 
         DataLoader = new XMLDataLoader(this);
         DataLoader.loadAll();
-        
+
         //AudioNode music = new AudioNode(assetManager, "music/lol.ogg", true);
-       // music.play();
-        
-        
+        // music.play();
+
+
         guiNode.detachAllChildren();
         NiftyJmeDisplay niftyDisplay =
                 new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
         nifty = niftyDisplay.getNifty();
         guiViewPort.addProcessor(niftyDisplay);
 
+        this.stateManager.attach(debugState);
+
+
         this.stateManager.attach(bulletState);
         this.stateManager.attach(worldMapState);
         this.stateManager.attach(screenshotState);
+
+        getFlyByCamera().setMoveSpeed(50);
+
+        getInputManager().addMapping("ScreenShot", new KeyTrigger(KeyInput.KEY_P));
+
+        getInputManager().addMapping("mouse_left", new MouseButtonTrigger(0));
+        getInputManager().addMapping("mouse_right", new MouseButtonTrigger(1));
+
+        getInputManager().addMapping("map_strafeup", new KeyTrigger(KeyInput.KEY_U));
+        getInputManager().addMapping("map_strafedown", new KeyTrigger(KeyInput.KEY_J));
+        getInputManager().addMapping("map_strafeleft", new KeyTrigger(KeyInput.KEY_H));
+        getInputManager().addMapping("map_straferight", new KeyTrigger(KeyInput.KEY_K));
+     
+        getInputManager().addMapping("texture_types", new KeyTrigger(KeyInput.KEY_1));
+        getInputManager().addMapping("texture_regions", new KeyTrigger(KeyInput.KEY_2));
+        getInputManager().addMapping("texture_climates", new KeyTrigger(KeyInput.KEY_3));
+        getInputManager().addMapping("draw_mode", new KeyTrigger(KeyInput.KEY_TAB));
+        getInputManager().addMapping("previousType", new KeyTrigger(KeyInput.KEY_B));
+        getInputManager().addMapping("nextType", new KeyTrigger(KeyInput.KEY_N));
+        getInputManager().addMapping("cursor", new KeyTrigger(KeyInput.KEY_X));
+        getInputManager().addMapping("dump", new KeyTrigger(KeyInput.KEY_RETURN));
+
+
+
     }
 
 // Calculates a mouse pick with a spatial and returns nearest result or null

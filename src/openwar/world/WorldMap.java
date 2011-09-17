@@ -5,7 +5,6 @@
 package openwar.world;
 
 import com.jme3.asset.AssetManager;
-import com.jme3.asset.TextureKey;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.light.DirectionalLight;
@@ -31,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import openwar.DB.Climate;
+import openwar.DB.GenericTile;
 import openwar.DB.Region;
 import openwar.DB.Settlement;
 import openwar.DB.Unit;
@@ -65,42 +66,16 @@ public class WorldMap {
             color = col;
         }
     };
-
-    // Holds ground type information
-    public class WorldTile extends Tile {
-
-        int groundType;
-        int cost;
-        String region;
-        String climate;
-
-        public WorldTile(int x, int z, int type, String r, String c) {
-            super(x, z);
-            region = r;
-            groundType = type;
-            cost = app.DB.map.tiles.get(type).cost;
-            climate = c;
-
-        }
-
-        @Override
-        public String toString() {
-            return super.toString()
-                    + " Type: " + getGroundTypeString(groundType)
-                    + "     Region: " + app.DB.hashedRegions.get(region).name
-                    + "     Climate: " + climate;
-        }
-    };
     Main app;
-    int width, height;
-    TerrainQuad terrain;
+    public int width, height;
+    public TerrainQuad terrain;
     BulletAppState bulletState;
-    Node scene = new Node("worldmap"), rootScene;
-    Material matTerrain, matTerrainDebug;
+    public Node scene = new Node("worldmap"), rootScene;
+    public Material matTerrain, matTerrainDebug;
     AssetManager assetManager;
     WorldHeightMap heightMap;
     Texture key0Image, key1Image, key2Image, gridImage;
-    WorldTile[][] worldTiles;
+    public WorldTile[][] worldTiles;
     ArrayList<SelectionTile> selectedTiles = new ArrayList<SelectionTile>();
     boolean selectedTilesChanged = false;
     Geometry selectedTilesOverlay;
@@ -123,34 +98,12 @@ public class WorldMap {
 
     }
 
-    // Overlays the terrain with the specific images for world map creation
-    public void displayDebugMaterial(int l) {
-
-        switch (l) {
-
-            case 0:
-                matTerrainDebug.setTexture("ColorMap", gridImage);
-                break;
-            case 1:
-                matTerrainDebug.setTexture("ColorMap", app.DB.map.regionsTex);
-                break;
-            case 2:
-                matTerrainDebug.setTexture("ColorMap", app.DB.map.climatesTex);
-                break;
-        }
-
-        terrain.setMaterial(matTerrainDebug);
-
+    public void setWorldTile(int x, int z, int type) {
+        worldTiles[x][z] = new WorldTile(x, z, type, getGroundTypeCost(type),
+                worldTiles[x][z].region, worldTiles[x][z].climate);
     }
 
-    public void displayStandardMaterial() {
-        terrain.setMaterial(matTerrain);
-
-    }
-
-    public boolean createTerrain() {
-
-        // Create key textures
+    public boolean createKeyTextures() {
         int size = width * height * 4;
         ByteBuffer buf0 = ByteBuffer.allocateDirect(size);
         ByteBuffer buf1 = ByteBuffer.allocateDirect(size);
@@ -158,17 +111,12 @@ public class WorldMap {
         byte[] data0 = new byte[size];
         byte[] data1 = new byte[size];
         byte[] data2 = new byte[size];
-        ByteBuffer buffer = app.DB.map.typesTex.getImage().getData(0);
-        for (int y = 0; y < height; y++) {
+        for (int z = 0; z < height; z++) {
             for (int x = 0; x < width; x++) {
-                int base = (y * width + x) * 4;
-                int r, g, b;
-                r = buffer.get() & 0xff;
-                g = buffer.get() & 0xff;
-                b = buffer.get() & 0xff;
-                if (!computeKeys(r, g, b, base, data0, data1, data2)) {
+                int base = (z * width + x) * 4;
+                if (!computeKeys(getVisualGroundType(worldTiles[x][height - 1 - z].groundType), base, data0, data1, data2)) {
                     logger.log(Level.SEVERE,
-                            "Unknown tile at ({0},{1}): {2} {3} {4}", new Object[]{x, y, r, g, b});
+                            "Unknown tile at ({0},{1}): {2} ", new Object[]{x, height - 1 - z, worldTiles[x][height - 1 - z].groundType});
                     return false;
                 }
             }
@@ -182,43 +130,52 @@ public class WorldMap {
         key0Image = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf0));
         key1Image = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf1));
         key2Image = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf2));
+        matTerrain.setTexture("AlphaMap", key0Image);
+        matTerrain.setTexture("AlphaMap_1", key1Image);
+        matTerrain.setTexture("AlphaMap_2", key2Image);
 
-        // Create grid texture
-        int grid_res = 16;
-        ByteBuffer buf = ByteBuffer.allocateDirect(grid_res*grid_res*4);
+        return true;
+    }
+
+    public void createGridTexture() {
+        int grid_res = 32;
+        ByteBuffer buf = ByteBuffer.allocateDirect(grid_res * grid_res * 4);
         for (int y = 0; y < grid_res; y++) {
             for (int x = 0; x < grid_res; x++) {
-                if (x == 0 || y == 0 || x == grid_res-1 || y == grid_res-1) {
-                    buf.putInt(Integer.parseInt("00FF00FF",16));
+                if (x == 0 || y == 0 || x == grid_res - 1 || y == grid_res - 1) {
+                    buf.putInt(Integer.parseInt("7F00007F", 16));
                 } else {
-                    buf.putInt(Integer.parseInt("000000",16));
+                    buf.putInt(Integer.parseInt("000000", 16));
 
                 }
 
             }
         }
-        gridImage = assetManager.loadTexture("map/base/grid.png");
         gridImage = new Texture2D(new Image(Image.Format.RGBA8, grid_res, grid_res, buf));
         gridImage.setWrap(Texture.WrapMode.Repeat);
+        matTerrain.setTexture("GridMap", gridImage);
+        matTerrain.setFloat("GridMap_scale", Math.min(width, height));
+    }
 
-
+    public boolean createTerrain() {
 
         // Create standard material with all textures and needed values
         matTerrain = new Material(assetManager, "materials/TerrainLighting.j3md");
-        matTerrain.setTexture("GridMap", gridImage);
-        matTerrain.setFloat("GridMap_scale", Math.min(width, height));
-        matTerrain.setTexture("DiffuseMap", app.DB.map.tileTextures.get(0));
-        app.DB.map.tileTextures.get(0).setWrap(Texture.WrapMode.Repeat);
-        matTerrain.setFloat("DiffuseMap_0_scale", 4f);
-        for (int i = 1; i < app.DB.map.tilesCount; i++) {
-            matTerrain.setTexture("DiffuseMap_" + i, app.DB.map.tileTextures.get(i));
-            matTerrain.setFloat("DiffuseMap_" + i + "_scale", 4f);
-            app.DB.map.tileTextures.get(i).setWrap(Texture.WrapMode.Repeat);
+        matTerrain.setTexture("DiffuseMap", Main.DB.map.tileTextures.get(0));
+        Main.DB.map.tileTextures.get(0).setWrap(Texture.WrapMode.Repeat);
+        matTerrain.setFloat("DiffuseMap_0_scale", Main.DB.map.tileTextures_scales.get(0));
+        for (int i = 1; i < Main.DB.map.tilesTexturesCount; i++) {
+            matTerrain.setTexture("DiffuseMap_" + i, Main.DB.map.tileTextures.get(i));
+            matTerrain.setFloat("DiffuseMap_" + i + "_scale", Main.DB.map.tileTextures_scales.get(i));
+            Main.DB.map.tileTextures.get(i).setWrap(Texture.WrapMode.Repeat);
 
         }
-        matTerrain.setTexture("AlphaMap", key0Image);
-        matTerrain.setTexture("AlphaMap_1", key1Image);
-        matTerrain.setTexture("AlphaMap_2", key2Image);
+
+
+        if (!createKeyTextures()) {
+            return false;
+        }
+        createGridTexture();
 
 
 
@@ -226,10 +183,10 @@ public class WorldMap {
         matTerrainDebug = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
 
         // Create mesh data with material and place its north-western edge to the origin
-        heightMap = new WorldHeightMap(app.DB.map.heightmapTex,
-                app.DB.map.terrain.heightmap.factor0,
-                app.DB.map.terrain.heightmap.factor1,
-                app.DB.map.terrain.heightmap.offset);
+        heightMap = new WorldHeightMap(Main.DB.map.heightmapTex,
+                Main.DB.map.terrain.heightmap.factor0,
+                Main.DB.map.terrain.heightmap.factor1,
+                Main.DB.map.terrain.heightmap.offset);
 
         heightMap.load(false, false);
         terrain = new TerrainQuad("terrain", 32, heightMap.getSize(), heightMap.getHeightMap());
@@ -239,20 +196,20 @@ public class WorldMap {
         return true;
     }
 
-    public boolean createRegions() {
+    public boolean createWorldTiles() {
 
         // Create worldTiles array and read according region and climate from images
         worldTiles = new WorldTile[width][height];
-        ByteBuffer buf = app.DB.map.typesTex.getImage().getData(0);
-        ByteBuffer regs = app.DB.map.regionsTex.getImage().getData(0);
-        ByteBuffer clis = app.DB.map.climatesTex.getImage().getData(0);
+        ByteBuffer types = Main.DB.map.typesTex.getImage().getData(0);
+        ByteBuffer regs = Main.DB.map.regionsTex.getImage().getData(0);
+        ByteBuffer clis = Main.DB.map.climatesTex.getImage().getData(0);
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 int base = (j * width + i) * 3;
                 int r, g, b, r1, g1, b1, r2, g2, b2;
-                r = buf.get(base + 0) & 0xff;
-                g = buf.get(base + 1) & 0xff;
-                b = buf.get(base + 2) & 0xff;
+                r = types.get(base + 0) & 0xff;
+                g = types.get(base + 1) & 0xff;
+                b = types.get(base + 2) & 0xff;
                 r1 = regs.get(base + 0) & 0xff;
                 g1 = regs.get(base + 1) & 0xff;
                 b1 = regs.get(base + 2) & 0xff;
@@ -260,11 +217,16 @@ public class WorldMap {
                 g2 = clis.get(base + 1) & 0xff;
                 b2 = clis.get(base + 2) & 0xff;
 
-                int type = RGBtoGroundType(r, g, b);
-                String climate = getClimateByRGB(r2, g2, b2);
+                // TODO: Find out why the groundtype image is bgr and the others aren't
+                int type = RGBtoGroundType(b, g, r);
+                Climate climate = getClimateByRGB(r2, g2, b2);
                 Region region = getRegionByRGB(new Vector3f(r1, g1, b1));
-                if (region != null) {
-                    worldTiles[i][height - 1 - j] = new WorldTile(i, height - 1 - j, type, region.refName, climate);
+                GenericTile tile = Main.DB.map.tiles.get(type);
+                if (region != null && climate != null && tile != null) {
+                    worldTiles[i][height - 1 - j] = new WorldTile(i, height - 1 - j, type, tile.cost, region.refName, climate.refName);
+                } else {
+                    logger.log(Level.SEVERE,"Error at ({0},{1}) ", new Object[]{i, height - 1 - j});                   
+                    return false;
                 }
             }
         }
@@ -275,13 +237,13 @@ public class WorldMap {
 
     public boolean createEntities() {
 
-        for (Region r : app.DB.regions) {
+        for (Region r : Main.DB.regions) {
 
-            if ("Ocean".equals(r.name)) {
+            if (r.settlement == null) {
                 continue;
             }
 
-            Spatial m = app.DB.genBuildings.get("city").levels.get(0).model.clone();
+            Spatial m = Main.DB.genBuildings.get("city").levels.get(0).model.clone();
             m.setShadowMode(ShadowMode.CastAndReceive);
             Vector3f vec = getGLTileCenter(r.settlement.posX, r.settlement.posZ);
             m.setLocalTranslation(vec);
@@ -298,69 +260,62 @@ public class WorldMap {
     // Create the whole world map
     public boolean createWorldMap() {
 
-        width = app.DB.map.typesTex.getImage().getWidth();
-        height = app.DB.map.typesTex.getImage().getHeight();
+        width = Main.DB.map.typesTex.getImage().getWidth();
+        height = Main.DB.map.typesTex.getImage().getHeight();
 
 
-        try {
-            if (!createRegions()) {
-                System.out.println("Couldn't create regions...");
-                return false;
-            }
-            if (!createTerrain()) {
-                System.out.println("Couldn't create terrain...");
-                return false;
-            }
-            if (!createEntities()) {
-                System.out.println("Couldn't create entities...");
-                return false;
-            }
-
-            DirectionalLight dlight = new DirectionalLight();
-            dlight.setColor(new ColorRGBA(
-                    app.DB.map.terrain.sun.color.x / 255f,
-                    app.DB.map.terrain.sun.color.y / 255f,
-                    app.DB.map.terrain.sun.color.z / 255f, 1));
-            dlight.setDirection(app.DB.map.terrain.sun.direction);
-            scene.addLight(dlight);
-
-            fpp = new FilterPostProcessor(assetManager);
-
-            WaterFilter water = new WaterFilter(scene, new Vector3f(0.3f, -0.9f, 1f));
-            water.setMaxAmplitude(0.2f);
-            water.setWaterTransparency(15f);
-            water.setWaterColor(new ColorRGBA(0.01f, 0.5f, 0.7f, 1f));
-            water.setSpeed(0.1f);
-            water.setFoamHardness(2f);
-            water.setFoamExistence(new Vector3f(0.1f, 0.2f, 0.18f));
-            fpp.addFilter(water);
-
-            BloomFilter bloom = new BloomFilter();
-            bloom.setExposurePower(4f);
-            fpp.addFilter(bloom);
-
-            app.getViewPort().addProcessor(fpp);
-
-
-            selectedTilesOverlay = new Geometry("overlay");
-            matOverlay = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-            matOverlay.setColor("Color", ColorRGBA.Blue);
-            selectedTilesOverlay.setMaterial(matOverlay);
-            matOverlay.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
-
-            scene.attachChild(terrain);
-            //     scene.attachChild(selectedTilesOverlay);
-            rootScene.attachChild(scene);
-
-            terrain.addControl(new RigidBodyControl(0));
-            bulletState.getPhysicsSpace().addAll(terrain);
-
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (!createWorldTiles()) {
+            System.out.println("Couldn't create world tiles...");
             return false;
         }
+        if (!createTerrain()) {
+            System.out.println("Couldn't create terrain...");
+            return false;
+        }
+        if (!createEntities()) {
+            System.out.println("Couldn't create entities...");
+            return false;
+        }
+
+        DirectionalLight dlight = new DirectionalLight();
+        dlight.setColor(new ColorRGBA(
+                Main.DB.map.terrain.sun.color.x / 255f,
+                Main.DB.map.terrain.sun.color.y / 255f,
+                Main.DB.map.terrain.sun.color.z / 255f, 1));
+        dlight.setDirection(Main.DB.map.terrain.sun.direction);
+        scene.addLight(dlight);
+
+        fpp = new FilterPostProcessor(assetManager);
+
+        WaterFilter water = new WaterFilter(scene, new Vector3f(0.3f, -0.9f, 1f));
+        water.setMaxAmplitude(0.2f);
+        water.setWaterTransparency(15f);
+        water.setWaterColor(new ColorRGBA(0.01f, 0.5f, 0.7f, 1f));
+        water.setSpeed(0.1f);
+        water.setFoamHardness(2f);
+        water.setFoamExistence(new Vector3f(0.1f, 0.2f, 0.18f));
+        fpp.addFilter(water);
+
+        BloomFilter bloom = new BloomFilter();
+        bloom.setExposurePower(4f);
+        fpp.addFilter(bloom);
+
+        app.getViewPort().addProcessor(fpp);
+
+
+        selectedTilesOverlay = new Geometry("overlay");
+        matOverlay = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        matOverlay.setColor("Color", ColorRGBA.Blue);
+        selectedTilesOverlay.setMaterial(matOverlay);
+        matOverlay.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
+
+        scene.attachChild(terrain);
+        //     scene.attachChild(selectedTilesOverlay);
+        rootScene.attachChild(scene);
+
+        terrain.addControl(new RigidBodyControl(0));
+        bulletState.getPhysicsSpace().addAll(terrain);
+
 
         return true;
 
@@ -393,12 +348,7 @@ public class WorldMap {
 
     // Process all the selected tiles into key 1 texture to make them visible
     private void showSelectedTiles() {
-
-
-
         selectedTilesChanged = false;
-
-
     }
 
     public void deselectAll() {
@@ -421,8 +371,6 @@ public class WorldMap {
             a.update(tpf);
         }
 
-
-
         if (selectedTilesChanged) {
             //     showSelectedTiles();
         }
@@ -433,7 +381,7 @@ public class WorldMap {
     // Spawns a physical army on the world map
     public Army createArmy(int x, int z, int player, ArrayList<Unit> units) {
 
-        Spatial m = (Spatial) assetManager.loadModel("Models/Oto/Oto.mesh.xml");
+        Spatial m = assetManager.loadModel("Models/Oto/Oto.mesh.xml");
         Army a = new Army(x, z, player, m, this);
 
         Armies.add(a);
@@ -481,7 +429,7 @@ public class WorldMap {
 
     public Settlement getSettlement(Spatial model) {
 
-        for (Settlement s : app.DB.settlements) {
+        for (Settlement s : Main.DB.settlements) {
             if (s.model == model) {
                 return s;
             }
@@ -491,7 +439,7 @@ public class WorldMap {
 
     public Settlement getSettlement(int x, int z) {
 
-        for (Settlement s : app.DB.settlements) {
+        for (Settlement s : Main.DB.settlements) {
             if (s.posX == x && s.posZ == z) {
                 return s;
             }
@@ -553,7 +501,7 @@ public class WorldMap {
     }
 
     public boolean walkableTile(int x, int z) {
-        return app.DB.map.tiles.get(worldTiles[x][z].groundType).walkable;
+        return Main.DB.map.tiles.get(worldTiles[x][z].groundType).walkable;
     }
 
     public boolean sailableTile(Tile t) {
@@ -561,7 +509,7 @@ public class WorldMap {
     }
 
     public boolean sailableTile(int x, int z) {
-        return app.DB.map.tiles.get(worldTiles[x][z].groundType).sailable;
+        return Main.DB.map.tiles.get(worldTiles[x][z].groundType).sailable;
     }
 
     public void marchTo(Army a, Tile t) {
@@ -585,7 +533,7 @@ public class WorldMap {
     }
 
     public Region getRegionByRGB(Vector3f col) {
-        for (Region reg : app.DB.regions) {
+        for (Region reg : Main.DB.regions) {
             if (reg.color.equals(col)) {
                 return reg;
             }
@@ -593,17 +541,17 @@ public class WorldMap {
         return null;
     }
 
-    public String getClimateByRGB(int r, int g, int b) {
+    public Climate getClimateByRGB(int r, int g, int b) {
         return getClimateByRGB(new Vector3f(r, g, b));
     }
 
-    public String getClimateByRGB(Vector3f col) {
-        for (openwar.DB.Map.Climate t : app.DB.map.climates) {
+    public Climate getClimateByRGB(Vector3f col) {
+        for (Climate t : Main.DB.climates) {
             if (t.color.equals(col)) {
-                return t.name;
+                return t;
             }
         }
-        return "N/A";
+        return null;
     }
 
     public int RGBtoGroundType(int r, int g, int b) {
@@ -611,7 +559,7 @@ public class WorldMap {
     }
 
     public int RGBtoGroundType(Vector3f col) {
-        for (openwar.DB.GenericTile t : app.DB.map.tiles.values()) {
+        for (openwar.DB.GenericTile t : Main.DB.map.tiles.values()) {
             if (t.color.equals(col)) {
                 return t.type;
             }
@@ -624,7 +572,7 @@ public class WorldMap {
     }
 
     public int RGBtoVisualGroundType(Vector3f col) {
-        for (openwar.DB.GenericTile t : app.DB.map.tiles.values()) {
+        for (openwar.DB.GenericTile t : Main.DB.map.tiles.values()) {
             if (t.color.equals(col)) {
                 return t.textureid;
             }
@@ -632,8 +580,17 @@ public class WorldMap {
         return -1;
     }
 
+    public int getVisualGroundType(int groundtype) {
+        for (openwar.DB.GenericTile t : Main.DB.map.tiles.values()) {
+            if (t.type == groundtype) {
+                return t.textureid;
+            }
+        }
+        return -1;
+    }
+
     public int getGroundTypeCost(int type) {
-        openwar.DB.GenericTile t = app.DB.map.tiles.get(type);
+        openwar.DB.GenericTile t = Main.DB.map.tiles.get(type);
         if (t != null) {
             return t.cost;
         }
@@ -642,7 +599,7 @@ public class WorldMap {
     }
 
     public boolean isWalkable(int type) {
-        openwar.DB.GenericTile t = app.DB.map.tiles.get(type);
+        openwar.DB.GenericTile t = Main.DB.map.tiles.get(type);
         if (t != null) {
             return t.walkable;
         }
@@ -651,7 +608,7 @@ public class WorldMap {
     }
 
     public boolean isSailable(int type) {
-        openwar.DB.GenericTile t = app.DB.map.tiles.get(type);
+        openwar.DB.GenericTile t = Main.DB.map.tiles.get(type);
         if (t != null) {
             return t.sailable;
         }
@@ -660,7 +617,7 @@ public class WorldMap {
 
     public String getGroundTypeString(int type) {
 
-        openwar.DB.GenericTile t = app.DB.map.tiles.get(type);
+        openwar.DB.GenericTile t = Main.DB.map.tiles.get(type);
         if (t != null) {
             return t.name;
         }
@@ -669,10 +626,8 @@ public class WorldMap {
     }
 
     // Fills the key textures at a specific base address with the right blending value
-    public boolean computeKeys(int r, int g, int b, int base, byte[] data0, byte[] data1, byte[] data2) {
-
-        int type = RGBtoVisualGroundType(r, g, b);
-        switch (type) {
+    public boolean computeKeys(int groundtype, int base, byte[] data0, byte[] data1, byte[] data2) {
+        switch (groundtype) {
             case (0):
                 data0[base + 0] = (byte) 255;
                 break;
@@ -711,8 +666,6 @@ public class WorldMap {
                 break;
             default:
                 return false;
-
-
         }
         return true;
     }
