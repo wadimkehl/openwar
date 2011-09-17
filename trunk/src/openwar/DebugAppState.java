@@ -84,9 +84,9 @@ public class DebugAppState extends AbstractAppState {
                 String currSelection = "";
                 if ("types".equals(currTexture)) {
                     if (currType < 0) {
-                        currType = Main.DB.map.tiles.keySet().size() - 1;
+                        currType = Main.DB.genTiles.keySet().size() - 1;
                     }
-                    currSelection = Main.DB.map.tiles.get(currType).name;
+                    currSelection = Main.DB.genTiles.get(currType).name;
 
                 } else if ("regions".equals(currTexture)) {
                     if (currType < 0) {
@@ -109,10 +109,10 @@ public class DebugAppState extends AbstractAppState {
                 currType++;
                 String currSelection = "";
                 if ("types".equals(currTexture)) {
-                    if (currType >= Main.DB.map.tiles.keySet().size()) {
+                    if (currType >= Main.DB.genTiles.keySet().size()) {
                         currType = 0;
                     }
-                    currSelection = Main.DB.map.tiles.get(currType).name;
+                    currSelection = Main.DB.genTiles.get(currType).name;
 
                 } else if ("regions".equals(currTexture)) {
                     if (currType >= Main.DB.regions.size()) {
@@ -178,9 +178,9 @@ public class DebugAppState extends AbstractAppState {
             return;
         }
         if ("regions".equals(t)) {
-            app.worldMapState.map.matTerrainDebug.setTexture("ColorMap", Main.DB.map.regionsTex);
+            app.worldMapState.map.matTerrainDebug.setTexture("ColorMap", Main.DB.regionsTex);
         } else if ("climates".equals(t)) {
-            app.worldMapState.map.matTerrainDebug.setTexture("ColorMap", Main.DB.map.climatesTex);
+            app.worldMapState.map.matTerrainDebug.setTexture("ColorMap", Main.DB.climatesTex);
         }
         app.worldMapState.map.terrain.setMaterial(app.worldMapState.map.matTerrainDebug);
 
@@ -195,7 +195,7 @@ public class DebugAppState extends AbstractAppState {
             for (int z = 0; z < app.worldMapState.map.height; z++) {
                 for (int x = 0; x < app.worldMapState.map.width; x++) {
                     WorldTile wt = app.worldMapState.map.worldTiles[x][z];
-                    Vector3f col = Main.DB.map.tiles.get(wt.groundType).color;
+                    Vector3f col = Main.DB.genTiles.get(wt.groundType).color;
                     int color = ((0xff & 255) << 24) | ((0xff & (int) col.x) << 16) | ((0xff & (int) col.y) << 8) | (0xff & (int) col.z);
                     im.setRGB(x, z, color);
                 }

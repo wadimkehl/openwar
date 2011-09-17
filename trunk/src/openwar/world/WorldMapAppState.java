@@ -17,6 +17,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.TerrainPatch;
+import java.io.File;
 import openwar.DB.Settlement;
 import openwar.Main;
 
@@ -157,14 +158,11 @@ public class WorldMapAppState extends AbstractAppState {
             app.stop();
         }
 
-
-//            audioRenderer.playSource(new AudioNode(assetManager, "music/lol.ogg", false));
-
         app.getRootNode().attachChild(sceneNode);
         app.getCamera().setLocation(new Vector3f(map.width / 2, 15, map.height / 2));
         app.getCamera().lookAtDirection(new Vector3f(0f, -.9f, -1f).normalizeLocal(), Vector3f.UNIT_Y);
 
-        app.nifty.fromXml("ui/worldmap/worldmap.xml", "start");
+        app.nifty.fromXml("ui" + File.separator + "worldmap" + File.separator + "ui.xml", "start");
 
         initialized = true;
     }
