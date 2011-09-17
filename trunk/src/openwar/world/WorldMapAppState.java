@@ -5,9 +5,7 @@
 package openwar.world;
 
 import com.jme3.app.Application;
-import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
-import com.jme3.app.state.AppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.collision.CollisionResult;
 import com.jme3.input.KeyInput;
@@ -28,11 +26,11 @@ import openwar.Main;
  */
 public class WorldMapAppState extends AbstractAppState {
 
-    Node sceneNode;
-    boolean debug = false;
-    WorldMap map;
-    Main app;
-    private ActionListener actionListener = new ActionListener() {
+    public Node sceneNode;
+    public boolean debug = false;
+    public WorldMap map;
+    public Main app;
+    public ActionListener actionListener = new ActionListener() {
 
         @Override
         public void onAction(String name, boolean pressed, float tpf) {
@@ -44,13 +42,13 @@ public class WorldMapAppState extends AbstractAppState {
                 }
 
                 Vector3f pt = r.getContactPoint();
-                int x = (int) (pt.x);
-                int z = (int) (pt.z);
+                int x = (int) pt.x;
+                int z = (int) pt.z;
 
                 if (r.getGeometry() instanceof TerrainPatch) {
-                    System.out.println(map.worldTiles[x][z]);
                     map.deselectTiles();
                     map.selectTile(x, z);
+                    System.err.println(map.worldTiles[x][z]);
                     return;
 
                 }
@@ -82,8 +80,8 @@ public class WorldMapAppState extends AbstractAppState {
                     return;
                 }
                 Vector3f pt = r.getContactPoint();
-                int x = (int) (pt.x - pt.x / map.width);
-                int z = (int) (pt.z - pt.z / map.height);
+                int x = (int) pt.x;
+                int z = (int) pt.z;
 
 
                 // Check if we ordered a march command
@@ -106,29 +104,9 @@ public class WorldMapAppState extends AbstractAppState {
                     return;
                 }
 
-            } else if (name.equals("standard") && !pressed) {
-
-                map.displayStandardMaterial();
-
-            } else if (name.equals("l0") && !pressed) {
-
-                map.displayDebugMaterial(0);
-
-            } else if (name.equals("l1") && !pressed) {
-
-                map.displayDebugMaterial(1);
-
-            } else if (name.equals("l2") && !pressed) {
-
-                map.displayDebugMaterial(2);
-
             } else if (name.equals("lol") && !pressed) {
 
                 map.fadeSeason();
-
-            } else if (name.equals("cursor") && !pressed) {
-                app.getInputManager().setCursorVisible(app.getFlyByCamera().isEnabled());
-                app.getFlyByCamera().setEnabled(!app.getFlyByCamera().isEnabled());
 
             }
         }
@@ -162,33 +140,10 @@ public class WorldMapAppState extends AbstractAppState {
 
         app = main;
 
-        app.getFlyByCamera().setMoveSpeed(50);
+ 
 
-        app.getInputManager().addMapping("ScreenShot", new KeyTrigger(KeyInput.KEY_P));
-        app.getInputManager().addMapping("standard", new KeyTrigger(KeyInput.KEY_1));
-        app.getInputManager().addMapping("l0", new KeyTrigger(KeyInput.KEY_2));
-        app.getInputManager().addMapping("l1", new KeyTrigger(KeyInput.KEY_3));
-        app.getInputManager().addMapping("l2", new KeyTrigger(KeyInput.KEY_4));
-        app.getInputManager().addMapping("mouse_left", new MouseButtonTrigger(0));
-        app.getInputManager().addMapping("mouse_right", new MouseButtonTrigger(1));
-        app.getInputManager().addMapping("cursor", new KeyTrigger(KeyInput.KEY_X));
-
-        app.getInputManager().addMapping("map_strafeup", new KeyTrigger(KeyInput.KEY_U));
-        app.getInputManager().addMapping("map_strafedown", new KeyTrigger(KeyInput.KEY_J));
-        app.getInputManager().addMapping("map_strafeleft", new KeyTrigger(KeyInput.KEY_H));
-        app.getInputManager().addMapping("map_straferight", new KeyTrigger(KeyInput.KEY_K));
-
-        app.getInputManager().addMapping("lol", new KeyTrigger(KeyInput.KEY_0));
-
-
-        app.getInputManager().addListener(actionListener, "standard");
         app.getInputManager().addListener(actionListener, "mouse_left");
         app.getInputManager().addListener(actionListener, "mouse_right");
-        app.getInputManager().addListener(actionListener, "cursor");
-        app.getInputManager().addListener(actionListener, "l0");
-        app.getInputManager().addListener(actionListener, "l1");
-        app.getInputManager().addListener(actionListener, "l2");
-        app.getInputManager().addListener(actionListener, "lol");
 
 
         app.getInputManager().addListener(analogListener, "map_strafeup");

@@ -10,11 +10,12 @@ import com.jme3.math.Vector3f;
  *
  * @author kehl
  */
-public class GenericTile {
-    
-    public int type, cost,textureid;
-    public boolean walkable, sailable;
+public class Climate {
+
     public String name;
+    public String refName;
     public Vector3f color;
-    
+
+    public Climate() {
+    }
 }

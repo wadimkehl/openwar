@@ -41,37 +41,21 @@ public class Map {
         }
     }
 
-    public class Climate {
-
-        public String name;
-        public String refName;
-        public Vector3f color;
-
-        public Climate() {
-        }
-    }
 
     public Terrain terrain;
-    public ArrayList<Climate> climates;
-    public HashMap<Integer,GenericTile> tiles;
-    public Texture heightmapTex,regionsTex,climatesTex,typesTex;
+    public HashMap<Integer, GenericTile> tiles;
+    public Texture heightmapTex, regionsTex, climatesTex, typesTex;
     public ArrayList<Texture> tileTextures;
-    public int tilesCount;
+    public ArrayList<Float> tileTextures_scales;
+    public int tilesTexturesCount;
 
     public Map() {
         terrain = new Terrain();
-        climates = new ArrayList<Climate>();
-        tiles = new HashMap<Integer,GenericTile>();
+        tiles = new HashMap<Integer, GenericTile>();
         tileTextures = new ArrayList<Texture>();
+        tileTextures_scales = new ArrayList<Float>();
+
     }
 
-    public void addClimate(String n, String r, Vector3f c) {
-        Climate clim = new Climate();
-        clim.name = n;
-        clim.refName = r;
-        clim.color = c;
-        climates.add(clim);
-    }
-
-   
+  
 }

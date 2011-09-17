@@ -8,12 +8,10 @@ package openwar.DB;
  *
  * @author kehl
  */
-import com.jme3.app.Application;
-import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
 import com.jme3.asset.TextureKey;
-import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
+import com.jme3.texture.Image.Format;
 import java.io.File;
 import java.util.Locale;
 import java.util.Scanner;
@@ -21,8 +19,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import openwar.DB.GenericBuilding;
-import openwar.DB.GenericFaction;
 import openwar.Main;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -120,7 +116,7 @@ public class XMLDataLoader {
             entity.maxMovePoints = Integer.parseInt(unit.getAttribute("maxmovepoints"));
             String image = "units" + File.separator + entity.refName + File.separator + unit.getAttribute("image");
             entity.image = assets.loadTexture(image);
-            app.DB.genUnits.put(entity.refName, entity);
+            Main.DB.genUnits.put(entity.refName, entity);
             logger.log(Level.WARNING, "*Unit loaded: {0} *", entity.refName);
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Unit CANNOT be loaded: {0}", entity.refName);
@@ -148,7 +144,7 @@ public class XMLDataLoader {
                 if (!"".equals(l.getAttribute("model"))) {
                     entity.levels.get(i).model = assets.loadModel(s + l.getAttribute("model"));
                 }
-                app.DB.genBuildings.put(entity.refName, entity);
+                Main.DB.genBuildings.put(entity.refName, entity);
 
             }
             logger.log(Level.WARNING, "*Building loaded: {0} *", entity.refName);
@@ -191,7 +187,7 @@ public class XMLDataLoader {
                 Element l = (Element) females.item(i);
                 entity.namesFemale.add(l.getAttribute("name"));
             }
-            app.DB.genFactions.put(entity.refName, entity);
+            Main.DB.genFactions.put(entity.refName, entity);
             logger.log(Level.WARNING, "*Faction loaded: {0} *", entity.refName);
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Faction CANNOT be loaded: {0}", entity.refName);
@@ -206,16 +202,17 @@ public class XMLDataLoader {
             Element regions = (Element) root.getElementsByTagName("regions").item(0);
 
 
-            app.DB.map.tilesCount = Integer.parseInt(textures.getAttribute("tiletextures"));
+            Main.DB.map.tilesTexturesCount = Integer.parseInt(textures.getAttribute("tiletextures"));
             NodeList tiletexs = textures.getElementsByTagName("tile");
             NodeList basetexs = textures.getElementsByTagName("base");
 
 
             for (int i = 0; i < tiletexs.getLength(); i++) {
                 Element l = (Element) tiletexs.item(i);
-                app.DB.map.tileTextures.add(Integer.parseInt(l.getAttribute("id")),
+                Main.DB.map.tileTextures.add(Integer.parseInt(l.getAttribute("id")),
                         assets.loadTexture("map" + File.separator + "textures"
                         + File.separator + l.getAttribute("texture")));
+                Main.DB.map.tileTextures_scales.add(Float.parseFloat(l.getAttribute("scale")));
             }
 
 
@@ -224,16 +221,21 @@ public class XMLDataLoader {
                 String path = "map" + File.separator + "base"
                         + File.separator + l.getAttribute("texture");
                 if ("regions".equals(l.getAttribute("name"))) {
-                    app.DB.map.regionsTex = assets.loadTexture(new TextureKey(path, true));
+                    Main.DB.map.regionsTex = assets.loadTexture(new TextureKey(path, true));
                 } else if ("types".equals(l.getAttribute("name"))) {
-                    app.DB.map.typesTex = assets.loadTexture(new TextureKey(path, true));
+                    Main.DB.map.typesTex = assets.loadTexture(new TextureKey(path, true));
                 } else if ("climates".equals(l.getAttribute("name"))) {
-                    app.DB.map.climatesTex = assets.loadTexture(new TextureKey(path, true));
+                    Main.DB.map.climatesTex = assets.loadTexture(new TextureKey(path, true));
                 } else if ("heights".equals(l.getAttribute("name"))) {
-                    app.DB.map.heightmapTex = assets.loadTexture(new TextureKey(path, true));
+                    Main.DB.map.heightmapTex = assets.loadTexture(new TextureKey(path, true));
 
                 }
             }
+
+            Main.DB.map.regionsTex.getImage().setFormat(Format.RGB8);
+            Main.DB.map.heightmapTex.getImage().setFormat(Format.RGB8);
+            Main.DB.map.typesTex.getImage().setFormat(Format.RGB8);
+            Main.DB.map.climatesTex.getImage().setFormat(Format.RGB8);
 
 
 
@@ -249,31 +251,36 @@ public class XMLDataLoader {
                 tile.walkable = Boolean.parseBoolean(l.getAttribute("walkable"));
                 tile.sailable = Boolean.parseBoolean(l.getAttribute("sailable"));
                 tile.textureid = Integer.parseInt(l.getAttribute("textureid"));
-                app.DB.map.tiles.put(tile.type, tile);
+                Main.DB.map.tiles.put(tile.type, tile);
             }
 
 
 
 
             Element hm = (Element) terrain.getElementsByTagName("heightmap").item(0);
-            app.DB.map.terrain.heightmap.factor0 = Float.parseFloat(hm.getAttribute("factor0"));
-            app.DB.map.terrain.heightmap.factor1 = Float.parseFloat(hm.getAttribute("factor1"));
-            app.DB.map.terrain.heightmap.offset = Float.parseFloat(hm.getAttribute("offset"));
+            Main.DB.map.terrain.heightmap.factor0 = Float.parseFloat(hm.getAttribute("factor0"));
+            Main.DB.map.terrain.heightmap.factor1 = Float.parseFloat(hm.getAttribute("factor1"));
+            Main.DB.map.terrain.heightmap.offset = Float.parseFloat(hm.getAttribute("offset"));
 
             Element sun = (Element) terrain.getElementsByTagName("sun").item(0);
             Scanner s = new Scanner(sun.getAttribute("color"));
-            app.DB.map.terrain.sun.color = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
+            Main.DB.map.terrain.sun.color = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
             s = new Scanner(sun.getAttribute("direction"));
             s.useLocale(Locale.ENGLISH);
-            app.DB.map.terrain.sun.direction =
+            Main.DB.map.terrain.sun.direction =
                     new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
 
             NodeList c = climates.getElementsByTagName("climate");
             for (int i = 0; i < c.getLength(); i++) {
                 Element l = (Element) c.item(i);
+
+                Climate cl = new Climate();
                 s = new Scanner(l.getAttribute("color"));
-                app.DB.map.addClimate(l.getAttribute("name"), l.getAttribute("refname"),
-                        new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat()));
+                cl.name = l.getAttribute("name");
+                cl.refName = l.getAttribute("refname");
+                cl.color = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
+                Main.DB.climates.add(cl);
+                Main.DB.hashedClimates.put(cl.refName, cl);
 
             }
 
@@ -287,8 +294,8 @@ public class XMLDataLoader {
                 s = new Scanner(r.getAttribute("color"));
                 reg.color = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
                 reg.owner = r.getAttribute("owner");
-                app.DB.regions.add(reg);
-                app.DB.hashedRegions.put(reg.refName, reg);
+                Main.DB.regions.add(reg);
+                Main.DB.hashedRegions.put(reg.refName, reg);
 
                 if (r.getElementsByTagName("settlement").getLength() > 0) {
                     Element sett = (Element) r.getElementsByTagName("settlement").item(0);
@@ -299,8 +306,8 @@ public class XMLDataLoader {
                     se.level = Integer.parseInt(sett.getAttribute("level"));
                     se.population = Integer.parseInt(sett.getAttribute("population"));
                     reg.settlement = se;
-                    app.DB.settlements.add(se);
-                    app.DB.hashedSettlements.put(reg.refName, se);
+                    Main.DB.settlements.add(se);
+                    Main.DB.hashedSettlements.put(reg.refName, se);
                 }
 
 
@@ -316,14 +323,16 @@ public class XMLDataLoader {
     public boolean loadAll() {
 
         try {
-            logger.log(Level.WARNING, "Loading map");
-            loadMultiData("map");
+            
             logger.log(Level.WARNING, "Loading factions");
             loadMultiData("factions");
             logger.log(Level.WARNING, "Loading units");
             loadMultiData("units");
             logger.log(Level.WARNING, "Loading buildings");
             loadMultiData("buildings");
+            
+            logger.log(Level.WARNING, "Loading map");
+            loadMultiData("map");
 
         } catch (Exception E) {
             return false;
