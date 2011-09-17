@@ -66,7 +66,7 @@ public class WorldMap {
             color = col;
         }
     };
-    Main app;
+    Main game;
     public int width, height;
     public TerrainQuad terrain;
     BulletAppState bulletState;
@@ -88,7 +88,7 @@ public class WorldMap {
     private static final Logger logger = Logger.getLogger(WorldMap.class.getName());
 
     public WorldMap(Main app, Node scene) {
-        this.app = app;
+        this.game = app;
         this.bulletState = app.bulletState;
         this.assetManager = app.getAssetManager();
         this.rootScene = scene;
@@ -137,13 +137,19 @@ public class WorldMap {
         return true;
     }
 
-    public void createGridTexture() {
+    public void showGrid(boolean on) {
+        int color;
+        if (on) {
+            color = Integer.parseInt("7F00007F", 16);
+        } else {
+            color = Integer.parseInt("000000", 16);
+        }
         int grid_res = 32;
         ByteBuffer buf = ByteBuffer.allocateDirect(grid_res * grid_res * 4);
         for (int y = 0; y < grid_res; y++) {
             for (int x = 0; x < grid_res; x++) {
                 if (x == 0 || y == 0 || x == grid_res - 1 || y == grid_res - 1) {
-                    buf.putInt(Integer.parseInt("7F00007F", 16));
+                    buf.putInt(color);
                 } else {
                     buf.putInt(Integer.parseInt("000000", 16));
 
@@ -175,16 +181,13 @@ public class WorldMap {
         if (!createKeyTextures()) {
             return false;
         }
-        createGridTexture();
-
-
 
         // Create debug material to display ground types, regions, climates etc.
         matTerrainDebug = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
 
         // Create mesh data with material and place its north-western edge to the origin
-        heightMap = new WorldHeightMap(Main.DB.heightmapTex,Main.DB.heightmapParams.x,
-                Main.DB.heightmapParams.y,Main.DB.heightmapParams.z);
+        heightMap = new WorldHeightMap(Main.DB.heightmapTex, Main.DB.heightmapParams.x,
+                Main.DB.heightmapParams.y, Main.DB.heightmapParams.z);
         heightMap.load(false, false);
         terrain = new TerrainQuad("terrain", 32, heightMap.getSize(), heightMap.getHeightMap());
         terrain.setMaterial(matTerrain);
@@ -222,7 +225,7 @@ public class WorldMap {
                 if (region != null && climate != null && tile != null) {
                     worldTiles[i][height - 1 - j] = new WorldTile(i, height - 1 - j, type, tile.cost, region.refName, climate.refName);
                 } else {
-                    logger.log(Level.SEVERE,"Error at ({0},{1}) ", new Object[]{i, height - 1 - j});                   
+                    logger.log(Level.SEVERE, "Error at ({0},{1}) ", new Object[]{i, height - 1 - j});
                     return false;
                 }
             }
@@ -297,7 +300,7 @@ public class WorldMap {
         bloom.setExposurePower(4f);
         fpp.addFilter(bloom);
 
-        app.getViewPort().addProcessor(fpp);
+        game.getViewPort().addProcessor(fpp);
 
 
         selectedTilesOverlay = new Geometry("overlay");
