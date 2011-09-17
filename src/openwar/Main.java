@@ -24,6 +24,7 @@ import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
 import de.lessvoid.nifty.Nifty;
+import java.io.File;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,7 +32,9 @@ import openwar.DB.GameDatabase;
 
 public class Main extends SimpleApplication {
 
-    public String locatorRoot = "data/";
+    static public String version = "r1";
+    
+    public String locatorRoot = "data" + File.separator;
     ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(4);
     public Nifty nifty;
     public BulletAppState bulletState = new BulletAppState();
@@ -45,10 +48,9 @@ public class Main extends SimpleApplication {
         Main app = new Main();
         Logger.getLogger("").setLevel(Level.WARNING);
 
-        app.setShowSettings(false);
+        app.setShowSettings(true);
         app.setSettings(new AppSettings(true));
-        app.settings.setTitle("OpenWar");
-        app.settings.setVSync(true);
+        app.settings.setTitle("openwar    " + version);
         app.settings.setFrameRate(30);
         app.start();
 
@@ -68,8 +70,8 @@ public class Main extends SimpleApplication {
 
 
         guiNode.detachAllChildren();
-        NiftyJmeDisplay niftyDisplay =
-                new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
+        NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
+                assetManager, inputManager, audioRenderer, guiViewPort);
         nifty = niftyDisplay.getNifty();
         guiViewPort.addProcessor(niftyDisplay);
 

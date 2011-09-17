@@ -30,8 +30,8 @@ import openwar.Main;
         @Override
         public String toString() {
             return super.toString()
-                    + " Type: " + Main.DB.map.tiles.get(groundType).name
+                    + " Type: " + Main.DB.genTiles.get(groundType).name
                     + "     Region: " + Main.DB.hashedRegions.get(region).name
-                    + "     Climate: " + climate;
+                    + "     Climate: " + Main.DB.hashedClimates.get(climate).name;
         }
     };

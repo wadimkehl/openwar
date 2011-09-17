@@ -202,17 +202,17 @@ public class XMLDataLoader {
             Element regions = (Element) root.getElementsByTagName("regions").item(0);
 
 
-            Main.DB.map.tilesTexturesCount = Integer.parseInt(textures.getAttribute("tiletextures"));
+            Main.DB.tilesTexturesCount = Integer.parseInt(textures.getAttribute("tiletextures"));
             NodeList tiletexs = textures.getElementsByTagName("tile");
             NodeList basetexs = textures.getElementsByTagName("base");
 
 
             for (int i = 0; i < tiletexs.getLength(); i++) {
                 Element l = (Element) tiletexs.item(i);
-                Main.DB.map.tileTextures.add(Integer.parseInt(l.getAttribute("id")),
+                Main.DB.tileTextures.add(Integer.parseInt(l.getAttribute("id")),
                         assets.loadTexture("map" + File.separator + "textures"
                         + File.separator + l.getAttribute("texture")));
-                Main.DB.map.tileTextures_scales.add(Float.parseFloat(l.getAttribute("scale")));
+                Main.DB.tileTextures_scales.add(Float.parseFloat(l.getAttribute("scale")));
             }
 
 
@@ -221,21 +221,21 @@ public class XMLDataLoader {
                 String path = "map" + File.separator + "base"
                         + File.separator + l.getAttribute("texture");
                 if ("regions".equals(l.getAttribute("name"))) {
-                    Main.DB.map.regionsTex = assets.loadTexture(new TextureKey(path, true));
+                    Main.DB.regionsTex = assets.loadTexture(new TextureKey(path, true));
                 } else if ("types".equals(l.getAttribute("name"))) {
-                    Main.DB.map.typesTex = assets.loadTexture(new TextureKey(path, true));
+                    Main.DB.typesTex = assets.loadTexture(new TextureKey(path, true));
                 } else if ("climates".equals(l.getAttribute("name"))) {
-                    Main.DB.map.climatesTex = assets.loadTexture(new TextureKey(path, true));
+                    Main.DB.climatesTex = assets.loadTexture(new TextureKey(path, true));
                 } else if ("heights".equals(l.getAttribute("name"))) {
-                    Main.DB.map.heightmapTex = assets.loadTexture(new TextureKey(path, true));
+                    Main.DB.heightmapTex = assets.loadTexture(new TextureKey(path, true));
 
                 }
             }
 
-            Main.DB.map.regionsTex.getImage().setFormat(Format.RGB8);
-            Main.DB.map.heightmapTex.getImage().setFormat(Format.RGB8);
-            Main.DB.map.typesTex.getImage().setFormat(Format.RGB8);
-            Main.DB.map.climatesTex.getImage().setFormat(Format.RGB8);
+            Main.DB.regionsTex.getImage().setFormat(Format.RGB8);
+            Main.DB.heightmapTex.getImage().setFormat(Format.RGB8);
+            Main.DB.typesTex.getImage().setFormat(Format.RGB8);
+            Main.DB.climatesTex.getImage().setFormat(Format.RGB8);
 
 
 
@@ -251,24 +251,24 @@ public class XMLDataLoader {
                 tile.walkable = Boolean.parseBoolean(l.getAttribute("walkable"));
                 tile.sailable = Boolean.parseBoolean(l.getAttribute("sailable"));
                 tile.textureid = Integer.parseInt(l.getAttribute("textureid"));
-                Main.DB.map.tiles.put(tile.type, tile);
+                Main.DB.genTiles.put(tile.type, tile);
             }
 
 
 
 
             Element hm = (Element) terrain.getElementsByTagName("heightmap").item(0);
-            Main.DB.map.terrain.heightmap.factor0 = Float.parseFloat(hm.getAttribute("factor0"));
-            Main.DB.map.terrain.heightmap.factor1 = Float.parseFloat(hm.getAttribute("factor1"));
-            Main.DB.map.terrain.heightmap.offset = Float.parseFloat(hm.getAttribute("offset"));
+            Main.DB.heightmapParams = new Vector3f();
+            Main.DB.heightmapParams.x = Float.parseFloat(hm.getAttribute("factor0"));
+            Main.DB.heightmapParams.y = Float.parseFloat(hm.getAttribute("factor1"));
+            Main.DB.heightmapParams.z = Float.parseFloat(hm.getAttribute("offset"));
 
             Element sun = (Element) terrain.getElementsByTagName("sun").item(0);
             Scanner s = new Scanner(sun.getAttribute("color"));
-            Main.DB.map.terrain.sun.color = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
+            Main.DB.sun_color = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
             s = new Scanner(sun.getAttribute("direction"));
             s.useLocale(Locale.ENGLISH);
-            Main.DB.map.terrain.sun.direction =
-                    new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
+            Main.DB.sun_direction= new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
 
             NodeList c = climates.getElementsByTagName("climate");
             for (int i = 0; i < c.getLength(); i++) {

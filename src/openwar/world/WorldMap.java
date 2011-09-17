@@ -161,13 +161,13 @@ public class WorldMap {
 
         // Create standard material with all textures and needed values
         matTerrain = new Material(assetManager, "materials/TerrainLighting.j3md");
-        matTerrain.setTexture("DiffuseMap", Main.DB.map.tileTextures.get(0));
-        Main.DB.map.tileTextures.get(0).setWrap(Texture.WrapMode.Repeat);
-        matTerrain.setFloat("DiffuseMap_0_scale", Main.DB.map.tileTextures_scales.get(0));
-        for (int i = 1; i < Main.DB.map.tilesTexturesCount; i++) {
-            matTerrain.setTexture("DiffuseMap_" + i, Main.DB.map.tileTextures.get(i));
-            matTerrain.setFloat("DiffuseMap_" + i + "_scale", Main.DB.map.tileTextures_scales.get(i));
-            Main.DB.map.tileTextures.get(i).setWrap(Texture.WrapMode.Repeat);
+        matTerrain.setTexture("DiffuseMap", Main.DB.tileTextures.get(0));
+        Main.DB.tileTextures.get(0).setWrap(Texture.WrapMode.Repeat);
+        matTerrain.setFloat("DiffuseMap_0_scale", Main.DB.tileTextures_scales.get(0));
+        for (int i = 1; i < Main.DB.tilesTexturesCount; i++) {
+            matTerrain.setTexture("DiffuseMap_" + i, Main.DB.tileTextures.get(i));
+            matTerrain.setFloat("DiffuseMap_" + i + "_scale", Main.DB.tileTextures_scales.get(i));
+            Main.DB.tileTextures.get(i).setWrap(Texture.WrapMode.Repeat);
 
         }
 
@@ -183,11 +183,8 @@ public class WorldMap {
         matTerrainDebug = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
 
         // Create mesh data with material and place its north-western edge to the origin
-        heightMap = new WorldHeightMap(Main.DB.map.heightmapTex,
-                Main.DB.map.terrain.heightmap.factor0,
-                Main.DB.map.terrain.heightmap.factor1,
-                Main.DB.map.terrain.heightmap.offset);
-
+        heightMap = new WorldHeightMap(Main.DB.heightmapTex,Main.DB.heightmapParams.x,
+                Main.DB.heightmapParams.y,Main.DB.heightmapParams.z);
         heightMap.load(false, false);
         terrain = new TerrainQuad("terrain", 32, heightMap.getSize(), heightMap.getHeightMap());
         terrain.setMaterial(matTerrain);
@@ -200,9 +197,9 @@ public class WorldMap {
 
         // Create worldTiles array and read according region and climate from images
         worldTiles = new WorldTile[width][height];
-        ByteBuffer types = Main.DB.map.typesTex.getImage().getData(0);
-        ByteBuffer regs = Main.DB.map.regionsTex.getImage().getData(0);
-        ByteBuffer clis = Main.DB.map.climatesTex.getImage().getData(0);
+        ByteBuffer types = Main.DB.typesTex.getImage().getData(0);
+        ByteBuffer regs = Main.DB.regionsTex.getImage().getData(0);
+        ByteBuffer clis = Main.DB.climatesTex.getImage().getData(0);
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 int base = (j * width + i) * 3;
@@ -221,7 +218,7 @@ public class WorldMap {
                 int type = RGBtoGroundType(b, g, r);
                 Climate climate = getClimateByRGB(r2, g2, b2);
                 Region region = getRegionByRGB(new Vector3f(r1, g1, b1));
-                GenericTile tile = Main.DB.map.tiles.get(type);
+                GenericTile tile = Main.DB.genTiles.get(type);
                 if (region != null && climate != null && tile != null) {
                     worldTiles[i][height - 1 - j] = new WorldTile(i, height - 1 - j, type, tile.cost, region.refName, climate.refName);
                 } else {
@@ -260,8 +257,8 @@ public class WorldMap {
     // Create the whole world map
     public boolean createWorldMap() {
 
-        width = Main.DB.map.typesTex.getImage().getWidth();
-        height = Main.DB.map.typesTex.getImage().getHeight();
+        width = Main.DB.typesTex.getImage().getWidth();
+        height = Main.DB.typesTex.getImage().getHeight();
 
 
         if (!createWorldTiles()) {
@@ -279,10 +276,10 @@ public class WorldMap {
 
         DirectionalLight dlight = new DirectionalLight();
         dlight.setColor(new ColorRGBA(
-                Main.DB.map.terrain.sun.color.x / 255f,
-                Main.DB.map.terrain.sun.color.y / 255f,
-                Main.DB.map.terrain.sun.color.z / 255f, 1));
-        dlight.setDirection(Main.DB.map.terrain.sun.direction);
+                Main.DB.sun_color.x / 255f,
+                Main.DB.sun_color.y / 255f,
+                Main.DB.sun_color.z / 255f, 1));
+        dlight.setDirection(Main.DB.sun_direction);
         scene.addLight(dlight);
 
         fpp = new FilterPostProcessor(assetManager);
@@ -501,7 +498,7 @@ public class WorldMap {
     }
 
     public boolean walkableTile(int x, int z) {
-        return Main.DB.map.tiles.get(worldTiles[x][z].groundType).walkable;
+        return Main.DB.genTiles.get(worldTiles[x][z].groundType).walkable;
     }
 
     public boolean sailableTile(Tile t) {
@@ -509,7 +506,7 @@ public class WorldMap {
     }
 
     public boolean sailableTile(int x, int z) {
-        return Main.DB.map.tiles.get(worldTiles[x][z].groundType).sailable;
+        return Main.DB.genTiles.get(worldTiles[x][z].groundType).sailable;
     }
 
     public void marchTo(Army a, Tile t) {
@@ -559,7 +556,7 @@ public class WorldMap {
     }
 
     public int RGBtoGroundType(Vector3f col) {
-        for (openwar.DB.GenericTile t : Main.DB.map.tiles.values()) {
+        for (openwar.DB.GenericTile t : Main.DB.genTiles.values()) {
             if (t.color.equals(col)) {
                 return t.type;
             }
@@ -572,7 +569,7 @@ public class WorldMap {
     }
 
     public int RGBtoVisualGroundType(Vector3f col) {
-        for (openwar.DB.GenericTile t : Main.DB.map.tiles.values()) {
+        for (openwar.DB.GenericTile t : Main.DB.genTiles.values()) {
             if (t.color.equals(col)) {
                 return t.textureid;
             }
@@ -581,7 +578,7 @@ public class WorldMap {
     }
 
     public int getVisualGroundType(int groundtype) {
-        for (openwar.DB.GenericTile t : Main.DB.map.tiles.values()) {
+        for (openwar.DB.GenericTile t : Main.DB.genTiles.values()) {
             if (t.type == groundtype) {
                 return t.textureid;
             }
@@ -590,7 +587,7 @@ public class WorldMap {
     }
 
     public int getGroundTypeCost(int type) {
-        openwar.DB.GenericTile t = Main.DB.map.tiles.get(type);
+        openwar.DB.GenericTile t = Main.DB.genTiles.get(type);
         if (t != null) {
             return t.cost;
         }
@@ -599,7 +596,7 @@ public class WorldMap {
     }
 
     public boolean isWalkable(int type) {
-        openwar.DB.GenericTile t = Main.DB.map.tiles.get(type);
+        openwar.DB.GenericTile t = Main.DB.genTiles.get(type);
         if (t != null) {
             return t.walkable;
         }
@@ -608,7 +605,7 @@ public class WorldMap {
     }
 
     public boolean isSailable(int type) {
-        openwar.DB.GenericTile t = Main.DB.map.tiles.get(type);
+        openwar.DB.GenericTile t = Main.DB.genTiles.get(type);
         if (t != null) {
             return t.sailable;
         }
@@ -617,7 +614,7 @@ public class WorldMap {
 
     public String getGroundTypeString(int type) {
 
-        openwar.DB.GenericTile t = Main.DB.map.tiles.get(type);
+        openwar.DB.GenericTile t = Main.DB.genTiles.get(type);
         if (t != null) {
             return t.name;
         }
