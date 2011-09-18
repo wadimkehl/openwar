@@ -21,7 +21,7 @@
             <panel height="80%"/> 
             <panel childLayout="center">
                 
-                <text id="test" align="center" valign="center" text="LOL" font="ui/font/palatino.fnt">
+                <text id="test" align="center" valign="center" text="LOL" font="ui/fonts/palatino.fnt">
             
             
                     <effect>
