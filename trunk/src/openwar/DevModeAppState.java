@@ -8,9 +8,8 @@ import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.collision.CollisionResult;
-import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
-import com.jme3.input.controls.KeyTrigger;
+import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
 import com.jme3.terrain.geomipmap.TerrainPatch;
 import java.awt.image.BufferedImage;
@@ -18,7 +17,6 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import openwar.DB.Region;
 import openwar.world.WorldTile;
 
 /**
@@ -27,10 +25,11 @@ import openwar.world.WorldTile;
  */
 public class DevModeAppState extends AbstractAppState {
 
-    Main app;
+    Main game;
     String currTexture = "types";
     int currType;
     boolean drawing;
+    Material matTerrainDev;
     private static final Logger logger = Logger.getLogger(DevModeAppState.class.getName());
     public ActionListener actionListener = new ActionListener() {
 
@@ -38,7 +37,7 @@ public class DevModeAppState extends AbstractAppState {
         public void onAction(String name, boolean pressed, float tpf) {
 
             if (name.equals("mouse_left") && !pressed) {
-                CollisionResult r = app.getNiftyMousePick(app.worldMapState.sceneNode);
+                CollisionResult r = game.getNiftyMousePick(game.worldMapState.sceneNode);
                 if (r == null) {
                     return;
                 }
@@ -52,8 +51,8 @@ public class DevModeAppState extends AbstractAppState {
                     if (!drawing) {
                         return;
                     }
-                    app.worldMapState.map.setWorldTile(x, z, currType);
-                    app.worldMapState.map.createKeyTextures();
+                    game.worldMapState.map.setWorldTile(x, z, currType);
+                    game.worldMapState.map.createKeyTextures();
                     return;
 
                 }
@@ -74,7 +73,7 @@ public class DevModeAppState extends AbstractAppState {
 
             } else if (name.equals("draw_mode") && !pressed) {
                 drawing = !drawing;
-                System.err.println("Drawing: " + drawing);
+                System.err.println("Drawing mode " + drawing);
 
 
 
@@ -132,12 +131,17 @@ public class DevModeAppState extends AbstractAppState {
 
 
             } else if (name.equals("cursor") && !pressed) {
-                app.getInputManager().setCursorVisible(app.getFlyByCamera().isEnabled());
-                app.getFlyByCamera().setEnabled(!app.getFlyByCamera().isEnabled());
+                game.getInputManager().setCursorVisible(game.getFlyByCamera().isEnabled());
+                game.getFlyByCamera().setEnabled(!game.getFlyByCamera().isEnabled());
             } else if (name.equals("dump") && !pressed) {
                 dumpImage();
-            }
+            } else if (name.equals("show_grid") && !pressed) {
+                
+                matTerrainDev.setTexture("GridMap", game.worldMapState.map.gridImage);
+                matTerrainDev.setFloat("GridMap_scale",
+                        Math.min(game.worldMapState.map.width, game.worldMapState.map.height));
 
+            }
 
         }
     };
@@ -148,24 +152,29 @@ public class DevModeAppState extends AbstractAppState {
     }
 
     public void initialize(AppStateManager stateManager, Main main) {
-        app = main;
+        game = main;
 
-     
 
-        app.getInputManager().addListener(actionListener, "texture_types");
-        app.getInputManager().addListener(actionListener, "texture_regions");
-        app.getInputManager().addListener(actionListener, "texture_climates");
-        app.getInputManager().addListener(actionListener, "draw_mode");
-        app.getInputManager().addListener(actionListener, "previousType");
-        app.getInputManager().addListener(actionListener, "nextType");
-        app.getInputManager().addListener(actionListener, "cursor");
-        app.getInputManager().addListener(actionListener, "mouse_left");
-        app.getInputManager().addListener(actionListener, "mouse_right");
-        app.getInputManager().addListener(actionListener, "dump");
+
+        game.getInputManager().addListener(actionListener, "texture_types");
+        game.getInputManager().addListener(actionListener, "texture_regions");
+        game.getInputManager().addListener(actionListener, "texture_climates");
+        game.getInputManager().addListener(actionListener, "draw_mode");
+        game.getInputManager().addListener(actionListener, "previousType");
+        game.getInputManager().addListener(actionListener, "nextType");
+        game.getInputManager().addListener(actionListener, "cursor");
+        game.getInputManager().addListener(actionListener, "mouse_left");
+        game.getInputManager().addListener(actionListener, "mouse_right");
+        game.getInputManager().addListener(actionListener, "dump");
+        game.getInputManager().addListener(actionListener, "show_grid");
+
 
 
 
         initialized = true;
+
+        // Create dev terrain material to display ground types, regions, climates etc.
+        matTerrainDev = new Material(game.getAssetManager(), "materials/Unshaded.j3md");
 
 
     }
@@ -174,27 +183,27 @@ public class DevModeAppState extends AbstractAppState {
     public void displayTerrainTexture(String t) {
         currTexture = t;
         if ("types".equals(t)) {
-            app.worldMapState.map.terrain.setMaterial(app.worldMapState.map.matTerrain);
+            game.worldMapState.map.terrain.setMaterial(game.worldMapState.map.matTerrain);
             return;
         }
         if ("regions".equals(t)) {
-            app.worldMapState.map.matTerrainDebug.setTexture("ColorMap", Main.DB.regionsTex);
+            matTerrainDev.setTexture("ColorMap", Main.DB.regionsTex);
         } else if ("climates".equals(t)) {
-            app.worldMapState.map.matTerrainDebug.setTexture("ColorMap", Main.DB.climatesTex);
+            matTerrainDev.setTexture("ColorMap", Main.DB.climatesTex);
         }
-        app.worldMapState.map.terrain.setMaterial(app.worldMapState.map.matTerrainDebug);
+        game.worldMapState.map.terrain.setMaterial(matTerrainDev);
 
     }
 
     public void dumpImage() {
 
-        BufferedImage im = new BufferedImage(app.worldMapState.map.width,
-                app.worldMapState.map.height, 1);
+        BufferedImage im = new BufferedImage(game.worldMapState.map.width,
+                game.worldMapState.map.height, 1);
 
         if ("types".equals(currTexture)) {
-            for (int z = 0; z < app.worldMapState.map.height; z++) {
-                for (int x = 0; x < app.worldMapState.map.width; x++) {
-                    WorldTile wt = app.worldMapState.map.worldTiles[x][z];
+            for (int z = 0; z < game.worldMapState.map.height; z++) {
+                for (int x = 0; x < game.worldMapState.map.width; x++) {
+                    WorldTile wt = game.worldMapState.map.worldTiles[x][z];
                     Vector3f col = Main.DB.genTiles.get(wt.groundType).color;
                     int color = ((0xff & 255) << 24) | ((0xff & (int) col.x) << 16) | ((0xff & (int) col.y) << 8) | (0xff & (int) col.z);
                     im.setRGB(x, z, color);
@@ -203,10 +212,10 @@ public class DevModeAppState extends AbstractAppState {
         }
 
         if ("regions".equals(currTexture)) {
-            for (int z = 0; z < app.worldMapState.map.height; z++) {
-                for (int x = 0; x < app.worldMapState.map.width; x++) {
-                   Vector3f col = Main.DB.hashedRegions.get(
-                           app.worldMapState.map.worldTiles[x][z].region).color;
+            for (int z = 0; z < game.worldMapState.map.height; z++) {
+                for (int x = 0; x < game.worldMapState.map.width; x++) {
+                    Vector3f col = Main.DB.hashedRegions.get(
+                            game.worldMapState.map.worldTiles[x][z].region).color;
                     int color = ((0xff & 255) << 24) | ((0xff & (int) col.x) << 16) | ((0xff & (int) col.y) << 8) | (0xff & (int) col.z);
                     im.setRGB(x, z, color);
                 }
@@ -214,10 +223,10 @@ public class DevModeAppState extends AbstractAppState {
         }
 
         if ("climates".equals(currTexture)) {
-            for (int z = 0; z < app.worldMapState.map.height; z++) {
-                for (int x = 0; x < app.worldMapState.map.width; x++) {
-                     Vector3f col = Main.DB.hashedClimates.get(
-                           app.worldMapState.map.worldTiles[x][z].climate).color;
+            for (int z = 0; z < game.worldMapState.map.height; z++) {
+                for (int x = 0; x < game.worldMapState.map.width; x++) {
+                    Vector3f col = Main.DB.hashedClimates.get(
+                            game.worldMapState.map.worldTiles[x][z].climate).color;
                     int color = ((0xff & 255) << 24) | ((0xff & (int) col.x) << 16) | ((0xff & (int) col.y) << 8) | (0xff & (int) col.z);
                     im.setRGB(x, z, color);
                 }
@@ -227,7 +236,7 @@ public class DevModeAppState extends AbstractAppState {
 
         try {
             ImageIO.write(im, "png", new File(currTexture + "_dump.png"));
-            logger.log(Level.WARNING, "Imaged dumped");
+            logger.log(Level.WARNING, currTexture + " image dumped");
 
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Error while saving screenshot", ex);

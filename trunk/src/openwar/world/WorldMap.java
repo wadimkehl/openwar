@@ -71,10 +71,10 @@ public class WorldMap {
     public TerrainQuad terrain;
     BulletAppState bulletState;
     public Node scene = new Node("worldmap"), rootScene;
-    public Material matTerrain, matTerrainDebug;
+    public Material matTerrain;
     AssetManager assetManager;
     WorldHeightMap heightMap;
-    Texture key0Image, key1Image, key2Image, gridImage;
+    public Texture key0Image, key1Image, key2Image, gridImage;
     public WorldTile[][] worldTiles;
     ArrayList<SelectionTile> selectedTiles = new ArrayList<SelectionTile>();
     boolean selectedTilesChanged = false;
@@ -140,11 +140,11 @@ public class WorldMap {
     public void showGrid(boolean on) {
         int color;
         if (on) {
-            color = Integer.parseInt("7F00007F", 16);
+            color = Integer.parseInt("7FFFFF7F", 16);
         } else {
             color = Integer.parseInt("000000", 16);
         }
-        int grid_res = 32;
+        int grid_res = 16;
         ByteBuffer buf = ByteBuffer.allocateDirect(grid_res * grid_res * 4);
         for (int y = 0; y < grid_res; y++) {
             for (int x = 0; x < grid_res; x++) {
@@ -181,9 +181,8 @@ public class WorldMap {
         if (!createKeyTextures()) {
             return false;
         }
-
-        // Create debug material to display ground types, regions, climates etc.
-        matTerrainDebug = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        
+        showGrid(false);
 
         // Create mesh data with material and place its north-western edge to the origin
         heightMap = new WorldHeightMap(Main.DB.heightmapTex, Main.DB.heightmapParams.x,
@@ -296,9 +295,13 @@ public class WorldMap {
         water.setFoamExistence(new Vector3f(0.1f, 0.2f, 0.18f));
         fpp.addFilter(water);
 
+        
+        if (!Main.devMode)
+        {
         BloomFilter bloom = new BloomFilter();
         bloom.setExposurePower(4f);
         fpp.addFilter(bloom);
+        }
 
         game.getViewPort().addProcessor(fpp);
 

@@ -39,7 +39,7 @@ import openwar.DB.GameDatabase;
 
 public class Main extends SimpleApplication {
 
-    static public int version = 1;
+    static public int version = 2;
     public String locatorRoot = "data" + File.separator;
     public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(4);
     public Nifty nifty;
@@ -50,15 +50,28 @@ public class Main extends SimpleApplication {
     static public GameDatabase DB = new GameDatabase();
     public XMLDataLoader DataLoader;
     public ScriptEngine scriptEngine;
+    static public boolean devMode;
 
     public static void main(String[] args) {
+
+
+
         Main app = new Main();
-        Logger.getLogger("").setLevel(Level.WARNING);
+        Logger.getLogger("").setLevel(Level.SEVERE);
 
         app.setShowSettings(true);
         app.setSettings(new AppSettings(true));
         app.settings.setTitle("openwar    r" + version);
         app.settings.setFrameRate(30);
+
+
+        for (String s : args) {
+            if ("--dev".equals(s)) {
+                Logger.getLogger("").setLevel(Level.WARNING);
+                devMode = true;
+            }
+        }
+        
         app.start();
 
 
@@ -77,8 +90,8 @@ public class Main extends SimpleApplication {
 
         DataLoader = new XMLDataLoader(this);
         DataLoader.loadAll();
-        
-         try {
+
+        try {
             scriptEngine.eval("onBuildingBuilt('humans','Berlin','irrigation',2)");
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -95,12 +108,17 @@ public class Main extends SimpleApplication {
         nifty = niftyDisplay.getNifty();
         guiViewPort.addProcessor(niftyDisplay);
 
-        this.stateManager.attach(debugState);
+
+        if (devMode) {
+            this.stateManager.attach(debugState);
+        }
 
 
         this.stateManager.attach(bulletState);
         this.stateManager.attach(worldMapState);
         this.stateManager.attach(screenshotState);
+
+
 
         getFlyByCamera().setMoveSpeed(50);
 
