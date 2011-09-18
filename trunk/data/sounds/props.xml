@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+
+ <sound refname="ui_open" file="ui_open.wav" />
+ <sound refname="ui_close" file="ui_close.wav" />
+
+
+</root>

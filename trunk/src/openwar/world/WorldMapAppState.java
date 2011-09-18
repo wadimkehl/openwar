@@ -15,6 +15,9 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.TerrainPatch;
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.script.ScriptException;
 import openwar.DB.Settlement;
 import openwar.Main;
 
@@ -164,9 +167,13 @@ public class WorldMapAppState extends AbstractAppState {
 
         game.nifty.fromXml("ui" + File.separator + "worldmap" + File.separator + "ui.xml", "start");
 
+        
         initialized = true;
+  
+        game.doScript("playMusic('ambient1')");
     }
 
+    
     @Override
     public void update(float tpf) {
 

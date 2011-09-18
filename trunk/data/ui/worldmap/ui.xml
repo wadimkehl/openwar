@@ -5,33 +5,71 @@
 
 
         <layer id="main" childLayout="vertical">
-        <panel height="75%"/>
-        <panel childLayout="horizontal">           
-            <image filename="ui/worldmap/worldmap.tga" imageMode="subImage:0,0,1024,174" width="*" height="*"/>
-        </panel>
+            <panel height="75%"/>
+            <panel childLayout="horizontal">           
+                <image filename="ui/worldmap/menue.tga" imageMode="subImage:0,0,1000,150" width="*" height="*"/>
+            </panel>
         </layer>
         
         
-        
-        
-        
+              
         
         <layer id="main_buttons"   childLayout="vertical" >
             
-            <panel height="80%"/> 
-            <panel childLayout="center">
+            <panel height="75%" width="*"/>
+            <panel height="25%" width="*" childLayout="horizontal">
                 
-                <text id="test" align="center" valign="center" text="LOL" font="ui/fonts/palatino.fnt">
-            
-            
-                    <effect>
-                        <onHover name="textSize" startSize="1.0" endSize="1.5" />
-                    </effect>
-              
-                </text>
+                <!-- left part of bottom ui -->
+                <panel height="*" width="25%" childLayout="horizontal">
+                    <panel height="*" width="10%"/> 
+                    <panel height="*" width="80%"  childLayout="vertical">
+                        <panel height="10%" width="*"/> 
+                        
+                        <!-- panel for map -->
+                        <panel height="80%" width="*">
+                        <!-- <image id="build" />   -->      
+                        </panel>
+                        <panel height="10%" width="*"/> 
+                    </panel>
+                    <panel height="*" width="10%"/> 
+                </panel>
                 
-            </panel>
+                
+                <!-- center part of bottom ui -->
+                <panel height="*" width="50%"/> 
+                
+                
+                <!-- right part of bottom ui -->
+                <panel height="*" width="25%" childLayout="vertical">
+                    <panel height="10%" width="*"/> 
+                    <panel height="47%" width="*"/> 
+                    <panel height="*" width="*" childLayout="horizontal" > 
+                        <panel height="80%" width="20%"/> 
+                        
+                        <!-- three buttons -->
+                        <panel height="80%" width="*" childLayout="horizontal">
+                            <image id="build" filename="ui/worldmap/menue.tga" imageMode="subImage:1,152,34,50" width="28%" height="*">         
+                                <interact onClick="onClick(build)" />                
+                            </image>
+                            <panel height="*" width="2%"/> 
+                            <image id="recruit" filename="ui/worldmap/menue.tga" imageMode="subImage:35,152,34,50" width="28%" height="*">         
+                                <interact onClick="onClick(recruit)" />                
+                            </image>
+                            <panel height="*" width="2%"/> 
+                            <image id="turn" filename="ui/worldmap/menue.tga" imageMode="subImage:70,152,34,50" width="28%" height="*">         
+                                <interact onClick="onClick(turn)" />                
+                            </image>
+                        </panel>
 
+                    </panel>
+
+                    
+                </panel>
+                
+                
+                
+          
+            </panel>
                        
         </layer>
     </screen>
