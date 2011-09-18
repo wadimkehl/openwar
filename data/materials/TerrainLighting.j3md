@@ -84,7 +84,7 @@ MaterialDef Terrain Lighting {
         Float DiffuseMap_11_scale
         Texture2D NormalMap_11
 
-        // Debug grid map
+        // Grid map
         Texture2D GridMap
         Float GridMap_scale
 

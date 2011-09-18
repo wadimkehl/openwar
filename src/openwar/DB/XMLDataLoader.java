@@ -235,7 +235,7 @@ public class XMLDataLoader {
 
             for (int i = 0; i < basetexs.getLength(); i++) {
                 Element l = (Element) basetexs.item(i);
-                String path = "map" + File.separator + "base"
+                String path = "map" + File.separator + "textures"
                         + File.separator + l.getAttribute("texture");
                 if ("regions".equals(l.getAttribute("name"))) {
                     Main.DB.regionsTex = assets.loadTexture(new TextureKey(path, true));

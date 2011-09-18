@@ -171,10 +171,15 @@ public class WorldMapAppState extends AbstractAppState {
     public void update(float tpf) {
 
         map.update(tpf);
+
+
+        if (game.devMode) {
+            return;
+        }
         
         Vector3f loc = game.getCamera().getLocation();
-        loc.x = Math.max(Math.min(map.width, loc.x),0);
-        loc.z = Math.max(Math.min(map.height+map.height/2, loc.z),map.height/2);
+        loc.x = Math.max(Math.min(map.width, loc.x), 0);
+        loc.z = Math.max(Math.min(map.height + map.height / 3, loc.z), map.height / 3);
 
     }
 }
