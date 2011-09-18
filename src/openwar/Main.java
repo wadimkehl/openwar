@@ -46,7 +46,7 @@ public class Main extends SimpleApplication {
     public BulletAppState bulletState = new BulletAppState();
     public ScreenshotAppState screenshotState = new ScreenshotAppState();
     public WorldMapAppState worldMapState = new WorldMapAppState();
-    public DebugAppState debugState = new DebugAppState();
+    public DevModeAppState debugState = new DevModeAppState();
     static public GameDatabase DB = new GameDatabase();
     public XMLDataLoader DataLoader;
     public ScriptEngine scriptEngine;

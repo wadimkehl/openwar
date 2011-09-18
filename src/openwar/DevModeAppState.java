@@ -25,13 +25,13 @@ import openwar.world.WorldTile;
  *
  * @author kehl
  */
-public class DebugAppState extends AbstractAppState {
+public class DevModeAppState extends AbstractAppState {
 
     Main app;
     String currTexture = "types";
     int currType;
     boolean drawing;
-    private static final Logger logger = Logger.getLogger(DebugAppState.class.getName());
+    private static final Logger logger = Logger.getLogger(DevModeAppState.class.getName());
     public ActionListener actionListener = new ActionListener() {
 
         @Override
@@ -62,15 +62,15 @@ public class DebugAppState extends AbstractAppState {
 
             } else if (name.equals("texture_types") && !pressed) {
 
-                displayDebugMaterial("types");
+                displayTerrainTexture("types");
 
             } else if (name.equals("texture_regions") && !pressed) {
 
-                displayDebugMaterial("regions");
+                displayTerrainTexture("regions");
 
             } else if (name.equals("texture_climates") && !pressed) {
 
-                displayDebugMaterial("climates");
+                displayTerrainTexture("climates");
 
             } else if (name.equals("draw_mode") && !pressed) {
                 drawing = !drawing;
@@ -171,7 +171,7 @@ public class DebugAppState extends AbstractAppState {
     }
 
     // Overlays the terrain with the specific images for world map creation
-    public void displayDebugMaterial(String t) {
+    public void displayTerrainTexture(String t) {
         currTexture = t;
         if ("types".equals(t)) {
             app.worldMapState.map.terrain.setMaterial(app.worldMapState.map.matTerrain);

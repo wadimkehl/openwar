@@ -1,5 +1,6 @@
 package openwar.DB;
 
+import com.jme3.audio.AudioNode;
 import com.jme3.math.Vector3f;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
@@ -20,27 +21,29 @@ public class GameDatabase {
     public HashMap<String, GenericBuilding> genBuildings;
     public HashMap<Integer, GenericTile> genTiles;
     public Texture heightmapTex, regionsTex, climatesTex, typesTex;
-    
+    public HashMap<String, AudioNode> musicNodes;
+    public HashMap<String, AudioNode> soundNodes;
     public ArrayList<Texture> tileTextures;
     public ArrayList<Float> tileTextures_scales;
     public int tilesTexturesCount;
-    
     public ArrayList<Region> regions;
     public HashMap<String, Region> hashedRegions;
     public ArrayList<Settlement> settlements;
     public HashMap<String, Settlement> hashedSettlements; // String is refname of region!
     public ArrayList<Climate> climates;
     public HashMap<String, Climate> hashedClimates;
-    
-    public Vector3f heightmapParams,sun_color, sun_direction;
-
+    public Vector3f heightmapParams, sun_color, sun_direction;
 
     public GameDatabase() {
         genUnits = new HashMap<String, GenericUnit>();
         genFactions = new HashMap<String, GenericFaction>();
         genBuildings = new HashMap<String, GenericBuilding>();
         genTiles = new HashMap<Integer, GenericTile>();
-        
+
+        musicNodes = new HashMap<String, AudioNode>();
+        soundNodes = new HashMap<String, AudioNode>();
+
+
         tileTextures = new ArrayList<Texture>();
         tileTextures_scales = new ArrayList<Float>();
 
