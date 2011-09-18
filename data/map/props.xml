@@ -15,7 +15,7 @@
         <tile id="5" texture="5.tga" scale="8.0"/>
         <tile id="6" texture="6.tga" scale="8.0"/>
         <tile id="7" texture="7.tga" scale="8.0"/>
-        <tile id="8" texture="8.tga" scale="8.0"/>
+        <tile id="8" texture="8.tga" scale="32.0"/>
         <tile id="9" texture="9.tga" scale="8.0"/>
         <tile id="10" texture="10.tga" scale="8.0"/>
         <tile id="11" texture="11.tga" scale="8.0"/>      
@@ -43,7 +43,7 @@
 
         
         <heightmap factor0="0.009" factor1="0.0" offset="-0.3"/>
-        <sun color="255 230 230" direction="-0.3 -1  -1" />
+        <sun color="255 230 230" direction="-0.3 -1.5  -1" />
     </terrain>
     
     <climates>
@@ -57,7 +57,7 @@
         
         <region name="Ocean" refname="" owner="" color="0 0 0" />
         <region name="Germany" refname="germany" color="255 0 0" owner="humans" >
-            <settlement name="Berlin" posx="16" posz="36" level="0" population="1000" capital="1">          
+            <settlement name="Berlin" posx="14" posz="38" level="0" population="1000" capital="1">          
                 <building refname="irrigation" level="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>
@@ -66,7 +66,7 @@
         </region>
     
         <region name="France" refname="france" color="0 255 0" owner="humans" >
-            <settlement name="Paris" posx="35" posz="46" level="0" population="1000">          
+            <settlement name="Paris" posx="33" posz="48" level="0" population="1000">          
                 <building refname="irrigation" level="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>

@@ -6,25 +6,25 @@
 
 // plays a sound, really. Does not interfere with other sounds playing
 // name is the specified refname of the sound file
-def playSound(name)
+def playSound(String name)
 {
-    node = game.DB.soundNodes.get(name).play()
+    game.DB.soundNodes.get(name).play()
     
 }
 
 
 // plays a music file. Stops the current running music
 // name is the specified refname of the music file
-def playMusic(name)
+def playMusic(String name)
 {
-    node = game.DB.musicNodes.get(name).play()
+    game.DB.musicNodes.get(name).play()
 
 }
 
 
 // UI changes to another screen defined in the xml file
 // name is the id of the screen
-def changeUIScreen(name)
+def changeUIScreen(String name)
 {
     game.nifty.gotoScreen(name)
 }
@@ -32,7 +32,7 @@ def changeUIScreen(name)
 
 // shows or hides an UI layer of the current active screen
 // name is the id of the element, show is a boolean
-def showUILayer(name,show)
+def showUILayer(String name,boolean show)
 {
     element = game.nifty.getCurrentScreen().findElementByName( "name" )
     if (show) element.show()
@@ -44,7 +44,7 @@ def showUILayer(name,show)
 // displays a blocking ui popup of the current active screen
 // name is the id of the popup template in the xml file
 // returns the popup element, needed to close the popup again!
-def showUIPopUp(name)
+def String showUIPopUp(String name)
 {
     element = game.nifty.createPopup(name).getId()
     game.nifty.showPopup(game.nifty.getCurrentScreen(), element, null)
@@ -54,7 +54,7 @@ def showUIPopUp(name)
 
 // closes a blocking ui popup that has been displayed with showUIPopUp()
 // element is the id of the popup that was returned by showUIPopUp()
-def closeUIPopUp(element)
+def closeUIPopUp(String element)
 {
     game.nifty.closePopup(element);
 }

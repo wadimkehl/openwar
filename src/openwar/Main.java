@@ -49,8 +49,9 @@ public class Main extends SimpleApplication {
     public DevModeAppState debugState = new DevModeAppState();
     static public GameDatabase DB = new GameDatabase();
     public XMLDataLoader DataLoader;
-    public ScriptEngine scriptEngine;
+    static public ScriptEngine scriptEngine;
     static public boolean devMode;
+    static public boolean debugUI;
 
     public static void main(String[] args) {
 
@@ -70,8 +71,11 @@ public class Main extends SimpleApplication {
                 Logger.getLogger("").setLevel(Level.WARNING);
                 devMode = true;
             }
+            if ("--debug-ui".equals(s)) {
+                debugUI = true;
+            }
         }
-        
+
         app.start();
 
 
@@ -91,16 +95,6 @@ public class Main extends SimpleApplication {
         DataLoader = new XMLDataLoader(this);
         DataLoader.loadAll();
 
-        try {
-            scriptEngine.eval("onBuildingBuilt('humans','Berlin','irrigation',2)");
-        } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-
-        //AudioNode music = new AudioNode(assetManager, "music/lol.ogg", true);
-        // music.play();
-
 
         guiNode.detachAllChildren();
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
@@ -111,6 +105,10 @@ public class Main extends SimpleApplication {
 
         if (devMode) {
             this.stateManager.attach(debugState);
+        }
+
+        if (debugUI) {
+            nifty.setDebugOptionPanelColors(true);
         }
 
 
@@ -163,6 +161,15 @@ public class Main extends SimpleApplication {
             return results.getClosestCollision();
         }
         return null;
+    }
+
+    public void doScript(String line) {
+        try {
+            scriptEngine.eval(line);
+        } catch (ScriptException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     @Override

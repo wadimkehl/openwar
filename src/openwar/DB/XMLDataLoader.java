@@ -10,6 +10,7 @@ package openwar.DB;
  */
 import com.jme3.asset.AssetManager;
 import com.jme3.asset.TextureKey;
+import com.jme3.audio.AudioNode;
 import com.jme3.math.Vector3f;
 import com.jme3.texture.Image.Format;
 import java.io.File;
@@ -36,6 +37,49 @@ public class XMLDataLoader {
         assets = appl.getAssetManager();
     }
 
+    private void loadSounds(Element root) {
+        AudioNode entity = new AudioNode();
+        String refname = null;
+        String file = null;
+        try {
+            NodeList nodes = root.getElementsByTagName("sound");
+
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Element l = (Element) nodes.item(i);
+                refname = l.getAttribute("refname");
+                file = l.getAttribute("file");
+                entity = new AudioNode(assets, "sounds" + File.separator + file, false);
+                Main.DB.soundNodes.put(refname, entity);
+            }
+
+
+            logger.log(Level.WARNING, "*Sound loaded: {0} *", refname);
+        } catch (Exception E) {
+            logger.log(Level.SEVERE, "Sound CANNOT be loaded: {0}", refname);
+        }
+    }
+
+    private void loadMusic(Element root) {
+        AudioNode entity = new AudioNode();
+        String refname = null;
+        String file = null;
+        try {
+            NodeList nodes = root.getElementsByTagName("music");
+
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Element l = (Element) nodes.item(i);
+                refname = l.getAttribute("refname");
+                file = l.getAttribute("file");
+                entity = new AudioNode(assets, "music" + File.separator + file, true);
+                Main.DB.musicNodes.put(refname, entity);
+            }
+
+            logger.log(Level.WARNING, "*Music loaded: {0} *", refname);
+        } catch (Exception E) {
+            logger.log(Level.SEVERE, "Music CANNOT be loaded: {0}", refname);
+        }
+    }
+
     private void loadData(String folder) {
 
         try {
@@ -50,7 +94,7 @@ public class XMLDataLoader {
             if ("scripts".equals(folder)) {
                 for (File l : f.listFiles()) {
                     if (l.isFile()) {
-                        game.scriptEngine.eval(new FileReader(game.locatorRoot
+                        Main.scriptEngine.eval(new FileReader(game.locatorRoot
                                 + f.getName() + File.separator + l.getName()));
 
                     }
@@ -77,6 +121,34 @@ public class XMLDataLoader {
                 DocumentBuilder db = dbf.newDocumentBuilder();
                 Document dom = db.parse(props.getCanonicalPath());
                 loadMap(dom.getDocumentElement());
+                return;
+            }
+
+            // if we load the sounds or music, check in meta folder for props.xml
+            if ("sounds".equals(folder) || "music".equals(folder)) {
+                // search props.xml
+                File props = null;
+                for (File l : f.listFiles()) {
+                    if ("props.xml".equals(l.getName())) {
+                        props = l;
+                    }
+                }
+                if (props == null) {
+                    logger.log(Level.WARNING, "Cannot find props.xml in {0}", f.getName());
+                    return;
+                }
+
+                // open props file and load everything into the database
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                DocumentBuilder db = dbf.newDocumentBuilder();
+                Document dom = db.parse(props.getCanonicalPath());
+
+                if ("sounds".equals(folder)) {
+                    loadSounds(dom.getDocumentElement());
+                } else {
+                    loadMusic(dom.getDocumentElement());
+                }
+
                 return;
             }
 
@@ -343,10 +415,12 @@ public class XMLDataLoader {
             loadData("units");
             logger.log(Level.WARNING, "Loading buildings");
             loadData("buildings");
-
+            logger.log(Level.WARNING, "Loading sounds");
+            loadData("sounds");
+            logger.log(Level.WARNING, "Loading music");
+            loadData("music");
             logger.log(Level.WARNING, "Loading map");
             loadData("map");
-
             logger.log(Level.WARNING, "Loading scripts");
             loadData("scripts");
 

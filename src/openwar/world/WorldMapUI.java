@@ -7,6 +7,10 @@ package openwar.world;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.script.ScriptException;
+import openwar.Main;
 
 /**
  *
@@ -30,11 +34,21 @@ public class WorldMapUI implements ScreenController{
     @Override
     public void onStartScreen() {
         
-        //
+        
     }
 
     @Override
     public void onEndScreen() {
+    }
+    
+    public void onClick(String s)
+    {
+        try {
+            Main.scriptEngine.eval("onWorldMapUIClicked('"+ s + "')");
+        } catch (ScriptException ex) {
+            Logger.getLogger(WorldMapUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
     
 }

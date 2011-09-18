@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+
+ <music refname="main_menu" file="main.ogg" />
+ <music refname="ambient1" file="celtic_impulse.ogg" />
+
+
+</root>
