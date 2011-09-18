@@ -20,7 +20,6 @@ def onUnitRecruited(faction, region, unit)
 def onEndTurn(faction, turn)
 {
     println faction + " ended turn " + turn
-
 }
 
 
@@ -29,5 +28,13 @@ def onEndTurn(faction, turn)
 def onBeginTurn(faction,turn)
 {
     println faction + " began turn " + turn
+}
+
+
+// called when the player clicks anything on the world map gui
+// element is the name defined in the ui xml file
+def onWorldMapUIClicked(element)
+{
+    
 }
 
