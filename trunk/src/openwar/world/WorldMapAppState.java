@@ -15,9 +15,6 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.TerrainPatch;
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.script.ScriptException;
 import openwar.DB.Settlement;
 import openwar.Main;
 
@@ -31,6 +28,7 @@ public class WorldMapAppState extends AbstractAppState {
     public boolean showGrid = false;
     public WorldMap map;
     public Main game;
+    public int currentTurn=0;
     public ActionListener actionListener = new ActionListener() {
 
         @Override
@@ -143,6 +141,7 @@ public class WorldMapAppState extends AbstractAppState {
 
         game = main;
 
+        game.nifty.fromXml("ui" + File.separator + "worldmap" + File.separator + "ui.xml", "start");
 
 
         game.getInputManager().addListener(actionListener, "mouse_left");
@@ -164,13 +163,10 @@ public class WorldMapAppState extends AbstractAppState {
         game.getRootNode().attachChild(sceneNode);
         game.getCamera().setLocation(new Vector3f(map.width / 2, 15, map.height / 2));
         game.getCamera().lookAtDirection(new Vector3f(0f, -.9f, -1f).normalizeLocal(), Vector3f.UNIT_Y);
-
-        game.nifty.fromXml("ui" + File.separator + "worldmap" + File.separator + "ui.xml", "start");
-
         
         initialized = true;
   
-        game.doScript("playMusic('ambient1')");
+        //game.doScript("playMusic('ambient1')");
     }
 
     

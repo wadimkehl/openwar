@@ -236,7 +236,7 @@ public class DevModeAppState extends AbstractAppState {
 
         try {
             ImageIO.write(im, "png", new File(currTexture + "_dump.png"));
-            logger.log(Level.WARNING, currTexture + " image dumped");
+            logger.log(Level.WARNING, "{0} image dumped", currTexture);
 
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Error while saving screenshot", ex);

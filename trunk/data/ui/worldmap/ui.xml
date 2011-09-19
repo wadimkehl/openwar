@@ -3,8 +3,9 @@
 
     <screen id="start" controller="openwar.world.WorldMapUI">
 
+       
 
-        <layer id="main" childLayout="vertical">
+        <layer id="back_layer" childLayout="vertical">
             <panel height="75%"/>
             <panel childLayout="horizontal">           
                 <image filename="ui/worldmap/menue.tga" imageMode="subImage:0,0,1000,150" width="*" height="*"/>
@@ -12,9 +13,7 @@
         </layer>
         
         
-              
-        
-        <layer id="main_buttons"   childLayout="vertical" >
+        <layer id="minimap_layer"   childLayout="vertical" >
             
             <panel height="75%" width="*"/>
             <panel height="25%" width="*" childLayout="horizontal">
@@ -23,18 +22,37 @@
                 <panel height="*" width="25%" childLayout="horizontal">
                     <panel height="*" width="10%"/> 
                     <panel height="*" width="80%"  childLayout="vertical">
-                        <panel height="10%" width="*"/> 
+                        <panel height="17%" width="*"/> 
                         
-                        <!-- panel for map -->
-                        <panel height="80%" width="*">
-                        <!-- <image id="build" />   -->      
+                        <!-- panel for mini map -->
+                        <panel height="75%" width="*" childLayout="horizontal">
+                            <image id="minimap" height="*" width="*">
+                                <interact onClick="onMinimapClick()" />                
+                            </image>
                         </panel>
-                        <panel height="10%" width="*"/> 
+                        <panel height="*" width="*"/> 
                     </panel>
                     <panel height="*" width="10%"/> 
                 </panel>
                 
                 
+                <!-- center part of bottom ui -->
+                <panel height="*" width="50%"/> 
+                <panel height="*" width="25%"/>
+                
+                    
+            </panel>
+        </layer>
+           
+        
+        <layer id="front_layer"   childLayout="vertical" >
+            
+            <panel height="75%" width="*"/>
+            <panel height="25%" width="*" childLayout="horizontal">
+                
+                <!-- left part of bottom ui -->
+                <panel height="*" width="25%" />
+                  
                 <!-- center part of bottom ui -->
                 <panel height="*" width="50%"/> 
                 
