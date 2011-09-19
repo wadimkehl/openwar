@@ -12,6 +12,7 @@ import com.jme3.texture.Texture2D;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.ImageRenderer;
 import de.lessvoid.nifty.render.NiftyImage;
+import de.lessvoid.nifty.tools.SizeValue;
 import java.nio.ByteBuffer;
 import openwar.Main;
 
@@ -25,13 +26,50 @@ public class WorldMinimap {
     public Element minimapElement;
     public Vector3f minimapColor = new Vector3f(255, 50, 50);
     public WorldMap map;
+    public int mapHeight, mapWidth, imageHeight, imageWidth, panelHeight, panelWidth;
+    public float imageRatio, panelRatio, mapRatio, disparity;
+    public int imageX, imageY;
 
-    public WorldMinimap(WorldMap m, String niftyid) {
+    public WorldMinimap(WorldMap m) {
         map = m;
-        minimapElement = map.game.nifty.getCurrentScreen().findElementByName(niftyid);
+        minimapElement = map.game.nifty.getCurrentScreen().findElementByName("minimap");
+        Element panel = map.game.nifty.getCurrentScreen().findElementByName("minimap_panel");
+
+        panelWidth = panel.getWidth();
+        panelHeight = panel.getHeight();
+        imageHeight = minimapElement.getHeight();
+        imageWidth = minimapElement.getWidth();
+        mapHeight = map.height;
+        mapWidth = map.width;
+
+        mapRatio = (float) mapHeight / (float) mapWidth;
+        imageRatio = (float) imageHeight / (float) imageWidth;
+        panelRatio = (float) panelHeight / (float) panelWidth;
+        float ratio = mapRatio * panelRatio;
+        minimapElement.setWidth((int) (ratio * (float) minimapElement.getWidth()));
+        imageX = minimapElement.getX();
+        imageY = map.game.getCamera().getHeight()-minimapElement.getY();
+        
+//        int newWidth = (int)(ratio * (float) minimapElement.getWidth());
+//        minimapElement.setConstraintWidth(new SizeValue(new Integer(newWidth).toString()));
+//        minimapElement.setConstraintX(new SizeValue(new Integer(200).toString()));
+//          minimapElement.setConstraintY(new SizeValue(new Integer(200).toString()));    
+//        panel.layoutElements();
+//        
+        disparity = (float) mapHeight / (float) imageHeight;
+
+
 
     }
-
+    
+    public Vector2f screenToMinimap(Vector2f p)
+    {
+        Vector2f l = p.subtract((float)imageX,(float)(imageY)).multLocal(disparity);
+        l.y *= -1f;
+        return l;
+        
+    }
+    
     void drawMinimapLine(ByteBuffer data, Vector2f p, Vector2f q) {
         int x = (int) p.x, y = (int) p.y;
         int xQ = (int) q.x, yQ = (int) q.y;
@@ -49,7 +87,7 @@ public class WorldMinimap {
             c = 2 * HX;
             M = 2 * HY;
             for (;;) {
-                int base = (map.ensureInTerrainZ(y) * map.width + map.ensureInTerrainX(x)) * 3;
+                int base = (map.ensureInTerrainZ(y) * mapHeight + map.ensureInTerrainX(x)) * 3;
                 data.put(base, (byte) (((int) minimapColor.x) & 0xff));
                 data.put(base + 1, (byte) (((int) minimapColor.y) & 0xff));
                 data.put(base + 2, (byte) (((int) minimapColor.z) & 0xff));
@@ -67,7 +105,7 @@ public class WorldMinimap {
             c = 2 * HY;
             M = 2 * HX;
             for (;;) {
-                int base = (map.ensureInTerrainZ(y) * map.width + map.ensureInTerrainX(x)) * 3;
+                int base = (map.ensureInTerrainZ(y) * mapHeight + map.ensureInTerrainX(x)) * 3;
                 data.put(base, (byte) (((int) minimapColor.x) & 0xff));
                 data.put(base + 1, (byte) (((int) minimapColor.y) & 0xff));
                 data.put(base + 2, (byte) (((int) minimapColor.z) & 0xff));
@@ -86,11 +124,14 @@ public class WorldMinimap {
 
     public void update() {
 
-        ByteBuffer data = ByteBuffer.allocateDirect(map.height * map.width * 3);
-        for (int j = 0; j < map.height; j++) {
-            for (int i = 0; i < map.width; i++) {
-
-                Vector3f col = Main.DB.genTiles.get(map.worldTiles[i][map.height - 1 - j].groundType).color;
+        ByteBuffer data = ByteBuffer.allocateDirect(mapHeight * mapWidth * 3);
+        for (int j = 0; j < mapHeight; j++) {
+            for (int i = 0; i < mapWidth; i++) {
+                Vector3f col = Vector3f.ZERO;
+                String owner = Main.DB.hashedRegions.get(map.worldTiles[i][mapHeight - 1 - j].region).owner;
+                if (!"".equals(owner)) {
+                    col = Main.DB.genFactions.get(owner).color;
+                }
                 int r = (int) col.x;
                 int g = (int) col.y;
                 int b = (int) col.z;
@@ -110,32 +151,32 @@ public class WorldMinimap {
         Vector3f t1 = map.game.getCamera().getWorldCoordinates(new Vector2f(left, map.game.getCamera().getHeight()), 1f);
         t1.subtractLocal(t0).normalizeLocal();
         t = -loc.y / t1.y;
-        Vector2f lu = new Vector2f((loc.x + t * t1.x), (map.height - 1 - (loc.z + t * t1.z)));
+        Vector2f lu = new Vector2f((loc.x + t * t1.x), (mapHeight - 1 - (loc.z + t * t1.z)));
 
         t0 = map.game.getCamera().getWorldCoordinates(new Vector2f(right, map.game.getCamera().getHeight()), 0f);
         t1 = map.game.getCamera().getWorldCoordinates(new Vector2f(right, map.game.getCamera().getHeight()), 1f);
         t1.subtractLocal(t0).normalizeLocal();
         t = -loc.y / t1.y;
-        Vector2f ru = new Vector2f((loc.x - t * t1.x), (map.height - 1 - (loc.z + t * t1.z)));
+        Vector2f ru = new Vector2f((loc.x - t * t1.x), (mapHeight - 1 - (loc.z + t * t1.z)));
 
         t0 = map.game.getCamera().getWorldCoordinates(new Vector2f(left, map.game.getCamera().getHeight() * 0.2f), 0f);
         t1 = map.game.getCamera().getWorldCoordinates(new Vector2f(left, map.game.getCamera().getHeight() * 0.2f), 1f);
         t1.subtractLocal(t0).normalizeLocal();
         t = -loc.y / t1.y;
-        Vector2f lb = new Vector2f((loc.x + t * t1.x), (map.height - 1 - (loc.z + t * t1.z)));
+        Vector2f lb = new Vector2f((loc.x + t * t1.x), (mapHeight - 1 - (loc.z + t * t1.z)));
 
         t0 = map.game.getCamera().getWorldCoordinates(new Vector2f(right, map.game.getCamera().getHeight() * 0.2f), 0f);
         t1 = map.game.getCamera().getWorldCoordinates(new Vector2f(right, map.game.getCamera().getHeight() * 0.2f), 1f);
         t1.subtractLocal(t0).normalizeLocal();
         t = -loc.y / t1.y;
-        Vector2f rb = new Vector2f((loc.x - t * t1.x), (map.height - 1 - (loc.z + t * t1.z)));
+        Vector2f rb = new Vector2f((loc.x - t * t1.x), (mapHeight - 1 - (loc.z + t * t1.z)));
 
         drawMinimapLine(data, lu, ru);
         drawMinimapLine(data, lu, lb);
         drawMinimapLine(data, ru, rb);
         drawMinimapLine(data, lb, rb);
 
-        minimapImage = new Texture2D(new Image(Image.Format.RGB8, map.width, map.height, data));
+        minimapImage = new Texture2D(new Image(Image.Format.RGB8, mapWidth, mapHeight, data));
         minimapElement.getRenderer(ImageRenderer.class).setImage(
                 new NiftyImage(map.game.nifty.getRenderEngine(), new RenderImageJme(minimapImage)));
 
