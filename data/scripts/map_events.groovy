@@ -35,7 +35,14 @@ def onBeginTurn(String faction,int turn)
 // element is the name defined in the ui xml file
 def onWorldMapUIClicked(String element)
 {
+    if(element == "turn")
+    {
+        playSound("ui_close")
+        onEndTurn("player",game.worldMapState.currentTurn)
+        
+        return;
+    }
+    
     playSound("ui_open")
-    println "you clicked " + element
 }
 
