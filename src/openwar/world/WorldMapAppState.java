@@ -28,6 +28,7 @@ public class WorldMapAppState extends AbstractAppState {
     public boolean showGrid = false;
     public WorldMap map;
     public Main game;
+    public WorldMapUI controller;
     public ActionListener actionListener = new ActionListener() {
 
         @Override
@@ -141,8 +142,10 @@ public class WorldMapAppState extends AbstractAppState {
 
         game = main;
 
-        game.nifty.fromXml("ui" + File.separator + "worldmap" + File.separator + "ui.xml", "start");
-
+        controller = new WorldMapUI();
+        game.nifty.fromXml("ui" + File.separator + "worldmap" 
+                + File.separator + "ui.xml", "start",controller);
+        controller.game = game;
 
         game.getInputManager().addListener(actionListener, "mouse_left");
         game.getInputManager().addListener(actionListener, "mouse_right");

@@ -51,7 +51,7 @@ import openwar.Main;
  * @author kehl
  */
 public class WorldMap {
-
+    
     Main game;
     public int width, height;
     public TerrainQuad terrain;
@@ -63,16 +63,13 @@ public class WorldMap {
     public Texture key0Image, key1Image, key2Image, gridImage;
     public WorldTile[][] worldTiles;
     ArrayList<Tile> selectedTiles = new ArrayList<Tile>();
-
     Geometry reachableArea;
-    
     ArrayList<Army> Armies = new ArrayList<Army>();
     Army selectedArmy;
     Settlement selectedSettlement;
     FilterPostProcessor fpp;
     PathFinder pathFinder = new PathFinder(this);
     private static final Logger logger = Logger.getLogger(WorldMap.class.getName());
-    
     public WorldMinimap minimap;
     
     public WorldMap(Main app, Node scene) {
@@ -81,9 +78,7 @@ public class WorldMap {
         assetManager = app.getAssetManager();
         rootScene = scene;
         heightMap = null;
-        scene.addControl(new UpdateControl());
-        minimap = new WorldMinimap(this,"minimap");
-        
+        scene.addControl(new UpdateControl());        
         
         
     }
@@ -184,8 +179,6 @@ public class WorldMap {
         return true;
     }
     
-   
-    
     public boolean createWorldTiles() {
 
         // Create worldTiles array and read according region and climate from images
@@ -267,6 +260,9 @@ public class WorldMap {
             return false;
         }
         
+        minimap = new WorldMinimap(this);
+        
+        
         DirectionalLight dlight = new DirectionalLight();
         dlight.setColor(new ColorRGBA(
                 Main.DB.sun_color.x / 255f,
@@ -295,7 +291,7 @@ public class WorldMap {
         
         game.getViewPort().addProcessor(fpp);
         
-       
+        
         scene.attachChild(terrain);
         //     scene.attachChild(selectedTilesOverlay);
         rootScene.attachChild(scene);
@@ -320,14 +316,11 @@ public class WorldMap {
     public Vector3f getGLTileCorner(int x, int z) {
         return new Vector3f(x, heightMap.getInterpolatedHeight(x, z), z);
     }
-
-  
     
     public void deselectAll() {
         selectedArmy = null;
         selectedSettlement = null;
     }
-
     
     public void update(float tpf) {
         
@@ -338,7 +331,7 @@ public class WorldMap {
             a.update(tpf);
         }
         
-       
+        
         
     }
 
@@ -450,7 +443,7 @@ public class WorldMap {
 
     // Run BFS to find the reachable tiles for the army
     public void drawReachableArea(Army army) {
-                
+        
         ArrayList<Tile> area = pathFinder.getReachableArea(army);
         
         for (Tile t : area) {

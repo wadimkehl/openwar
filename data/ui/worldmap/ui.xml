@@ -25,8 +25,8 @@
                         <panel height="17%" width="*"/> 
                         
                         <!-- panel for mini map -->
-                        <panel height="75%" width="*" childLayout="horizontal">
-                            <image id="minimap" height="*" width="*">
+                        <panel id="minimap_panel" height="75%" width="*" childLayout="horizontal">
+                            <image id="minimap" height="*" width="*" >
                                 <interact onClick="onMinimapClick()" />                
                             </image>
                         </panel>
