@@ -175,7 +175,7 @@ public class WorldMapAppState extends AbstractAppState {
         map.update(tpf);
 
 
-        if (game.devMode) {
+        if (Main.devMode) {
             return;
         }
 
