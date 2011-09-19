@@ -299,16 +299,14 @@ public class XMLDataLoader {
             for (int i = 0; i < tiletexs.getLength(); i++) {
                 Element l = (Element) tiletexs.item(i);
                 Main.DB.tileTextures.add(Integer.parseInt(l.getAttribute("id")),
-                        assets.loadTexture("map" + File.separator + "textures"
-                        + File.separator + l.getAttribute("texture")));
+                        assets.loadTexture("map" + File.separator + l.getAttribute("texture")));
                 Main.DB.tileTextures_scales.add(Float.parseFloat(l.getAttribute("scale")));
             }
 
 
             for (int i = 0; i < basetexs.getLength(); i++) {
                 Element l = (Element) basetexs.item(i);
-                String path = "map" + File.separator + "textures"
-                        + File.separator + l.getAttribute("texture");
+                String path = "map" + File.separator + l.getAttribute("texture");
                 if ("regions".equals(l.getAttribute("name"))) {
                     Main.DB.regionsTex = assets.loadTexture(new TextureKey(path, true));
                 } else if ("types".equals(l.getAttribute("name"))) {
