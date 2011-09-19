@@ -28,14 +28,13 @@ public class WorldMapAppState extends AbstractAppState {
     public boolean showGrid = false;
     public WorldMap map;
     public Main game;
-    public int currentTurn=0;
     public ActionListener actionListener = new ActionListener() {
 
         @Override
         public void onAction(String name, boolean pressed, float tpf) {
 
             if (name.equals("mouse_left") && !pressed) {
-                CollisionResult r = game.getNiftyMousePick(map.scene);
+                CollisionResult r = game.getMousePick(map.scene);
                 if (r == null) {
                     return;
                 }
@@ -45,9 +44,10 @@ public class WorldMapAppState extends AbstractAppState {
                 int z = (int) pt.z;
 
                 if (r.getGeometry() instanceof TerrainPatch) {
-                    map.deselectTiles();
-                    map.selectTile(x, z);
-                    System.err.println(map.worldTiles[x][z]);
+
+                    if (Main.devMode) {
+                        System.err.println(map.worldTiles[x][z]);
+                    }
                     return;
 
                 }
@@ -74,7 +74,7 @@ public class WorldMapAppState extends AbstractAppState {
                     return;
                 }
 
-                CollisionResult r = game.getNiftyMousePick(map.scene);
+                CollisionResult r = game.getMousePick(map.scene);
                 if (r == null) {
                     return;
                 }
@@ -163,13 +163,12 @@ public class WorldMapAppState extends AbstractAppState {
         game.getRootNode().attachChild(sceneNode);
         game.getCamera().setLocation(new Vector3f(map.width / 2, 15, map.height / 2));
         game.getCamera().lookAtDirection(new Vector3f(0f, -.9f, -1f).normalizeLocal(), Vector3f.UNIT_Y);
-        
+
         initialized = true;
-  
+
         //game.doScript("playMusic('ambient1')");
     }
 
-    
     @Override
     public void update(float tpf) {
 
@@ -179,7 +178,7 @@ public class WorldMapAppState extends AbstractAppState {
         if (game.devMode) {
             return;
         }
-        
+
         Vector3f loc = game.getCamera().getLocation();
         loc.x = Math.max(Math.min(map.width, loc.x), 0);
         loc.z = Math.max(Math.min(map.height + map.height / 3, loc.z), map.height / 3);
