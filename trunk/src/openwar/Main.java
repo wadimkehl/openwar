@@ -116,6 +116,8 @@ public class Main extends SimpleApplication {
         this.stateManager.attach(worldMapState);
         this.stateManager.attach(screenshotState);
 
+        
+        //doScript("onGameBegin()");
 
 
         getFlyByCamera().setMoveSpeed(50);
@@ -147,11 +149,9 @@ public class Main extends SimpleApplication {
     }
 
 // Calculates a mouse pick with a spatial and returns nearest result or null
-    public CollisionResult getNiftyMousePick(Spatial s) {
-
-        int x = nifty.getNiftyMouse().getX();
-        int y = cam.getHeight() - nifty.getNiftyMouse().getY();
-        Vector2f mouse = new Vector2f(x, y);
+    public CollisionResult getMousePick(Spatial s) {
+        
+        Vector2f mouse = inputManager.getCursorPosition();
         Vector3f t0 = cam.getWorldCoordinates(mouse, 0f);
         Vector3f t1 = cam.getWorldCoordinates(mouse, 1f);
         CollisionResults results = new CollisionResults();

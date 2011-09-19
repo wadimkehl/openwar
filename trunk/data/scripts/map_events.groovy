@@ -1,4 +1,11 @@
 
+// this function is called once at the beginning of the game
+def onGameBegin()
+{
+    println "Game begins"
+    
+}
+
 
 // called when a building was constructed
 // faction, region and building are refnames; level is the new level of the building
@@ -16,33 +23,45 @@ def onUnitRecruited(String faction, String region, unit)
 
 
 // called when a faction ends its turn
-// faction is refname, turn is current turn number 
-def onEndTurn(String faction, int turn)
+// faction is refname, round is current round number 
+def onEndTurn(String faction, int round)
 {
-    println faction + " ended turn " + turn
+    println faction + " ended round " + round
 }
 
 
 // called when a faction begins its turn
-// faction is refname, turn is current turn number 
-def onBeginTurn(String faction,int turn)
+// faction is refname, round is current round number 
+def onBeginTurn(String faction,int round)
 {
-    println faction + " began turn " + turn
+    println faction + " began round " + round
 }
 
+// called when a new round begins (i.e. all factions had their turn)
+def onBeginRound()
+{
+    game.DB.currentRound++
+    
+}
 
-// called when the player clicks anything on the world map gui
+// called when the player clicks any element on the world map gui
 // element is the name defined in the ui xml file
 def onWorldMapUIClicked(String element)
 {
     if(element == "turn")
     {
         playSound("ui_close")
-        onEndTurn("player",game.worldMapState.currentTurn)
-        
+        onEndTurn("player",game.DB.currentRound)  
+        onBeginRound()
         return;
     }
     
-    playSound("ui_open")
+    if (element == "build")
+    {
+        playSound("ui_open")
+        toggleUIElement("scrolls_layer")
+
+    }
+    
 }
 

@@ -52,28 +52,6 @@ import openwar.Main;
  */
 public class WorldMap {
 
-    // Basic (x,z)-Tile
-    // Holds information about selected (highlighted) tiles
-    public class SelectionTile extends Tile {
-        
-        public float intensity;
-        public Vector3f color;
-        
-        public SelectionTile(int x, int z, float i) {
-            super(x, z);
-            intensity = i;
-        }
-        
-        public SelectionTile(int x, int z) {
-            super(x, z);
-            intensity = 1f;
-        }
-        
-        public SelectionTile(int x, int z, Vector3f col) {
-            super(x, z);
-            color = col;
-        }
-    };
     Main game;
     public int width, height;
     public TerrainQuad terrain;
@@ -84,27 +62,28 @@ public class WorldMap {
     WorldHeightMap heightMap;
     public Texture key0Image, key1Image, key2Image, gridImage;
     public WorldTile[][] worldTiles;
-    ArrayList<SelectionTile> selectedTiles = new ArrayList<SelectionTile>();
-    boolean selectedTilesChanged = false;
-    Geometry selectedTilesOverlay;
-    Material matOverlay;
+    ArrayList<Tile> selectedTiles = new ArrayList<Tile>();
+
+    Geometry reachableArea;
+    
     ArrayList<Army> Armies = new ArrayList<Army>();
     Army selectedArmy;
     Settlement selectedSettlement;
     FilterPostProcessor fpp;
     PathFinder pathFinder = new PathFinder(this);
     private static final Logger logger = Logger.getLogger(WorldMap.class.getName());
-    public Texture2D minimapImage;
-    public Element minimapElement;
-    public Vector3f minimapColor = new Vector3f(255, 50, 50);
+    
+    public WorldMinimap minimap;
     
     public WorldMap(Main app, Node scene) {
-        this.game = app;
-        this.bulletState = app.bulletState;
-        this.assetManager = app.getAssetManager();
-        this.rootScene = scene;
+        game = app;
+        bulletState = app.bulletState;
+        assetManager = app.getAssetManager();
+        rootScene = scene;
         heightMap = null;
-        this.scene.addControl(new UpdateControl());
+        scene.addControl(new UpdateControl());
+        minimap = new WorldMinimap(this,"minimap");
+        
         
         
     }
@@ -205,114 +184,7 @@ public class WorldMap {
         return true;
     }
     
-    void drawMinimapLine(ByteBuffer data, Vector2f p, Vector2f q) {
-        int x = (int) p.x, y = (int) p.y;
-        int xQ = (int) q.x, yQ = (int) q.y;
-        
-        int D = 0, HX = xQ - x, HY = yQ - y, c, M, xInc = 1, yInc = 1;
-        if (HX < 0) {
-            xInc = -1;
-            HX = -HX;
-        }
-        if (HY < 0) {
-            yInc = -1;
-            HY = -HY;
-        }
-        if (HY <= HX) {
-            c = 2 * HX;
-            M = 2 * HY;
-            for (;;) {
-                int base = (ensureInTerrainZ(y) * width + ensureInTerrainX(x)) * 3;
-                data.put(base, (byte) (((int) minimapColor.x) & 0xff));
-                data.put(base + 1, (byte) (((int) minimapColor.y) & 0xff));
-                data.put(base + 2, (byte) (((int) minimapColor.z) & 0xff));
-                if (x == xQ) {
-                    break;
-                }
-                x += xInc;
-                D += M;
-                if (D > HX) {
-                    y += yInc;
-                    D -= c;
-                }
-            }
-        } else {
-            c = 2 * HY;
-            M = 2 * HX;
-            for (;;) {
-                int base = (ensureInTerrainZ(y) * width + ensureInTerrainX(x)) * 3;
-                data.put(base, (byte) (((int) minimapColor.x) & 0xff));
-                data.put(base + 1, (byte) (((int) minimapColor.y) & 0xff));
-                data.put(base + 2, (byte) (((int) minimapColor.z) & 0xff));
-                if (y == yQ) {
-                    break;
-                }
-                y += yInc;
-                D += M;
-                if (D > HY) {
-                    x += xInc;
-                    D -= c;
-                }
-            }
-        }
-    }
-    
-    public void createMinimapTexture() {
-        
-        ByteBuffer data = ByteBuffer.allocateDirect(height * width * 3);
-        for (int j = 0; j < height; j++) {
-            for (int i = 0; i < width; i++) {
-                
-                Vector3f col = Main.DB.genTiles.get(worldTiles[i][height - 1 - j].groundType).color;
-                int r = (int) col.x;
-                int g = (int) col.y;
-                int b = (int) col.z;
-                data.put((byte) (r & 0xff));
-                data.put((byte) (g & 0xff));
-                data.put((byte) (b & 0xff));
-            }
-        }
-        
-        Vector3f loc = game.getCamera().getLocation();
-        
-        float left = game.getCamera().getFrustumLeft();
-        float right = game.getCamera().getFrustumRight();
-        float t;
-        
-        Vector3f t0 = game.getCamera().getWorldCoordinates(new Vector2f(left, game.getCamera().getHeight()), 0f);        
-        Vector3f t1 = game.getCamera().getWorldCoordinates(new Vector2f(left, game.getCamera().getHeight()), 1f);
-        t1.subtractLocal(t0).normalizeLocal();
-        t = -loc.y / t1.y;
-        Vector2f lu = new Vector2f((loc.x + t * t1.x), (height - 1 - (loc.z + t * t1.z)));
-        
-        t0 = game.getCamera().getWorldCoordinates(new Vector2f(right, game.getCamera().getHeight()), 0f);        
-        t1 = game.getCamera().getWorldCoordinates(new Vector2f(right, game.getCamera().getHeight()), 1f);
-        t1.subtractLocal(t0).normalizeLocal();
-        t = -loc.y / t1.y;
-        Vector2f ru = new Vector2f((loc.x - t * t1.x), (height - 1 - (loc.z + t * t1.z)));
-        
-        t0 = game.getCamera().getWorldCoordinates(new Vector2f(left, game.getCamera().getHeight() * 0.2f), 0f);        
-        t1 = game.getCamera().getWorldCoordinates(new Vector2f(left, game.getCamera().getHeight() * 0.2f), 1f);
-        t1.subtractLocal(t0).normalizeLocal();
-        t = -loc.y / t1.y;
-        Vector2f lb = new Vector2f((loc.x + t * t1.x), (height - 1 - (loc.z + t * t1.z)));
-        
-        t0 = game.getCamera().getWorldCoordinates(new Vector2f(right, game.getCamera().getHeight() * 0.2f), 0f);        
-        t1 = game.getCamera().getWorldCoordinates(new Vector2f(right, game.getCamera().getHeight() * 0.2f), 1f);
-        t1.subtractLocal(t0).normalizeLocal();
-        t = -loc.y / t1.y;
-        Vector2f rb = new Vector2f((loc.x - t * t1.x), (height - 1 - (loc.z + t * t1.z)));
-               
-        drawMinimapLine(data, lu, ru);
-        drawMinimapLine(data, lu, lb);
-        drawMinimapLine(data, ru, rb);
-        drawMinimapLine(data, lb, rb);
-               
-        minimapImage = new Texture2D(new Image(Image.Format.RGB8, width, height, data));
-        minimapElement.getRenderer(ImageRenderer.class).setImage(
-                new NiftyImage(game.nifty.getRenderEngine(), new RenderImageJme(minimapImage)));
-        
-    }
+   
     
     public boolean createWorldTiles() {
 
@@ -423,13 +295,7 @@ public class WorldMap {
         
         game.getViewPort().addProcessor(fpp);
         
-        
-        selectedTilesOverlay = new Geometry("overlay");
-        matOverlay = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        matOverlay.setColor("Color", ColorRGBA.Blue);
-        selectedTilesOverlay.setMaterial(matOverlay);
-        matOverlay.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
-        
+       
         scene.attachChild(terrain);
         //     scene.attachChild(selectedTilesOverlay);
         rootScene.attachChild(scene);
@@ -438,8 +304,6 @@ public class WorldMap {
         bulletState.getPhysicsSpace().addAll(terrain);
         
         
-        minimapElement = game.nifty.getCurrentScreen().findElementByName("minimap");
-        createMinimapTexture();
         
         return true;
         
@@ -457,50 +321,24 @@ public class WorldMap {
         return new Vector3f(x, heightMap.getInterpolatedHeight(x, z), z);
     }
 
-    // Select a tile of the terrain (gets highlighting)
-    public void selectTile(int x, int z, float i) {
-        x = ensureInTerrainX(x);
-        z = ensureInTerrainZ(z);
-        selectedTiles.add(new SelectionTile(x, z, i));
-        selectedTilesChanged = true;
-        
-    }
-    
-    public void selectTile(int x, int z) {
-        selectTile(x, z, 1f);
-    }
-
-    // Process all the selected tiles into key 1 texture to make them visible
-    private void showSelectedTiles() {
-        selectedTilesChanged = false;
-    }
+  
     
     public void deselectAll() {
-        deselectTiles();
         selectedArmy = null;
         selectedSettlement = null;
     }
 
-    // Deselects the selected tiles (removes highlighting)
-    public void deselectTiles() {
-        selectedTiles.clear();
-        selectedTilesChanged = true;
-        
-    }
     
     public void update(float tpf) {
         
         
-        createMinimapTexture();
+        minimap.update();
         
         for (Army a : Armies) {
             a.update(tpf);
         }
         
-        if (selectedTilesChanged) {
-            //     showSelectedTiles();
-        }
-        
+       
         
     }
 
@@ -612,9 +450,7 @@ public class WorldMap {
 
     // Run BFS to find the reachable tiles for the army
     public void drawReachableArea(Army army) {
-        
-        deselectTiles();
-        
+                
         ArrayList<Tile> area = pathFinder.getReachableArea(army);
         
         for (Tile t : area) {

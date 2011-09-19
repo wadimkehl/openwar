@@ -79,16 +79,25 @@
                             </image>
                         </panel>
 
-                    </panel>
-
-                    
-                </panel>
-                
-                
-                
-          
+                    </panel>                   
+                </panel>         
             </panel>
                        
+        </layer>
+        
+        
+        <layer id="scrolls_layer" childLayout="vertical" visible="false">
+            <panel height="75%" childLayout="horizontal">
+                <panel height="*" width="50%" childLayout="horizontal">
+                    
+                    <image id="left" filename="ui/worldmap/menue.tga" imageMode="subImage:70,152,34,50" width="*" height="*" />         
+
+                </panel>
+                <panel height="*" width="*" childLayout="horizontal">
+                    <image id="right" filename="ui/worldmap/menue.tga" imageMode="subImage:70,152,34,50" width="*" height="*" />         
+
+                </panel>
+            </panel>           
         </layer>
     </screen>
 </nifty>

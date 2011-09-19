@@ -37,7 +37,7 @@ public class DevModeAppState extends AbstractAppState {
         public void onAction(String name, boolean pressed, float tpf) {
 
             if (name.equals("mouse_left") && !pressed) {
-                CollisionResult r = game.getNiftyMousePick(game.worldMapState.sceneNode);
+                CollisionResult r = game.getMousePick(game.worldMapState.sceneNode);
                 if (r == null) {
                     return;
                 }

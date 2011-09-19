@@ -32,9 +32,15 @@ public class GameDatabase {
     public HashMap<String, Settlement> hashedSettlements; // String is refname of region!
     public ArrayList<Climate> climates;
     public HashMap<String, Climate> hashedClimates;
+    public ArrayList<Faction> factions;
+    public HashMap<String, Faction> hashedFactions;
     public Vector3f heightmapParams, sun_color, sun_direction;
+    public String playerFaction = "humans";
+    public int currentRound=0;
+    public String currentTurn="humans";
 
     public GameDatabase() {
+
         genUnits = new HashMap<String, GenericUnit>();
         genFactions = new HashMap<String, GenericFaction>();
         genBuildings = new HashMap<String, GenericBuilding>();
@@ -50,7 +56,9 @@ public class GameDatabase {
         regions = new ArrayList<Region>();
         settlements = new ArrayList<Settlement>();
         climates = new ArrayList<Climate>();
+        factions = new ArrayList<Faction>();
 
+        hashedFactions = new HashMap<String, Faction>();
         hashedRegions = new HashMap<String, Region>();
         hashedClimates = new HashMap<String, Climate>();
         hashedSettlements = new HashMap<String, Settlement>();

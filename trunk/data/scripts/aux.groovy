@@ -1,6 +1,6 @@
 
 // this file gives auxilliary functions to the scripts for easy engine interoperability
-// you can include this file with every scenarion BUT MAKE SURE that these functions are loaded first!
+// you can include this file with every custom campaign BUT MAKE SURE that these functions are loaded first!
 // Either by naming the file with the lowest lexicographical order or by incorporating these functions into other files
 
 
@@ -8,8 +8,13 @@
 // name is the specified refname of the sound file
 def playSound(String name)
 {
-    game.DB.soundNodes.get(name).play()
-    
+    n = game.DB.soundNodes.get(name)
+    if(n == null)
+    {
+        println "Cannot find sound: " + name
+        return
+    }
+    n.play()   
 }
 
 
@@ -17,8 +22,13 @@ def playSound(String name)
 // name is the specified refname of the music file
 def playMusic(String name)
 {
-    game.DB.musicNodes.get(name).play()
-
+    n = game.DB.musicNodes.get(name)
+    if(n == null)
+    {
+        println "Cannot find music: " + name
+        return
+    }
+    n.play()
 }
 
 
@@ -30,15 +40,34 @@ def changeUIScreen(String name)
 }
 
 
-// shows or hides an UI layer of the current active screen
+// shows or hides an UI element of the current active screen
 // name is the id of the element, show is a boolean
-def showUILayer(String name,boolean show)
+def showUIElement(String name,boolean show)
 {
-    element = game.nifty.getCurrentScreen().findElementByName( "name" )
-    if (show) element.show()
-    else
-    element.hide()
+    element = game.nifty.getCurrentScreen().findElementByName(name)   
+    if(element == null)
+    {
+        println "Cannot find gui element: " + name
+        return
+    }  
+    element.setVisible(show)
+    return
 }
+
+// toggles the visibility of an UI element (e.g. a layer or an image)
+// name is the id of the element, show is a boolean
+def toggleUIElement(String name)
+{
+    element = game.nifty.getCurrentScreen().findElementByName(name)   
+    if(element == null)
+    {
+        println "Cannot find gui element: " + name
+        return
+    }  
+    element.setVisible(!element.isVisible())
+    return
+}
+
 
 
 // displays a blocking ui popup of the current active screen
@@ -47,6 +76,11 @@ def showUILayer(String name,boolean show)
 def String showUIPopUp(String name)
 {
     element = game.nifty.createPopup(name).getId()
+    if(element == null)
+    {
+        println "Cannot find popup template: " + name
+        return
+    } 
     game.nifty.showPopup(game.nifty.getCurrentScreen(), element, null)
     return element
 
@@ -55,6 +89,10 @@ def String showUIPopUp(String name)
 // closes a blocking ui popup that has been displayed with showUIPopUp()
 // element is the id of the popup that was returned by showUIPopUp()
 def closeUIPopUp(String element)
-{
+{    if(element == null)
+    {
+        println "Cannot find popup with id: " + element
+        return
+    } 
     game.nifty.closePopup(element);
 }
