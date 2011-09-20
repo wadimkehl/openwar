@@ -48,8 +48,8 @@ public class WorldMinimap {
         float ratio = mapRatio * panelRatio;
         minimapElement.setWidth((int) (ratio * (float) minimapElement.getWidth()));
         imageX = minimapElement.getX();
-        imageY = map.game.getCamera().getHeight()-minimapElement.getY();
-        
+        imageY = map.game.getCamera().getHeight() - minimapElement.getY();
+
 //        int newWidth = (int)(ratio * (float) minimapElement.getWidth());
 //        minimapElement.setConstraintWidth(new SizeValue(new Integer(newWidth).toString()));
 //        minimapElement.setConstraintX(new SizeValue(new Integer(200).toString()));
@@ -61,19 +61,14 @@ public class WorldMinimap {
 
 
     }
-    
-    public Vector2f screenToMinimap(Vector2f p)
-    {
-        Vector2f l = p.subtract((float)imageX,(float)(imageY)).multLocal(disparity);
-        l.y *= -1f;
-        return l;
-        
+
+    public Vector2f screenToMinimap(Vector2f p) {
+        return p.subtract((float) imageX, (float) (map.game.getCamera().getHeight() - imageY)).multLocal(disparity);
     }
-    
+
     void drawMinimapLine(ByteBuffer data, Vector2f p, Vector2f q) {
         int x = (int) p.x, y = (int) p.y;
         int xQ = (int) q.x, yQ = (int) q.y;
-
         int D = 0, HX = xQ - x, HY = yQ - y, c, M, xInc = 1, yInc = 1;
         if (HX < 0) {
             xInc = -1;
@@ -83,6 +78,9 @@ public class WorldMinimap {
             yInc = -1;
             HY = -HY;
         }
+
+
+
         if (HY <= HX) {
             c = 2 * HX;
             M = 2 * HY;

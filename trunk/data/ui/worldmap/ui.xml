@@ -13,11 +13,9 @@
         </layer>
         
         
-        <layer id="minimap_layer"   childLayout="vertical" >
-            
+        <layer id="minimap_layer"   childLayout="vertical" >           
             <panel height="75%" width="*"/>
-            <panel height="25%" width="*" childLayout="horizontal">
-                
+            <panel height="25%" width="*" childLayout="horizontal">                
                 <!-- left part of bottom ui -->
                 <panel height="*" width="25%" childLayout="horizontal">
                     <panel height="*" width="10%"/> 
@@ -33,14 +31,7 @@
                         <panel height="*" width="*"/> 
                     </panel>
                     <panel height="*" width="10%"/> 
-                </panel>
-                
-                
-                <!-- center part of bottom ui -->
-                <panel height="*" width="50%"/> 
-                <panel height="*" width="25%"/>
-                
-                    
+                </panel>                 
             </panel>
         </layer>
            
@@ -67,15 +58,21 @@
                         <!-- three buttons -->
                         <panel height="80%" width="*" childLayout="horizontal">
                             <image id="build" filename="ui/worldmap/menue.tga" imageMode="subImage:1,152,34,50" width="28%" height="*">         
-                                <interact onClick="onClick(build)" />                
+                                <interact onClick="onClick(build,0)" /> 
+               
+
                             </image>
                             <panel height="*" width="2%"/> 
                             <image id="recruit" filename="ui/worldmap/menue.tga" imageMode="subImage:35,152,34,50" width="28%" height="*">         
-                                <interact onClick="onClick(recruit)" />                
+                                <interact onPrimaryClick="onClick(recruit,0)" /> 
+                                <interact onSecondaryClick="onClick(recruit,1)" />    
+                                <interact onTertiaryClick="onClick(recruit,2)" />
                             </image>
                             <panel height="*" width="2%"/> 
                             <image id="turn" filename="ui/worldmap/menue.tga" imageMode="subImage:70,152,34,50" width="28%" height="*">         
-                                <interact onClick="onClick(turn)" />                
+                                <interact onPrimaryClick="onClick(turn,0)" /> 
+                                <interact onSecondaryClick="onClick(turn,1)" />    
+                                <interact onTertiaryClick="onClick(turn,2)" />
                             </image>
                         </panel>
 
