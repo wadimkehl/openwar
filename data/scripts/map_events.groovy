@@ -46,7 +46,8 @@ def onBeginRound()
 
 // called when the player clicks any element on the world map gui
 // element is the name defined in the ui xml file
-def onWorldMapUIClicked(String element)
+// button is which button was pressed: 0=left,1=right,2=middle
+def onWorldMapUIClicked(String element, int button)
 {
     if(element == "turn")
     {

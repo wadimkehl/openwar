@@ -41,23 +41,22 @@ public class WorldMapUI implements ScreenController {
     public void onEndScreen() {
     }
 
-    public void onClick(String s) {
+    public void onClick(String s, String b) {
         try {
-            Main.scriptEngine.eval("onWorldMapUIClicked('" + s + "')");
+            Main.scriptEngine.eval("onWorldMapUIClicked('" + s + "'," + b + ")");
         } catch (ScriptException ex) {
             Logger.getLogger(WorldMapUI.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
 
-    public void onMinimapClick() {
-        Vector2f p = game.getInputManager().getCursorPosition();
+    public void onMinimapClick(final int mouseX, final int mouseY) {
+        Vector2f p = new Vector2f(mouseX,mouseY);
         p = game.worldMapState.map.minimap.screenToMinimap(p);
         Vector3f l = game.getCamera().getLocation();
         Vector3f d = game.getCamera().getDirection();
         Vector3f goal = new Vector3f(p.x,0f,p.y);
-        float t = -l.y / d.y;
-        game.getCamera().setLocation(goal.add(d.mult(-t)));
+        game.getCamera().setLocation(goal.add(d.mult(l.y / d.y)));
 
     }
 }
