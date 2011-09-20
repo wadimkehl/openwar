@@ -13,6 +13,7 @@ import com.jme3.asset.TextureKey;
 import com.jme3.audio.AudioNode;
 import com.jme3.math.Vector3f;
 import com.jme3.texture.Image.Format;
+import com.jme3.texture.Texture2D;
 import java.io.File;
 import java.io.FileReader;
 import java.util.Locale;
@@ -204,7 +205,7 @@ public class XMLDataLoader {
             entity.maxCount = Integer.parseInt(unit.getAttribute("maxcount"));
             entity.maxMovePoints = Integer.parseInt(unit.getAttribute("maxmovepoints"));
             String image = "units" + File.separator + entity.refName + File.separator + unit.getAttribute("image");
-            entity.image = assets.loadTexture(image);
+            entity.image = (Texture2D) assets.loadTexture(image);
             Main.DB.genUnits.put(entity.refName, entity);
             logger.log(Level.WARNING, "*Unit loaded: {0} *", entity.refName);
         } catch (Exception E) {
@@ -351,7 +352,7 @@ public class XMLDataLoader {
             Main.DB.sun_color = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
             s = new Scanner(sun.getAttribute("direction"));
             s.useLocale(Locale.ENGLISH);
-            Main.DB.sun_direction = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
+            Main.DB.sun_direction = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat()).normalizeLocal();
 
             NodeList c = climates.getElementsByTagName("climate");
             for (int i = 0; i < c.getLength(); i++) {
