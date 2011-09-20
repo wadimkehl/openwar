@@ -43,17 +43,15 @@ public class Army {
         model = m;
         model.setShadowMode(ShadowMode.CastAndReceive);
 
-       control = new CharacterControl(new CapsuleCollisionShape(0.25f, 1.5f, 1), 10000f);
+        control = new CharacterControl(new CapsuleCollisionShape(0.25f, 0.5f, 1), 10000f);
         model.addControl(control);
 
         Vector3f vec = map.getGLTileCenter(x, z);
         vec.addLocal(0, 1f, 0);
         control.setPhysicsLocation(vec);
 
-
-        model.scale(0.2f);
         units = new ArrayList<Unit>();
-        
+
         resetMovePoints();
 
     }
@@ -84,65 +82,61 @@ public class Army {
 
     public void update(float tpf) {
 
-        if (onRoute) {
+        if (!onRoute) {
+            return;   
+        }
+        if (route == null || route.isEmpty()) {
+            route = null;
+            onRoute = false;
+            control.setWalkDirection(Vector3f.ZERO);
 
-            // check if goal reached
-            if (route == null || route.isEmpty()) {
-                route = null;
-                onRoute = false;
+
+        } else {
+
+            Tile t = route.peek();
+
+            if (currMovePoints < map.getTileCosts(t)) {
+                return;
+            }
+
+            Vector3f checkpoint = map.getGLTileCenter(t);
+            Vector3f location = control.getPhysicsLocation();
+            location.subtractLocal(0, 1f, 0);
+
+            // next checkpoint reached
+            if (checkpoint.distanceSquared(location) < 0.1f) {
+                route.pop();
+                System.out.println("Checkpoint reached");
                 control.setWalkDirection(Vector3f.ZERO);
+                reduceMovePoints(map.getTileCosts(t));
+
+                if (map.selectedArmy == this) {
+                    map.selectedTiles.clear();
+                    map.drawReachableArea(this);
+                }
+
+                if (route.isEmpty()) {
+                    control.setPhysicsLocation(checkpoint.addLocal(0, 1f, 0));
+                    onRoute = false;
+                    System.out.println("Goal reached");
+                    control.setWalkDirection(Vector3f.ZERO);
 
 
-            } else {
+                    Settlement s = map.getSettlement(t);
+                    if (s != null) {
+                        garrisonArmy(s);
+                    }
 
-                Tile t = route.peek();
-
-                if (currMovePoints < map.getTileCosts(t.x, t.z)) {
                     return;
                 }
 
-                Vector3f checkpoint = map.getGLTileCenter(t.x, t.z);
-                Vector3f location = control.getPhysicsLocation();
-                location.subtractLocal(0, 1f, 0);
-
-                // next checkpoint reached
-                if (checkpoint.distanceSquared(location) < 0.05f) {
-                    route.pop();
-                    System.out.println("Checkpoint reached");
-                    control.setWalkDirection(Vector3f.ZERO);
-                    reduceMovePoints(map.getTileCosts(t.x, t.z));
-                    posX = t.x;
-                    posZ = t.z;
-
-
-                    if (map.selectedArmy == this) {
-                        map.selectedTiles.clear();
-                        map.drawReachableArea(this);
-                    }
-
-                    if (route.isEmpty()) {
-                        control.setPhysicsLocation(checkpoint.addLocal(0, 1f, 0));
-                        onRoute = false;
-                        System.out.println("Goal reached");
-                        control.setWalkDirection(Vector3f.ZERO);
-
-
-                        Settlement s = map.getSettlement(posX, posZ);
-                        if (s != null) {
-                            garrisonArmy(s);
-                        }
-
-                        return;
-                    }
-
-                    t = route.peek();
-                    checkpoint = map.getGLTileCenter(t.x, t.z);
-                    Vector3f dir = checkpoint.subtractLocal(location);
-                    dir.normalizeLocal().multLocal(0.5f).setY(0);
-                    control.setWalkDirection(dir);
-                    control.setViewDirection(dir);
-                }
+                t = route.peek();
+                checkpoint = map.getGLTileCenter(t);
+                Vector3f dir = checkpoint.subtract(location).normalizeLocal();
+                control.setWalkDirection(dir);
+                control.setViewDirection(dir);
             }
+
 
 
 
@@ -154,21 +148,22 @@ public class Army {
         route = r;
         onRoute = true;
     }
-    
+
     public void garrisonArmy(Settlement s) {
-        
+
         for (Unit u : units) {
             units.add(u);
         }
-        
-       final Army a = this;
+
+        final Army a = this;
 
         map.scene.getControl(UpdateControl.class).enqueue(new Callable() {
+
             @Override
-         public Object call() throws Exception {
-             map.removeArmy(a);             
-             return null;
-         }
-     });
+            public Object call() throws Exception {
+                map.removeArmy(a);
+                return null;
+            }
+        });
     }
 }

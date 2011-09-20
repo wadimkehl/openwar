@@ -60,7 +60,7 @@ public class Main extends SimpleApplication {
         Main app = new Main();
         Logger.getLogger("").setLevel(Level.SEVERE);
 
-        app.setShowSettings(false);
+        app.setShowSettings(true);
         app.setSettings(new AppSettings(true));
         app.settings.setTitle("openwar    r" + version);
         app.settings.setFrameRate(30);
