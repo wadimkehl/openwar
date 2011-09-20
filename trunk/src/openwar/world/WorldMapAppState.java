@@ -44,7 +44,7 @@ public class WorldMapAppState extends AbstractAppState {
                 int x = (int) pt.x;
                 int z = (int) pt.z;
 
-                if (r.getGeometry() instanceof TerrainPatch) {
+                if (r.getGeometry() instanceof TerrainPatch || r.getGeometry().getName().equals("reachableArea")) {
 
                     if (Main.devMode) {
                         System.err.println(map.worldTiles[x][z]);
@@ -87,7 +87,7 @@ public class WorldMapAppState extends AbstractAppState {
 
 
                 // Check if we ordered a march command
-                if (r.getGeometry() instanceof TerrainPatch) {
+                if (r.getGeometry() instanceof TerrainPatch  || r.getGeometry().getName().equals("reachableArea")) {
                     map.marchTo(map.selectedArmy, x, z);
                     return;
                 }
