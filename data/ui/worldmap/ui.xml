@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <nifty xmlns="http://nifty-gui.sourceforge.net/nifty.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nifty-gui.sourceforge.net/nifty.xsd http://nifty-gui.sourceforge.net/nifty.xsd">
 
+  <useStyles filename="nifty-default-styles.xml" />
+  <useControls filename="nifty-default-controls.xml" />
+
+
     <screen id="start" controller="openwar.world.WorldMapUI">
 
        
@@ -20,11 +24,11 @@
                 <panel height="*" width="25%" childLayout="horizontal">
                     <panel height="*" width="10%"/> 
                     <panel height="*" width="80%"  childLayout="vertical">
-                        <panel height="17%" width="*"/> 
+                        <panel height="16%" width="*"/> 
                         
                         <!-- panel for mini map -->
-                        <panel id="minimap_panel" height="75%" width="*" childLayout="horizontal">
-                            <image id="minimap" height="*" width="*" >
+                        <panel id="minimap_panel" height="75%" width="*" childLayout="center">
+                            <image id="minimap" height="100%" width="100%" align="center" valign="center">
                                 <interact onClick="onMinimapClick()" />                
                             </image>
                         </panel>
@@ -45,7 +49,69 @@
                 <panel height="*" width="25%" />
                   
                 <!-- center part of bottom ui -->
-                <panel height="*" width="50%"/> 
+                <panel height="*" width="50%"  childLayout="vertical">
+                    <panel height="16%" width="*"/> 
+                    <panel height="*" width="*" childLayout="horizontal">
+                        <panel height="*" width="3.75%"/>
+                        <panel height="*" width="*" childLayout="vertical" >
+                      
+                            <panel height="45%" width="*" childLayout="vertical">
+
+                        <!-- upper units row --> 
+                                <panel height="*" width="*" childLayout="horizontal">
+                                    <image id="unit0" width="9.975%" height="*" /> 
+                                    <panel height="*" width="0.25%"/>
+                                    <image id="unit1" width="9.975%" height="*" /> 
+                                    <panel height="*" width="0.25%"/>
+                                    <image id="unit2" width="9.975%" height="*" /> 
+                                    <panel height="*" width="0.25%"/>
+                                    <image id="unit3" width="9.975%" height="*" /> 
+                                    <panel height="*" width="0.25%"/>
+                                    <image id="unit4" width="9.975%" height="*" /> 
+                                    <panel height="*" width="0.25%"/>
+                                    <image id="unit5" width="9.975%" height="*" />
+                                    <panel height="*" width="0.25%"/>
+                                    <image id="unit6" width="9.975%" height="*" />
+                                    <panel height="*" width="0.25%"/>
+                                    <image id="unit7" width="9.975%" height="*" /> 
+                                    <panel height="*" width="0.25%"/>
+                                    <image id="unit8" width="9.975%" height="*" /> 
+                                    <panel height="*" width="0.25%"/>
+                                    <image id="unit9" width="9.975%" height="*" />         
+                                </panel>
+                            </panel>
+                           
+                            <panel height="0.5%" width="*"/>
+
+                        <!-- lower units row --> 
+                            <panel height="45%" width="*" childLayout="horizontal">
+
+                                <panel height="*" width="*" childLayout="horizontal">
+                                    <image id="unit10" width="9.975%" height="*" /> 
+                                    <panel height="*" width="0.25%"/>
+                                    <image id="unit11" width="9.975%" height="*" /> 
+                                    <panel height="*" width="0.25%"/>
+                                    <image id="unit12" width="9.975%" height="*" /> 
+                                    <panel height="*" width="0.25%"/>
+                                    <image id="unit13" width="9.975%" height="*" /> 
+                                    <panel height="*" width="0.25%"/>
+                                    <image id="unit14" width="9.975%" height="*" /> 
+                                    <panel height="*" width="0.25%"/>
+                                    <image id="unit15" width="9.975%" height="*" />
+                                    <panel height="*" width="0.25%"/>
+                                    <image id="unit16" width="9.975%" height="*" />
+                                    <panel height="*" width="0.25%"/>
+                                    <image id="unit17" width="9.975%" height="*" /> 
+                                    <panel height="*" width="0.25%"/>
+                                    <image id="unit18" width="9.975%" height="*" /> 
+                                    <panel height="*" width="0.25%"/>
+                                    <image id="unit19" width="9.975%" height="*" />         
+                                </panel>                     
+                            </panel>     
+                        </panel>
+                        <panel height="*" width="3.5%"/>
+                    </panel>             
+                </panel> 
                 
                 
                 <!-- right part of bottom ui -->
@@ -58,21 +124,15 @@
                         <!-- three buttons -->
                         <panel height="80%" width="*" childLayout="horizontal">
                             <image id="build" filename="ui/worldmap/menue.tga" imageMode="subImage:1,152,34,50" width="28%" height="*">         
-                                <interact onClick="onClick(build,0)" /> 
-               
-
+                                <interact onPrimaryClick="onClick(build,0)" onSecondaryClick="onClick(build,1)" onTertiaryClick="onClick(build,2)" />
                             </image>
                             <panel height="*" width="2%"/> 
                             <image id="recruit" filename="ui/worldmap/menue.tga" imageMode="subImage:35,152,34,50" width="28%" height="*">         
-                                <interact onPrimaryClick="onClick(recruit,0)" /> 
-                                <interact onSecondaryClick="onClick(recruit,1)" />    
-                                <interact onTertiaryClick="onClick(recruit,2)" />
+                                <interact onPrimaryClick="onClick(recruit,0)" onSecondaryClick="onClick(recruit,1)" onTertiaryClick="onClick(recruit,2)" />
                             </image>
                             <panel height="*" width="2%"/> 
                             <image id="turn" filename="ui/worldmap/menue.tga" imageMode="subImage:70,152,34,50" width="28%" height="*">         
-                                <interact onPrimaryClick="onClick(turn,0)" /> 
-                                <interact onSecondaryClick="onClick(turn,1)" />    
-                                <interact onTertiaryClick="onClick(turn,2)" />
+                                <interact onPrimaryClick="onClick(turn,0)" onSecondaryClick="onClick(turn,1)" onTertiaryClick="onClick(turn,2)" />
                             </image>
                         </panel>
 

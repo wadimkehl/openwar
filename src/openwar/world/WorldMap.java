@@ -28,7 +28,10 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.scene.control.UpdateControl;
+import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
+import com.jme3.shadow.BasicShadowRenderer;
+import com.jme3.shadow.PssmShadowRenderer;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import com.jme3.texture.Image;
 import com.jme3.texture.Texture;
@@ -57,7 +60,7 @@ import openwar.Main;
  * @author kehl
  */
 public class WorldMap {
-    
+
     Main game;
     public int width, height;
     public TerrainQuad terrain;
@@ -77,7 +80,7 @@ public class WorldMap {
     PathFinder pathFinder = new PathFinder(this);
     private static final Logger logger = Logger.getLogger(WorldMap.class.getName());
     public WorldMinimap minimap;
-    
+
     public WorldMap(Main app, Node scene) {
         game = app;
         bulletState = app.bulletState;
@@ -85,15 +88,15 @@ public class WorldMap {
         rootScene = scene;
         heightMap = null;
         scene.addControl(new UpdateControl());
-        
-        
+
+
     }
-    
+
     public void setWorldTile(int x, int z, int type) {
         worldTiles[x][z] = new WorldTile(x, z, type, getGroundTypeCost(type),
                 worldTiles[x][z].region, worldTiles[x][z].climate);
     }
-    
+
     public boolean createKeyTextures() {
         int size = width * height * 4;
         ByteBuffer buf0 = ByteBuffer.allocateDirect(size);
@@ -116,7 +119,7 @@ public class WorldMap {
             buf0.put(data0[i]);
             buf1.put(data1[i]);
             buf2.put(data2[i]);
-            
+
         }
         key0Image = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf0));
         key1Image = new Texture2D(new Image(Image.Format.RGBA8, width, height, buf1));
@@ -124,10 +127,10 @@ public class WorldMap {
         matTerrain.setTexture("AlphaMap", key0Image);
         matTerrain.setTexture("AlphaMap_1", key1Image);
         matTerrain.setTexture("AlphaMap_2", key2Image);
-        
+
         return true;
     }
-    
+
     public void showGrid(boolean on) {
         int color;
         if (on) {
@@ -143,9 +146,9 @@ public class WorldMap {
                     buf.putInt(color);
                 } else {
                     buf.putInt(Integer.parseInt("000000", 16));
-                    
+
                 }
-                
+
             }
         }
         gridImage = new Texture2D(new Image(Image.Format.RGBA8, grid_res, grid_res, buf));
@@ -153,7 +156,7 @@ public class WorldMap {
         matTerrain.setTexture("GridMap", gridImage);
         matTerrain.setFloat("GridMap_scale", Math.min(width, height));
     }
-    
+
     public boolean createTerrain() {
 
         // Create standard material with all textures and needed values
@@ -165,13 +168,13 @@ public class WorldMap {
             matTerrain.setTexture("DiffuseMap_" + i, Main.DB.tileTextures.get(i));
             matTerrain.setFloat("DiffuseMap_" + i + "_scale", Main.DB.tileTextures_scales.get(i));
             Main.DB.tileTextures.get(i).setWrap(Texture.WrapMode.Repeat);
-            
+
         }
-        
+
         if (!createKeyTextures()) {
             return false;
         }
-        
+
         showGrid(false);
 
         // Create mesh data with material and place its north-western edge to the origin
@@ -181,10 +184,10 @@ public class WorldMap {
         terrain = new TerrainQuad("terrain", 32, heightMap.getSize(), heightMap.getHeightMap());
         terrain.setMaterial(matTerrain);
         terrain.setLocalTranslation(width / 2f, 0f, height / 2f);
-        
+
         return true;
     }
-    
+
     public boolean createWorldTiles() {
 
         // Create worldTiles array and read according region and climate from images
@@ -219,40 +222,44 @@ public class WorldMap {
                 }
             }
         }
-        
+
         return true;
-        
+
     }
-    
+
     public boolean createEntities() {
-        
+
         for (Region r : Main.DB.regions) {
-            
+
             if (r.settlement == null) {
                 continue;
             }
-            
-            Spatial m = Main.DB.genBuildings.get("city").levels.get(0).model.clone();
+
+            //Spatial m = Main.DB.genBuildings.get("city").levels.get(0).model.clone();
+            Spatial m = (Spatial) new Geometry("city", new Box(Vector3f.ZERO, 1.2f, 0.25f, 1.2f));
+            m.setMaterial(new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md"));
+
             m.setShadowMode(ShadowMode.CastAndReceive);
             Vector3f vec = getGLTileCenter(r.settlement.posX, r.settlement.posZ);
+            vec.y += 0.25f;
             m.setLocalTranslation(vec);
             r.settlement.model = m;
             scene.attachChild(m);
-            
-            
+
+
         }
-        
+
         return true;
-        
+
     }
 
     // Create the whole world map
     public boolean createWorldMap() {
-        
+
         width = Main.DB.typesTex.getImage().getWidth();
         height = Main.DB.typesTex.getImage().getHeight();
-        
-        
+
+
         if (!createWorldTiles()) {
             System.out.println("Couldn't create world tiles...");
             return false;
@@ -265,10 +272,10 @@ public class WorldMap {
             System.out.println("Couldn't create entities...");
             return false;
         }
-        
+
         minimap = new WorldMinimap(this);
-        
-        
+
+
         DirectionalLight dlight = new DirectionalLight();
         dlight.setColor(new ColorRGBA(
                 Main.DB.sun_color.x / 255f,
@@ -276,9 +283,9 @@ public class WorldMap {
                 Main.DB.sun_color.z / 255f, 1));
         dlight.setDirection(Main.DB.sun_direction);
         scene.addLight(dlight);
-        
+
         fpp = new FilterPostProcessor(assetManager);
-        
+
         WaterFilter water = new WaterFilter(scene, new Vector3f(0.3f, -0.9f, 1f));
         water.setMaxAmplitude(0.2f);
         water.setWaterTransparency(15f);
@@ -287,31 +294,41 @@ public class WorldMap {
         water.setFoamHardness(2f);
         water.setFoamExistence(new Vector3f(0.1f, 0.2f, 0.18f));
         fpp.addFilter(water);
-        
-        
+
+
         if (!Main.devMode) {
             BloomFilter bloom = new BloomFilter();
             bloom.setExposurePower(4f);
             fpp.addFilter(bloom);
+
+            PssmShadowRenderer pssm = new PssmShadowRenderer(assetManager, 1024, 4);
+            pssm.setDirection(Main.DB.sun_direction);
+            game.getViewPort().addProcessor(pssm);
+
         }
-        
+
         game.getViewPort().addProcessor(fpp);
-        
-        
+
+
         reachableArea = new Geometry();
         scene.attachChild(terrain);
         rootScene.attachChild(scene);
         terrain.addControl(new RigidBodyControl(0));
         bulletState.getPhysicsSpace().addAll(terrain);
-        
+
+
+        terrain.setShadowMode(ShadowMode.Receive);
+
+
         ArrayList<Unit> units = new ArrayList<Unit>();
-        Unit u = new Unit("bowmen");
-        units.add(u);
+        for (int i = 0; i < 20; i++) {
+            units.add(new Unit("bowmen"));
+        }
         createArmy(31, 20, "humans", units);
-        
-        
+
+
         return true;
-        
+
     }
 
     // Returns for a tile the real opengl center coordinates
@@ -320,7 +337,7 @@ public class WorldMap {
         float newz = z + 0.5f;
         return new Vector3f(newx, heightMap.getInterpolatedHeight(newx, newz), newz);
     }
-    
+
     public Vector3f getGLTileCenter(Tile t) {
         return getGLTileCenter(t.x, t.z);
     }
@@ -329,65 +346,65 @@ public class WorldMap {
     public Vector3f getGLTileCorner(int x, int z) {
         return new Vector3f(x, heightMap.getInterpolatedHeight(x, z), z);
     }
-    
+
     public void deselectAll() {
         selectedArmy = null;
         selectedSettlement = null;
-        
+
         scene.detachChild(reachableArea);
-        
+
     }
-    
+
     public void update(float tpf) {
-        
-        
+
+
         minimap.update();
-        
+
         for (Army a : Armies) {
             a.update(tpf);
         }
-        
-        
-        
+
+
+
     }
 
     // Spawns a physical army on the world map
     public Army createArmy(int x, int z, String owner, ArrayList<Unit> units) {
-        
+
         Spatial m = (Spatial) new Geometry("army", new Sphere(15, 15, 0.5f));
         m.setMaterial(new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md"));
-        
-        
+
+
         Army a = new Army(x, z, owner, m, this);
         a.units = units;
         Armies.add(a);
         scene.attachChild(m);
         bulletState.getPhysicsSpace().add(a.control);
-        
+
         return a;
-        
+
     }
 
     // Removes an army from the world map
     public void removeArmy(Army a) {
-        
+
         Armies.remove(a);
         scene.detachChild(a.model);
-        
-        
+
+
     }
-    
+
     public int getTileCosts(Tile t) {
         return getTileCosts(t.x, t.z);
     }
-    
+
     public int getTileCosts(int x, int z) {
         return worldTiles[ensureInTerrainX(x)][ensureInTerrainZ(z)].cost;
     }
 
     // Returns army object
     public Army getArmy(Spatial model) {
-        
+
         for (Army w : Armies) {
             if (w.model == model) {
                 return w;
@@ -403,7 +420,7 @@ public class WorldMap {
 
     // Returns army object
     public Army getArmy(int x, int z) {
-        
+
         for (Army w : Armies) {
             if (w.posX == x && w.posZ == z) {
                 return w;
@@ -411,9 +428,9 @@ public class WorldMap {
         }
         return null;
     }
-    
+
     public Settlement getSettlement(Spatial model) {
-        
+
         for (Settlement s : Main.DB.settlements) {
             if (s.model == model) {
                 return s;
@@ -421,13 +438,13 @@ public class WorldMap {
         }
         return null;
     }
-    
+
     public Settlement getSettlement(Tile t) {
         return getSettlement(t.x, t.z);
     }
-    
+
     public Settlement getSettlement(int x, int z) {
-        
+
         for (Settlement s : Main.DB.settlements) {
             if (s.posX == x && s.posZ == z) {
                 return s;
@@ -444,6 +461,12 @@ public class WorldMap {
         selectedArmy = army;
         drawReachableArea(army);
         
+        for(int i=0; i < 20; i++)
+        {
+            game.worldMapState.controller.setImage("unit"+i,Main.DB.genUnits.get(army.units.get(i).refName).image);
+        }
+
+
     }
 
     // Marks the army as currently selected
@@ -453,31 +476,31 @@ public class WorldMap {
         }
         selectedSettlement = s;
         System.out.println(s.name);
-        
+
     }
-    
+
     public int ensureMinMax(int value, int min, int max) {
         return Math.min(max, Math.max(min, value));
-        
-        
+
+
     }
-    
+
     public int ensureInTerrainX(float value) {
         return (int) Math.min(width - 1, Math.max(0, value));
-        
-        
+
+
     }
-    
+
     public int ensureInTerrainZ(float value) {
         return (int) Math.min(height - 1, Math.max(0, value));
-        
+
     }
 
     // Run BFS to find the reachable tiles for the army
     public void drawReachableArea(Army army) {
-        
+
         ArrayList<Tile> area = pathFinder.getReachableArea(army);
-        
+
         ArrayList<Vector2f> corners = new ArrayList<Vector2f>();
         for (Tile t : area) {
             corners.add(new Vector2f(t.x, t.z + 1));
@@ -485,25 +508,25 @@ public class WorldMap {
             corners.add(new Vector2f(t.x + 1, t.z));
             corners.add(new Vector2f(t.x, t.z));
         }
-        
+
         Mesh m = new Mesh();
         float[] verts = new float[corners.size() * 3];
         float[] colors = new float[corners.size() * 4];
         int[] indices = new int[area.size() * 6];
-        
+
         for (int i = 0; i < corners.size(); i++) {
             float x = corners.get(i).x;
             float z = corners.get(i).y;
             verts[i * 3] = corners.get(i).x;
             verts[i * 3 + 1] = heightMap.getInterpolatedHeight(x, z) + 0.1f;
             verts[i * 3 + 2] = corners.get(i).y;
-            
+
             colors[i * 4] = 0f;
             colors[i * 4 + 1] = 1f;
             colors[i * 4 + 2] = 0f;
-            
+
         }
-        
+
         for (int i = 0; i < area.size(); i++) {
             int base_ind = i * 6;
             int base_vert = i * 4;
@@ -514,14 +537,14 @@ public class WorldMap {
             indices[base_ind + 4] = base_vert + 2;
             indices[base_ind + 5] = base_vert + 3;
         }
-        
+
         m.setBuffer(Type.Position, 3, verts);
         m.setBuffer(Type.Index, 1, indices);
         m.setBuffer(Type.Color, 4, colors);
         m.setMode(Mesh.Mode.Triangles);
         m.setStatic();
         m.updateBound();
-        
+
         reachableArea = new Geometry("reachableArea", m);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setBoolean("VertexColor", true);
@@ -535,39 +558,39 @@ public class WorldMap {
     public boolean walkableTile(Tile t) {
         return walkableTile(t.x, t.z);
     }
-    
+
     public boolean walkableTile(int x, int z) {
         return Main.DB.genTiles.get(worldTiles[x][z].groundType).walkable;
     }
-    
+
     public boolean sailableTile(Tile t) {
         return sailableTile(t.x, t.z);
     }
-    
+
     public boolean sailableTile(int x, int z) {
         return Main.DB.genTiles.get(worldTiles[x][z].groundType).sailable;
     }
-    
+
     public void marchTo(Army a, Tile t) {
         marchTo(a, t.x, t.z);
     }
-    
+
     public void marchTo(Army a, Settlement s) {
         marchTo(a, s.posX, s.posZ);
     }
-    
+
     public void marchTo(Army a, Army goal) {
         marchTo(a, goal.posX, goal.posZ);
     }
-    
+
     public void marchTo(Army a, int x, int z) {
-        
+
         Stack<Tile> p = pathFinder.findPath(new Tile(a.posX, a.posZ), new Tile(x, z));
         if (p != null) {
             selectedArmy.setRoute(p);
         }
     }
-    
+
     public Region getRegionByRGB(Vector3f col) {
         for (Region reg : Main.DB.regions) {
             if (reg.color.equals(col)) {
@@ -576,11 +599,11 @@ public class WorldMap {
         }
         return null;
     }
-    
+
     public Climate getClimateByRGB(int r, int g, int b) {
         return getClimateByRGB(new Vector3f(r, g, b));
     }
-    
+
     public Climate getClimateByRGB(Vector3f col) {
         for (Climate t : Main.DB.climates) {
             if (t.color.equals(col)) {
@@ -589,11 +612,11 @@ public class WorldMap {
         }
         return null;
     }
-    
+
     public int RGBtoGroundType(int r, int g, int b) {
         return RGBtoGroundType(new Vector3f(r, g, b));
     }
-    
+
     public int RGBtoGroundType(Vector3f col) {
         for (openwar.DB.GenericTile t : Main.DB.genTiles.values()) {
             if (t.color.equals(col)) {
@@ -602,11 +625,11 @@ public class WorldMap {
         }
         return -1;
     }
-    
+
     public int RGBtoVisualGroundType(int r, int g, int b) {
         return RGBtoVisualGroundType(new Vector3f(r, g, b));
     }
-    
+
     public int RGBtoVisualGroundType(Vector3f col) {
         for (openwar.DB.GenericTile t : Main.DB.genTiles.values()) {
             if (t.color.equals(col)) {
@@ -615,7 +638,7 @@ public class WorldMap {
         }
         return -1;
     }
-    
+
     public int getVisualGroundType(int groundtype) {
         for (openwar.DB.GenericTile t : Main.DB.genTiles.values()) {
             if (t.type == groundtype) {
@@ -624,25 +647,25 @@ public class WorldMap {
         }
         return -1;
     }
-    
+
     public int getGroundTypeCost(int type) {
         openwar.DB.GenericTile t = Main.DB.genTiles.get(type);
         if (t != null) {
             return t.cost;
         }
-        
+
         return -1;
     }
-    
+
     public boolean isWalkable(int type) {
         openwar.DB.GenericTile t = Main.DB.genTiles.get(type);
         if (t != null) {
             return t.walkable;
         }
-        
+
         return false;
     }
-    
+
     public boolean isSailable(int type) {
         openwar.DB.GenericTile t = Main.DB.genTiles.get(type);
         if (t != null) {
@@ -650,14 +673,14 @@ public class WorldMap {
         }
         return false;
     }
-    
+
     public String getGroundTypeString(int type) {
-        
+
         openwar.DB.GenericTile t = Main.DB.genTiles.get(type);
         if (t != null) {
             return t.name;
         }
-        
+
         return "N/A";
     }
 
@@ -705,7 +728,7 @@ public class WorldMap {
         }
         return true;
     }
-    
+
     public void fadeSeason() {
     }
 }

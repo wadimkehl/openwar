@@ -2,7 +2,7 @@
 
 <root>
 
-    <unit name="Bowmen" refname="bowmen" maxcount="100" maxmovepoints="20" image="unitcard.png" />
+    <unit name="Bowmen" refname="bowmen" maxcount="100" maxmovepoints="20" image="unitcard.jpg" />
     <stats att_melee="1" att_assault="1" att_range="5" armor="1" shield="0" melee="1" ranged="1" />
 
 
