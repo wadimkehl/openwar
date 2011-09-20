@@ -23,7 +23,7 @@ import openwar.DB.Unit;
 public class Army {
 
     int posX, posZ;
-    int playerNumber;
+    String player;
     int currMovePoints;
     Spatial model;
     CharacterControl control;
@@ -35,18 +35,15 @@ public class Army {
     public Army() {
     }
 
-    public Army(int x, int z, int player, Spatial m, WorldMap map) {
+    public Army(int x, int z, String p, Spatial m, WorldMap map) {
         posX = x;
         posZ = z;
-        playerNumber = player;
+        player = p;
         this.map = map;
         model = m;
         model.setShadowMode(ShadowMode.CastAndReceive);
 
-
-
-
-        control = new CharacterControl(new CapsuleCollisionShape(0.25f, 1.5f, 1), 10000f);
+       control = new CharacterControl(new CapsuleCollisionShape(0.25f, 1.5f, 1), 10000f);
         model.addControl(control);
 
         Vector3f vec = map.getGLTileCenter(x, z);
@@ -56,6 +53,8 @@ public class Army {
 
         model.scale(0.2f);
         units = new ArrayList<Unit>();
+        
+        resetMovePoints();
 
     }
 

@@ -49,7 +49,7 @@ public class PathFinder {
             int min = 100000;
             PathTile best = null;
             for (PathTile temp : open) {
-                if (temp.distance < min) {
+                if (temp.distance < min && map.walkableTile(temp)) {
                     min = temp.distance;
                     best = temp;
                 }
@@ -146,7 +146,7 @@ public class PathFinder {
                 for (int z = -1; z < 2; z++) {
 
                     int new_d = map.getTileCosts(t.x + x, t.z + z) + t.distance;
-                    if (new_d >= points) {
+                    if (new_d >= points ) {
                         continue;
                     }
                     int offset_x = map.ensureMinMax(points - army.posX + t.x + x, 0, 2 * points - 1);
@@ -161,7 +161,7 @@ public class PathFinder {
         
         for (int x = -points; x < points; x++) 
             for (int z = -points; z < points; z++) 
-                if (distance[points + x][points + z] <= points)
+                if (distance[points + x][points + z] <= points && map.walkableTile(army.posX+x,army.posZ+z))
                     area.add(new Tile(army.posX+x,army.posZ+z));
 
         return area;
