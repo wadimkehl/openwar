@@ -12,6 +12,7 @@ import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.light.DirectionalLight;
 
 import com.jme3.material.Material;
+import com.jme3.material.RenderState.BlendMode;
 import com.jme3.material.RenderState.FaceCullMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector2f;
@@ -19,6 +20,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.niftygui.RenderImageJme;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.BloomFilter;
+import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
@@ -457,51 +459,16 @@ public class WorldMap {
 
         ArrayList<Vector2f> corners = new ArrayList<Vector2f>();
         for (Tile t : area) {
-            Vector2f corner0 = new Vector2f(t.x, t.z+1);
-            Vector2f corner1 = new Vector2f(t.x+1, t.z+1);
-            Vector2f corner2 = new Vector2f(t.x+1, t.z);
-            Vector2f corner3 = new Vector2f(t.x , t.z);
-            corners.add(corner0);
-            corners.add(corner1);
-            corners.add(corner2);
-            corners.add(corner3);
-//            }
-//            }
-//            boolean c0 = false, c1 = false, c2 = false, c3 = false;
-//            for (Vector2f c : corners) {
-//                if (c.equals(corner0)) {
-//                    c0 = true;
-//                }
-//                if (c.equals(corner1)) {
-//                    c1 = true;
-//                }
-//
-//                if (c.equals(corner2)) {
-//                    c2 = true;
-//                }
-//
-//                if (c.equals(corner3)) {
-//                    c3 = true;
-//                }
-//            }
-//            if (!c0) {
-//                corners.add(corner0);
-//            }
-//            if (!c1) {
-//                corners.add(corner1);
-//            }
-//            if (!c2) {
-//                corners.add(corner2);
-//            }
-//            if (!c3) {
-//                corners.add(corner3);
-//            }
-        }
+            corners.add(new Vector2f(t.x, t.z + 1));
+            corners.add(new Vector2f(t.x + 1, t.z + 1));
+            corners.add(new Vector2f(t.x + 1, t.z));
+            corners.add(new Vector2f(t.x, t.z));
+       }
 
         Mesh m = new Mesh();
         float[] verts = new float[corners.size() * 3];
         float[] colors = new float[corners.size() * 4];
-        int[] indices = new int[(corners.size()*3)/2];
+        int[] indices = new int[area.size()*6];
 
         for (int i = 0; i < corners.size(); i++) {
             float x = corners.get(i).x;
@@ -509,35 +476,37 @@ public class WorldMap {
             verts[i * 3] = corners.get(i).x;
             verts[i * 3 + 1] = heightMap.getInterpolatedHeight(x, z) + 0.1f;
             verts[i * 3 + 2] = corners.get(i).y;
+            
             colors[i * 4] = 0f;
             colors[i * 4 + 1] = 1f;
             colors[i * 4 + 2] = 0f;
-            colors[i * 4 + 3] = 0.5f;
+                    
         }
 
-        for (int i = 0; i < corners.size()/4; i++) {
-            int base = i*6;
-            indices[base] = base/2+2;
-            indices[base+1] = base/2+0;
-            indices[base+2] = base/2+1;
-            indices[base+3] = base/2+1;
-            indices[base+4] = base/2+3;
-            indices[base+5] = base/2+2;
+        for (int i = 0; i < area.size(); i++) {
+            int base_ind = i*6;
+            int base_vert = i*4;
+            indices[base_ind] = base_vert;
+            indices[base_ind+1] = base_vert+1;
+            indices[base_ind+2] = base_vert+2;
+            indices[base_ind+3] = base_vert+0;
+            indices[base_ind+4] = base_vert+2;
+            indices[base_ind+5] = base_vert+3;
         }
 
         m.setBuffer(Type.Position, 3, verts);
         m.setBuffer(Type.Index, 1, indices);
         m.setBuffer(Type.Color, 4, colors);
-        m.setPointSize(1f);
-        m.setMode(Mesh.Mode.Lines);
+        m.setMode(Mesh.Mode.Triangles);
         m.setStatic();
         m.updateBound();
 
         reachableArea = new Geometry("reachableArea", m);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
         mat.setBoolean("VertexColor", true);
+        mat.getAdditionalRenderState().setBlendMode(BlendMode.Modulate);
         reachableArea.setMaterial(mat);
+        reachableArea.setQueueBucket(Bucket.Transparent);
         scene.attachChild(reachableArea);
     }
 
@@ -671,7 +640,7 @@ public class WorldMap {
         return "N/A";
     }
 
-    // Fills the key textures at a specific base address with the right blending value
+    // Fills the key textures at a specific base_ind address with the right blending value
     public boolean computeKeys(int groundtype, int base, byte[] data0, byte[] data1, byte[] data2) {
         switch (groundtype) {
             case (0):

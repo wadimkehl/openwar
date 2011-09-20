@@ -39,7 +39,7 @@ import openwar.DB.GameDatabase;
 
 public class Main extends SimpleApplication {
 
-    static public int version = 2;
+    static public int version = 3;
     public String locatorRoot = "data" + File.separator;
     public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(4);
     public Nifty nifty;
@@ -60,7 +60,7 @@ public class Main extends SimpleApplication {
         Main app = new Main();
         Logger.getLogger("").setLevel(Level.SEVERE);
 
-        app.setShowSettings(true);
+        app.setShowSettings(false);
         app.setSettings(new AppSettings(true));
         app.settings.setTitle("openwar    r" + version);
         app.settings.setFrameRate(30);
