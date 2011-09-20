@@ -24,11 +24,13 @@ public class WorldMinimap {
 
     public Texture2D minimapImage;
     public Element minimapElement;
-    public Vector3f minimapColor = new Vector3f(255, 50, 50);
+    public Vector3f minimapCameraColor = new Vector3f(255, 50, 50);
+    public Vector3f minimapNoOwnerColor = new Vector3f(50, 50, 255);
     public WorldMap map;
     public int mapHeight, mapWidth, imageHeight, imageWidth, panelHeight, panelWidth;
     public float imageRatio, panelRatio, mapRatio, disparity;
     public int imageX, imageY;
+    public float[][] borderMap;
 
     public WorldMinimap(WorldMap m) {
         map = m;
@@ -58,7 +60,32 @@ public class WorldMinimap {
 //        
         disparity = (float) mapHeight / (float) imageHeight;
 
-
+        borderMap = new float[mapWidth][mapHeight];
+        String lastReg = map.worldTiles[0][0].region;
+        for (int j = 0; j < mapHeight; j++) {
+            for (int i = 0; i < mapWidth; i++) {
+                borderMap[i][j] = 1f;
+                if (!lastReg.equals(map.worldTiles[i][j].region)) {
+                    lastReg = map.worldTiles[i][j].region;
+                    borderMap[i][j] = 0f;
+                }
+            }
+            if (j < mapHeight - 1) {
+                lastReg = map.worldTiles[0][j].region;
+            }
+        }
+        lastReg = map.worldTiles[0][0].region;
+        for (int i = 0; i < mapWidth; i++) {
+            for (int j = 0; j < mapHeight; j++) {
+                if (!lastReg.equals(map.worldTiles[i][j].region)) {
+                    lastReg = map.worldTiles[i][j].region;
+                    borderMap[i][j] = 0f;
+                }
+            }
+            if (i < mapWidth - 1) {
+                lastReg = map.worldTiles[i][0].region;
+            }
+        }
 
     }
 
@@ -86,9 +113,9 @@ public class WorldMinimap {
             M = 2 * HY;
             for (;;) {
                 int base = (map.ensureInTerrainZ(y) * mapHeight + map.ensureInTerrainX(x)) * 3;
-                data.put(base, (byte) (((int) minimapColor.x) & 0xff));
-                data.put(base + 1, (byte) (((int) minimapColor.y) & 0xff));
-                data.put(base + 2, (byte) (((int) minimapColor.z) & 0xff));
+                data.put(base, (byte) (((int) minimapCameraColor.x) & 0xff));
+                data.put(base + 1, (byte) (((int) minimapCameraColor.y) & 0xff));
+                data.put(base + 2, (byte) (((int) minimapCameraColor.z) & 0xff));
                 if (x == xQ) {
                     break;
                 }
@@ -104,9 +131,9 @@ public class WorldMinimap {
             M = 2 * HX;
             for (;;) {
                 int base = (map.ensureInTerrainZ(y) * mapHeight + map.ensureInTerrainX(x)) * 3;
-                data.put(base, (byte) (((int) minimapColor.x) & 0xff));
-                data.put(base + 1, (byte) (((int) minimapColor.y) & 0xff));
-                data.put(base + 2, (byte) (((int) minimapColor.z) & 0xff));
+                data.put(base, (byte) (((int) minimapCameraColor.x) & 0xff));
+                data.put(base + 1, (byte) (((int) minimapCameraColor.y) & 0xff));
+                data.put(base + 2, (byte) (((int) minimapCameraColor.z) & 0xff));
                 if (y == yQ) {
                     break;
                 }
@@ -125,14 +152,15 @@ public class WorldMinimap {
         ByteBuffer data = ByteBuffer.allocateDirect(mapHeight * mapWidth * 3);
         for (int j = 0; j < mapHeight; j++) {
             for (int i = 0; i < mapWidth; i++) {
-                Vector3f col = Vector3f.ZERO;
+                Vector3f col = minimapNoOwnerColor;
                 String owner = Main.DB.hashedRegions.get(map.worldTiles[i][mapHeight - 1 - j].region).owner;
                 if (!"".equals(owner)) {
                     col = Main.DB.genFactions.get(owner).color;
                 }
-                int r = (int) col.x;
-                int g = (int) col.y;
-                int b = (int) col.z;
+                float border = borderMap[i][mapHeight - 1 - j];
+                int r = (int) (col.x * border);
+                int g = (int) (col.y * border);
+                int b = (int) (col.z * border);
                 data.put((byte) (r & 0xff));
                 data.put((byte) (g & 0xff));
                 data.put((byte) (b & 0xff));

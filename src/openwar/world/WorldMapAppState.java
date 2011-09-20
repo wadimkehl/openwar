@@ -56,7 +56,7 @@ public class WorldMapAppState extends AbstractAppState {
                 }
 
                 // TODO: BLENDER exports spatial into two cascaded nodes!
-                Spatial s = (Spatial) r.getGeometry().getParent().getParent();
+                Spatial s = (Spatial) r.getGeometry();
                 Army a = map.getArmy(s);
                 if (a != null) {
                     map.selectArmy(a);
