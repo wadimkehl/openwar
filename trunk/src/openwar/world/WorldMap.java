@@ -456,12 +456,18 @@ public class WorldMap {
 
         ArrayList<Vector2f> corners = new ArrayList<Vector2f>();
         for (Tile t : area) {
-            Vector2f corner0 = new Vector2f(t.x, t.z);
-            Vector2f corner1 = new Vector2f(t.x + 1, t.z);
-            Vector2f corner2 = new Vector2f(t.x, t.z + 1);
-            Vector2f corner3 = new Vector2f(t.x + 1, t.z + 1);
-            boolean c0 = false, c1 = false, c2 = false, c3 = false;
-            for (Vector2f c : corners) {
+            Vector2f corner0 = new Vector2f(t.x, t.z+1);
+            Vector2f corner1 = new Vector2f(t.x+1, t.z+1);
+            Vector2f corner2 = new Vector2f(t.x+1, t.z);
+            Vector2f corner3 = new Vector2f(t.x , t.z);
+            corners.add(corner0);
+            corners.add(corner1);
+            corners.add(corner2);
+            corners.add(corner3);
+//            }
+//            }
+//            boolean c0 = false, c1 = false, c2 = false, c3 = false;
+//            for (Vector2f c : corners) {
 //                if (c.equals(corner0)) {
 //                    c0 = true;
 //                }
@@ -476,25 +482,25 @@ public class WorldMap {
 //                if (c.equals(corner3)) {
 //                    c3 = true;
 //                }
-            }
-            if (!c0) {
-                corners.add(corner0);
-            }
-            if (!c1) {
-                corners.add(corner1);
-            }
-            if (!c2) {
-                corners.add(corner2);
-            }
-            if (!c3) {
-                corners.add(corner3);
-            }
+//            }
+//            if (!c0) {
+//                corners.add(corner0);
+//            }
+//            if (!c1) {
+//                corners.add(corner1);
+//            }
+//            if (!c2) {
+//                corners.add(corner2);
+//            }
+//            if (!c3) {
+//                corners.add(corner3);
+//            }
         }
 
         Mesh m = new Mesh();
         float[] verts = new float[corners.size() * 3];
         float[] colors = new float[corners.size() * 4];
-        int[] indices = new int[area.size() * 6];
+        int[] indices = new int[(corners.size()*3)/2];
 
         for (int i = 0; i < corners.size(); i++) {
             float x = corners.get(i).x;
@@ -508,14 +514,14 @@ public class WorldMap {
             colors[i * 4 + 3] = 0.5f;
         }
 
-        for (int i = 0; i < area.size(); i++) {
+        for (int i = 0; i < corners.size()/4; i++) {
             int base = i*6;
-            indices[base] = i+2;
-            indices[base+1] = i;
-            indices[base+2] = i+1;
-            indices[base+3] = i+1;
-            indices[base+4] = i+3;
-            indices[base+5] = i+2;
+            indices[base] = base/2+2;
+            indices[base+1] = base/2+0;
+            indices[base+2] = base/2+1;
+            indices[base+3] = base/2+1;
+            indices[base+4] = base/2+3;
+            indices[base+5] = base/2+2;
         }
 
         m.setBuffer(Type.Position, 3, verts);
