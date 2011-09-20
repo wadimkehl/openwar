@@ -49,6 +49,8 @@ public class WorldMapAppState extends AbstractAppState {
                     if (Main.devMode) {
                         System.err.println(map.worldTiles[x][z]);
                     }
+                    
+                    map.deselectAll();
                     return;
 
                 }
