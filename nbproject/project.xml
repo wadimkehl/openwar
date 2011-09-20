@@ -6,6 +6,9 @@
             <extension file="assets-impl.xml" id="assets">
                 <dependency dependsOn="-init-assets" target="-do-init"/>
             </extension>
+            <extension file="groovy-build.xml" id="groovy">
+                <dependency dependsOn="-groovy-init-macrodef-javac" target="-pre-pre-compile"/>
+            </extension>
             <extension file="macapp-impl.xml" id="macapp">
                 <dependency dependsOn="-mac-app" target="jar"/>
             </extension>

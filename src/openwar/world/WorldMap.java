@@ -295,6 +295,7 @@ public class WorldMap {
         game.getViewPort().addProcessor(fpp);
 
 
+        reachableArea = new Geometry();
         scene.attachChild(terrain);
         rootScene.attachChild(scene);
         terrain.addControl(new RigidBodyControl(0));
