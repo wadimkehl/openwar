@@ -72,7 +72,7 @@ public class WorldMap {
     public Texture key0Image, key1Image, key2Image, gridImage;
     public WorldTile[][] worldTiles;
     Geometry reachableArea;
-    ArrayList<Army> Armies = new ArrayList<Army>();
+    ArrayList<Army> armies = new ArrayList<Army>();
     Army selectedArmy;
     Settlement selectedSettlement;
     FilterPostProcessor fpp;
@@ -86,7 +86,6 @@ public class WorldMap {
         assetManager = app.getAssetManager();
         rootScene = scene;
         heightMap = null;
-        scene.addControl(new UpdateControl());
 
 
     }
@@ -236,7 +235,7 @@ public class WorldMap {
 
             //Spatial m = Main.DB.genBuildings.get("city").levels.get(0).model.clone();
             Spatial m = (Spatial) new Geometry("city", new Box(Vector3f.ZERO, 1.2f, 0.25f, 1.2f));
-            m.setMaterial(new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md"));
+            m.setMaterial(new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"));
 
             m.setShadowMode(ShadowMode.CastAndReceive);
             Vector3f vec = getGLTileCenter(r.settlement.posX, r.settlement.posZ);
@@ -363,7 +362,7 @@ public class WorldMap {
 
         minimap.update();
 
-        for (Army a : Armies) {
+        for (Army a : armies) {
             a.update(tpf);
         }
 
@@ -374,14 +373,14 @@ public class WorldMap {
     // Spawns a physical army on the world map
     public Army createArmy(int x, int z, String owner, ArrayList<Unit> units) {
 
-        Spatial m = (Spatial) new Geometry("army", new Sphere(15, 15, 0.5f));
-        m.setMaterial(new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md"));
+        Spatial m = (Spatial) new Geometry("army", new Sphere(10, 10, 0.5f));
+        m.setMaterial(new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"));
 
 
         Army a = new Army(x, z, owner, m, this);
         a.units = units;
         a.calculateMovePoints();
-        Armies.add(a);
+        armies.add(a);
         scene.attachChild(m);
 
         return a;
@@ -391,7 +390,7 @@ public class WorldMap {
     // Removes an army from the world map
     public void removeArmy(Army a) {
 
-        Armies.remove(a);
+        armies.remove(a);
         scene.detachChild(a.model);
 
 
@@ -408,7 +407,7 @@ public class WorldMap {
     // Returns army object
     public Army getArmy(Spatial model) {
 
-        for (Army w : Armies) {
+        for (Army w : armies) {
             if (w.model == model) {
                 return w;
             }
@@ -424,7 +423,7 @@ public class WorldMap {
     // Returns army object
     public Army getArmy(int x, int z) {
 
-        for (Army w : Armies) {
+        for (Army w : armies) {
             if (w.posX == x && w.posZ == z) {
                 return w;
             }
@@ -461,10 +460,13 @@ public class WorldMap {
         if (army == null) {
             return;
         }
+
+        deselectAll();
         selectedArmy = army;
+        army.calculateMovePoints();
         drawReachableArea(army);
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < army.units.size(); i++) {
             game.worldMapState.uiController.setImage("unit" + i, Main.DB.genUnits.get(army.units.get(i).refName).image);
         }
 
@@ -476,7 +478,12 @@ public class WorldMap {
         if (s == null) {
             return;
         }
+        deselectAll();
+
         selectedSettlement = s;
+         for (int i = 0; i < s.units.size(); i++) {
+            game.worldMapState.uiController.setImage("unit" + i, Main.DB.genUnits.get(s.units.get(i).refName).image);
+        }
         System.out.println(s.name);
 
     }
@@ -495,7 +502,7 @@ public class WorldMap {
     // Run BFS to find the reachable tiles for the army
     public void drawReachableArea(Army army) {
 
-        ArrayList<Tile> area = pathFinder.getReachableArea(army);
+        ArrayList<Tile> area = pathFinder.getReachableArea(army, true, false);
 
         ArrayList<Vector2f> corners = new ArrayList<Vector2f>();
         for (Tile t : area) {
@@ -582,7 +589,7 @@ public class WorldMap {
 
     public void marchTo(Army a, int x, int z) {
 
-        Stack<Tile> p = pathFinder.findPath(new Tile(a.posX, a.posZ), new Tile(x, z));
+        Stack<Tile> p = pathFinder.findPath(new Tile(a.posX, a.posZ), new Tile(x, z), true, false);
         if (p != null) {
             selectedArmy.setRoute(p);
         }
@@ -644,15 +651,13 @@ public class WorldMap {
         }
         return -1;
     }
-    
-    public boolean insideTerrain(Tile t)
-    {
-        return insideTerrain(t.x,t.z);
+
+    public boolean insideTerrain(Tile t) {
+        return insideTerrain(t.x, t.z);
     }
-    
-    public boolean insideTerrain(int x, int z)
-    {
-        return (x>=0 && z>=0 && x < width && z < height);
+
+    public boolean insideTerrain(int x, int z) {
+        return (x >= 0 && z >= 0 && x < width && z < height);
     }
 
     public int getGroundTypeCost(int type) {

@@ -32,12 +32,16 @@ public class PathFinder {
         this.map = m;
     }
 
-    public Stack<Tile> findPath(Tile start, Tile end) {
+    public Stack<Tile> findPath(Tile start, Tile end, boolean walks, boolean sails) {
 
-        if (!map.walkableTile(start) || !map.walkableTile(end)) {
+        if (walks &&  !map.walkableTile(end)) {
             return null;
         }
 
+        if (sails && !map.sailableTile(end)) {
+            return null;
+        }
+        
         LinkedList<PathTile> open = new LinkedList<PathTile>();
         LinkedList<PathTile> closed = new LinkedList<PathTile>();
         open.add(new PathTile(start.x, start.z, 0, null));
@@ -79,6 +83,12 @@ public class PathFinder {
                     if (alreadyClosed) {
                         continue;
                     }
+                    
+                    if(walks && !map.walkableTile(newx, newz))
+                        continue;
+                    
+                    if(sails && !map.sailableTile(newx, newz))
+                        continue;
 
                     int new_distance = best.distance + map.worldTiles[newx][newz].cost;
 
@@ -118,7 +128,7 @@ public class PathFinder {
         return path;
     }
 
-    public ArrayList<Tile> getReachableArea(Army army) {
+    public ArrayList<Tile> getReachableArea(Army army, boolean walks, boolean sails) {
         ArrayList<Tile> area = new ArrayList<Tile>();
 
         int points = army.currMovePoints;
@@ -149,7 +159,11 @@ public class PathFinder {
                         continue;
                     }
 
-                    if (!map.walkableTile(t.x + x, t.z + z)) {
+                    if (walks && !map.walkableTile(t.x + x, t.z + z)) {
+                        continue;
+                    }
+                    
+                     if (sails && !map.sailableTile(t.x + x, t.z + z)) {
                         continue;
                     }
 
