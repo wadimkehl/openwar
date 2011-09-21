@@ -136,7 +136,7 @@ public class DevModeAppState extends AbstractAppState {
             } else if (name.equals("dump") && !pressed) {
                 dumpImage();
             } else if (name.equals("show_grid") && !pressed) {
-                
+
                 matTerrainDev.setTexture("GridMap", game.worldMapState.map.gridImage);
                 matTerrainDev.setFloat("GridMap_scale",
                         Math.min(game.worldMapState.map.width, game.worldMapState.map.height));
@@ -167,8 +167,6 @@ public class DevModeAppState extends AbstractAppState {
         game.getInputManager().addListener(actionListener, "mouse_right");
         game.getInputManager().addListener(actionListener, "dump");
         game.getInputManager().addListener(actionListener, "show_grid");
-
-
 
 
         initialized = true;

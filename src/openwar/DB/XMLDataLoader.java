@@ -23,6 +23,7 @@ import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import openwar.Main;
+import openwar.world.Army;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -290,6 +291,7 @@ public class XMLDataLoader {
             Element terrain = (Element) root.getElementsByTagName("terrain").item(0);
             Element climates = (Element) root.getElementsByTagName("climates").item(0);
             Element regions = (Element) root.getElementsByTagName("regions").item(0);
+            Element factions = (Element) root.getElementsByTagName("factions").item(0);
 
 
             Main.DB.tilesTexturesCount = Integer.parseInt(textures.getAttribute("tiletextures"));
@@ -392,6 +394,50 @@ public class XMLDataLoader {
                     reg.settlement = se;
                     Main.DB.settlements.add(se);
                     Main.DB.hashedSettlements.put(reg.refName, se);
+                }
+
+
+
+            }
+            
+            c = factions.getElementsByTagName("faction");
+            for (int i = 0; i < c.getLength(); i++) {
+                Element r = (Element) c.item(i);
+
+                Faction fac = new Faction();
+                fac.refName = r.getAttribute("refname");
+                fac.gold = Integer.parseInt(r.getAttribute("gold"));
+                fac.capital = r.getAttribute("capital");
+                
+
+                Main.DB.factions.add(fac);
+                Main.DB.hashedFactions.put(fac.refName, fac);
+
+
+                NodeList armies = r.getElementsByTagName("army");
+                for (int j = 0; j < armies.getLength(); j++) {
+
+                    Element army = (Element) armies.item(j);
+                    Army a = new Army();
+                    a.posX = Integer.parseInt(army.getAttribute("posx"));
+                    a.posZ = Integer.parseInt(army.getAttribute("posz"));
+                    a.player = fac.refName;
+
+                    NodeList units = army.getElementsByTagName("unit");
+                    for (int k = 0; k < units.getLength(); k++) {
+
+                        Element unit = (Element) units.item(k);
+                        Unit u = new Unit();
+                        u.refName = unit.getAttribute("refname");
+                        u.count = Integer.parseInt(unit.getAttribute("count"));
+                        u.exp = Integer.parseInt(unit.getAttribute("exp"));
+                        u.att_bonus = Integer.parseInt(unit.getAttribute("att_bonus"));
+                        u.def_bonus = Integer.parseInt(unit.getAttribute("def_bonus"));
+                        u.resetMovePoints();
+                        a.units.add(u);
+                    }
+                    a.calculateMovePoints();
+                    fac.armies.add(a);
                 }
 
 

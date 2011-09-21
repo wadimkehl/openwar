@@ -48,6 +48,7 @@ import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import openwar.DB.Climate;
+import openwar.DB.Faction;
 import openwar.DB.GenericTile;
 import openwar.DB.Region;
 import openwar.DB.Settlement;
@@ -72,7 +73,6 @@ public class WorldMap {
     public Texture key0Image, key1Image, key2Image, gridImage;
     public WorldTile[][] worldTiles;
     Geometry reachableArea;
-    ArrayList<Army> armies = new ArrayList<Army>();
     Army selectedArmy;
     Settlement selectedSettlement;
     FilterPostProcessor fpp;
@@ -243,8 +243,20 @@ public class WorldMap {
             m.setLocalTranslation(vec);
             r.settlement.model = m;
             scene.attachChild(m);
+        }
 
+        for (Faction f : Main.DB.factions) {
+            for (Army a : f.armies) {
+                a.model = (Spatial) new Geometry("army", new Sphere(10, 10, 0.5f));
+                a.model.setMaterial(new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"));
+                a.model.setShadowMode(ShadowMode.CastAndReceive);
+                a.locationGL = getGLTileCenter(a.posX, a.posZ);
+                a.model.setLocalTranslation(a.locationGL.add(0, 0.5f, 0));
+                a.map = this;
 
+                scene.attachChild(a.model);
+
+            }
         }
 
         return true;
@@ -296,10 +308,10 @@ public class WorldMap {
 
         if (!Main.devMode) {
             BloomFilter bloom = new BloomFilter();
-            bloom.setExposurePower(4f);
+            bloom.setExposurePower(8f);
             fpp.addFilter(bloom);
 
-            PssmShadowRenderer pssm = new PssmShadowRenderer(assetManager, 1024, 4);
+            PssmShadowRenderer pssm = new PssmShadowRenderer(assetManager, 1024, 8);
             pssm.setDirection(Main.DB.sun_direction);
             game.getViewPort().addProcessor(pssm);
 
@@ -316,14 +328,6 @@ public class WorldMap {
 
 
         terrain.setShadowMode(ShadowMode.Receive);
-
-
-        ArrayList<Unit> units = new ArrayList<Unit>();
-        for (int i = 0; i < 20; i++) {
-            units.add(new Unit("bowmen"));
-        }
-        createArmy(31, 20, "humans", units);
-
 
         return true;
 
@@ -362,8 +366,10 @@ public class WorldMap {
 
         minimap.update();
 
-        for (Army a : armies) {
-            a.update(tpf);
+        for (Faction f : Main.DB.factions) {
+            for (Army a : f.armies) {
+                a.update(tpf);
+            }
         }
 
 
@@ -373,24 +379,14 @@ public class WorldMap {
     // Spawns a physical army on the world map
     public Army createArmy(int x, int z, String owner, ArrayList<Unit> units) {
 
-        Spatial m = (Spatial) new Geometry("army", new Sphere(10, 10, 0.5f));
-        m.setMaterial(new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"));
-
-
-        Army a = new Army(x, z, owner, m, this);
-        a.units = units;
-        a.calculateMovePoints();
-        armies.add(a);
-        scene.attachChild(m);
-
-        return a;
+        return null;
 
     }
 
     // Removes an army from the world map
     public void removeArmy(Army a) {
 
-        armies.remove(a);
+        Main.DB.hashedFactions.get(a.player).armies.remove(a);
         scene.detachChild(a.model);
 
 
@@ -406,10 +402,11 @@ public class WorldMap {
 
     // Returns army object
     public Army getArmy(Spatial model) {
-
-        for (Army w : armies) {
-            if (w.model == model) {
-                return w;
+        for (Faction f : Main.DB.factions) {
+            for (Army w : f.armies) {
+                if (w.model == model) {
+                    return w;
+                }
             }
         }
         return null;
@@ -422,10 +419,11 @@ public class WorldMap {
 
     // Returns army object
     public Army getArmy(int x, int z) {
-
-        for (Army w : armies) {
-            if (w.posX == x && w.posZ == z) {
-                return w;
+        for (Faction f : Main.DB.factions) {
+            for (Army w : f.armies) {
+                if (w.posX == x && w.posZ == z) {
+                    return w;
+                }
             }
         }
         return null;
@@ -481,7 +479,7 @@ public class WorldMap {
         deselectAll();
 
         selectedSettlement = s;
-         for (int i = 0; i < s.units.size(); i++) {
+        for (int i = 0; i < s.units.size(); i++) {
             game.worldMapState.uiController.setImage("unit" + i, Main.DB.genUnits.get(s.units.get(i).refName).image);
         }
         System.out.println(s.name);
