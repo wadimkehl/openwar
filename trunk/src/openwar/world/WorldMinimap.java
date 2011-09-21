@@ -89,8 +89,9 @@ public class WorldMinimap {
 
     }
 
-    public Vector2f screenToMinimap(Vector2f p) {
-        return p.subtract((float) imageX, (float) (map.game.getCamera().getHeight() - imageY)).multLocal(disparity);
+    public Tile screenToMinimap(int x, int y) {
+       return new Tile((int)((x- imageX)*disparity), 
+                (int)((y-(map.game.getCamera().getHeight() - imageY))*disparity));
     }
 
     void drawMinimapLine(ByteBuffer data, Vector2f p, Vector2f q) {

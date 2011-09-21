@@ -71,7 +71,6 @@ public class WorldMap {
     WorldHeightMap heightMap;
     public Texture key0Image, key1Image, key2Image, gridImage;
     public WorldTile[][] worldTiles;
-    ArrayList<Tile> selectedTiles = new ArrayList<Tile>();
     Geometry reachableArea;
     ArrayList<Army> Armies = new ArrayList<Army>();
     Army selectedArmy;
@@ -353,6 +352,10 @@ public class WorldMap {
 
         scene.detachChild(reachableArea);
 
+        for (int i = 0; i < 20; i++) {
+            game.worldMapState.uiController.setImage("unit" + i, null);
+        }
+
     }
 
     public void update(float tpf) {
@@ -377,9 +380,9 @@ public class WorldMap {
 
         Army a = new Army(x, z, owner, m, this);
         a.units = units;
+        a.calculateMovePoints();
         Armies.add(a);
         scene.attachChild(m);
-        bulletState.getPhysicsSpace().add(a.control);
 
         return a;
 
@@ -460,10 +463,9 @@ public class WorldMap {
         }
         selectedArmy = army;
         drawReachableArea(army);
-        
-        for(int i=0; i < 20; i++)
-        {
-            game.worldMapState.controller.setImage("unit"+i,Main.DB.genUnits.get(army.units.get(i).refName).image);
+
+        for (int i = 0; i < 20; i++) {
+            game.worldMapState.uiController.setImage("unit" + i, Main.DB.genUnits.get(army.units.get(i).refName).image);
         }
 
 
@@ -476,12 +478,6 @@ public class WorldMap {
         }
         selectedSettlement = s;
         System.out.println(s.name);
-
-    }
-
-    public int ensureMinMax(int value, int min, int max) {
-        return Math.min(max, Math.max(min, value));
-
 
     }
 
@@ -518,7 +514,7 @@ public class WorldMap {
             float x = corners.get(i).x;
             float z = corners.get(i).y;
             verts[i * 3] = corners.get(i).x;
-            verts[i * 3 + 1] = heightMap.getInterpolatedHeight(x, z) + 0.1f;
+            verts[i * 3 + 1] = heightMap.getInterpolatedHeight(x, z) + 0.01f;
             verts[i * 3 + 2] = corners.get(i).y;
 
             colors[i * 4] = 0f;
@@ -545,6 +541,7 @@ public class WorldMap {
         m.setStatic();
         m.updateBound();
 
+        scene.detachChild(reachableArea);
         reachableArea = new Geometry("reachableArea", m);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setBoolean("VertexColor", true);
@@ -646,6 +643,16 @@ public class WorldMap {
             }
         }
         return -1;
+    }
+    
+    public boolean insideTerrain(Tile t)
+    {
+        return insideTerrain(t.x,t.z);
+    }
+    
+    public boolean insideTerrain(int x, int z)
+    {
+        return (x>=0 && z>=0 && x < width && z < height);
     }
 
     public int getGroundTypeCost(int type) {

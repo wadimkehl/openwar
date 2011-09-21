@@ -4,7 +4,6 @@
  */
 package openwar.DB;
 
-import com.jme3.texture.Texture;
 import com.jme3.texture.Texture2D;
 import java.util.Map;
 
