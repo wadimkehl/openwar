@@ -45,7 +45,7 @@ public class Army {
 
 
         locationGL = map.getGLTileCenter(x, z);
-        m.setLocalTranslation(locationGL);
+        m.setLocalTranslation(locationGL.add(0, 0.5f, 0));
         units = new ArrayList<Unit>();
 
     }
@@ -105,7 +105,7 @@ public class Army {
                 posX = t.x;
                 posZ = t.z;
                 locationGL = map.getGLTileCenter(t);
-                model.setLocalTranslation(locationGL);
+                model.setLocalTranslation(locationGL.add(0, 0.5f, 0));
 
                 reduceMovePoints(map.getTileCosts(t));
 
@@ -114,8 +114,6 @@ public class Army {
                 }
 
                 if (route.isEmpty()) {
-                    System.out.println("Goal reached");
-
 
                     Settlement s = map.getSettlement(t);
                     if (s != null) {
@@ -129,7 +127,7 @@ public class Army {
             checkpoint = map.getGLTileCenter(t);
             Vector3f dir = checkpoint.subtract(locationGL).normalizeLocal();
             locationGL.addLocal(dir.multLocal(tpf));
-            model.setLocalTranslation(locationGL);
+            model.setLocalTranslation(locationGL.add(0, 0.5f, 0));
 
 
 
@@ -139,12 +137,6 @@ public class Army {
 
     public void setRoute(Stack<Tile> r) {
 
-//        System.err.println("Planned path:");
-//        route = new Stack<Tile>();
-//        while (!r.empty()) {
-//            Tile t = r.pop();
-//            route.push(t);
-//        }
         r.pop();
         route = r;
         onRoute = true;
@@ -152,19 +144,22 @@ public class Army {
 
     }
 
-    public void garrisonArmy(Settlement s) {
-
-        for (Unit u : units) {
-            units.add(u);
-        }
+    public void garrisonArmy(final Settlement s) {
 
         final Army a = this;
-
+        for (Unit u : a.units) {
+            s.units.add(u);
+        }
+        
+        map.scene.addControl(new UpdateControl());
         map.scene.getControl(UpdateControl.class).enqueue(new Callable() {
 
             @Override
             public Object call() throws Exception {
+
+
                 map.removeArmy(a);
+                map.deselectAll();
                 return null;
             }
         });

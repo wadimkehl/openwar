@@ -93,7 +93,8 @@ public class WorldMapAppState extends AbstractAppState {
                 }
 
                 // TODO: BLENDER exports spatial into two cascaded nodes!
-                Spatial s = (Spatial) r.getGeometry().getParent().getParent();
+                //Spatial s = (Spatial) r.getGeometry().getParent().getParent();
+                Spatial s = (Spatial) r.getGeometry();
                 Army a = map.getArmy(s);
                 if (a != null) {
                     map.marchTo(map.selectedArmy, a);
@@ -173,7 +174,7 @@ public class WorldMapAppState extends AbstractAppState {
         game.getCamera().lookAtDirection(new Vector3f(0f, -1f, -1f).normalizeLocal(), Vector3f.UNIT_Y);
         game.getCamera().getLocation().y = 15f;
 
-        moveCameraTo(map.Armies.get(0));
+        moveCameraTo(map.armies.get(0));
 
         initialized = true;
 
@@ -203,7 +204,7 @@ public class WorldMapAppState extends AbstractAppState {
     public void moveCameraTo(int x, int z) {
         Vector3f l = game.getCamera().getLocation();
         Vector3f d = game.getCamera().getDirection();
-        Vector3f goal = new Vector3f(x+0.5f, 0f, z+0.5f);
+        Vector3f goal = new Vector3f(x + 0.5f, 0f, z + 0.5f);
         game.getCamera().setLocation(goal.add(d.mult(l.y / d.y)));
 
     }
