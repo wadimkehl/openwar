@@ -22,17 +22,20 @@ import openwar.DB.Unit;
  */
 public class Army {
 
-    int posX, posZ;
-    String player;
-    int currMovePoints;
-    Spatial model;
-    WorldMap map;
-    ArrayList<Unit> units;
-    Stack<Tile> route;
-    boolean onRoute = false;
+    public int posX, posZ;
+    public String player;
+    public int currMovePoints;
+    public Spatial model;
+    public WorldMap map;
+    public ArrayList<Unit> units;
+    public Stack<Tile> route;
+    public boolean onRoute = false;
     public Vector3f locationGL;
 
     public Army() {
+        
+        units = new ArrayList<Unit>();
+
     }
 
     public Army(int x, int z, String p, Spatial m, WorldMap map) {
@@ -150,7 +153,7 @@ public class Army {
         for (Unit u : a.units) {
             s.units.add(u);
         }
-        
+
         map.scene.addControl(new UpdateControl());
         map.scene.getControl(UpdateControl.class).enqueue(new Callable() {
 

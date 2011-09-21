@@ -174,7 +174,7 @@ public class WorldMapAppState extends AbstractAppState {
         game.getCamera().lookAtDirection(new Vector3f(0f, -1f, -1f).normalizeLocal(), Vector3f.UNIT_Y);
         game.getCamera().getLocation().y = 15f;
 
-        moveCameraTo(map.armies.get(0));
+        moveCameraTo(Main.DB.hashedSettlements.get(Main.DB.hashedFactions.get(Main.DB.playerFaction).capital));
 
         initialized = true;
 
@@ -191,6 +191,10 @@ public class WorldMapAppState extends AbstractAppState {
 
     public void moveCameraTo(Tile t) {
         moveCameraTo(t.x, t.z);
+    }
+
+    public void moveCameraTo(Spatial s) {
+        moveCameraTo((int)s.getWorldTranslation().x, (int) s.getWorldTranslation().z);
     }
 
     public void moveCameraTo(Army a) {

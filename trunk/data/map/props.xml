@@ -53,11 +53,39 @@
         <climate name="Maritim" refname="maritim" color="0 0 0"/>    
     </climates>
     
+    
+    <factions>
+        
+        <faction refname="humans" gold="1000" capital="germany">
+            <army posx="31" posz="20" >
+                <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
+                <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
+                <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
+                <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
+                <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
+                <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />                 
+            </army>  
+        </faction>
+        
+        <faction refname="aliens" gold="1000" capital="sweden">
+            <army posx="17" posz="12" >
+                <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
+                <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
+                <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
+                <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
+                <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
+                <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />                 
+            </army>  
+        </faction>
+        
+    </factions>
+    
     <regions>
         
         <region name="Ocean" refname="" owner="" color="0 0 0" />
+        
         <region name="Germany" refname="germany" color="255 0 0" owner="humans" >
-            <settlement name="Berlin" posx="14" posz="38" level="0" population="1000" capital="1">          
+            <settlement name="Berlin" posx="14" posz="38" level="0" population="1000">          
                 <building refname="irrigation" level="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>
@@ -90,7 +118,7 @@
         </region>
 
         <region name="Sweden" refname="sweden" color="0 255 255" owner="aliens" >
-            <settlement name="Stockholm" posx="54" posz="57" level="0" population="1000" capital="1">          
+            <settlement name="Stockholm" posx="54" posz="57" level="0" population="1000" >          
                 <building refname="irrigation" level="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>

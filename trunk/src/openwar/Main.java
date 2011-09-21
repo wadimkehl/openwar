@@ -145,6 +145,9 @@ public class Main extends SimpleApplication {
         getInputManager().addMapping("show_grid", new KeyTrigger(KeyInput.KEY_G));
 
 
+        getInputManager().setCursorVisible(getFlyByCamera().isEnabled());
+        getFlyByCamera().setEnabled(!getFlyByCamera().isEnabled());
+
 
     }
 

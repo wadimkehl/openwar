@@ -4,12 +4,24 @@
  */
 package openwar.DB;
 
+import java.util.ArrayList;
+import openwar.world.Army;
+
 /**
  *
  * @author kehl
  */
 public class Faction {
     
-    int gold;
+    public String refName;
+    public int gold;
+    public String capital; // refname of the region of the capital!!!
+    
+    public ArrayList<Army> armies;
+    
+    public Faction()
+    {
+        armies = new ArrayList<Army>();
+    }
     
 }

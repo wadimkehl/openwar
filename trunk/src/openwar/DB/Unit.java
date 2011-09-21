@@ -21,6 +21,9 @@ public class Unit {
         resetMovePoints();
     }
 
+    Unit() {
+    }
+
     public void resetMovePoints() {
         
         currMovePoints = Main.DB.genUnits.get(refName).maxMovePoints;
