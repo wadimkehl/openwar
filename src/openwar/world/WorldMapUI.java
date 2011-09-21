@@ -63,18 +63,16 @@ public class WorldMapUI implements ScreenController {
     }
 
     public void onMinimapClick(final int mouseX, final int mouseY) {
-        Vector2f p = new Vector2f(mouseX, mouseY);
-        p = game.worldMapState.map.minimap.screenToMinimap(p);
-        Vector3f l = game.getCamera().getLocation();
-        Vector3f d = game.getCamera().getDirection();
-        Vector3f goal = new Vector3f(p.x, 0f, p.y);
-        game.getCamera().setLocation(goal.add(d.mult(l.y / d.y)));
-
+        Tile t  = game.worldMapState.map.minimap.screenToMinimap(mouseX,mouseY);
+        game.worldMapState.moveCameraTo(t);
     }
     
     public void setImage(String id,Texture2D t)
     {
         Element l = nifty.getCurrentScreen().findElementByName(id);
+        if (t==null)
+            l.getRenderer(ImageRenderer.class).setImage(null);
+        else
         l.getRenderer(ImageRenderer.class).setImage(
                 new NiftyImage(nifty.getRenderEngine(), new RenderImageJme(t)));
 

@@ -26,11 +26,11 @@ public class Army {
     String player;
     int currMovePoints;
     Spatial model;
-    CharacterControl control;
     WorldMap map;
     ArrayList<Unit> units;
     Stack<Tile> route;
     boolean onRoute = false;
+    public Vector3f locationGL;
 
     public Army() {
     }
@@ -43,17 +43,16 @@ public class Army {
         model = m;
         model.setShadowMode(ShadowMode.CastAndReceive);
 
-        control = new CharacterControl(new CapsuleCollisionShape(0.25f, 0.5f, 1), 10000f);
-        model.addControl(control);
 
-        Vector3f vec = map.getGLTileCenter(x, z);
-        vec.addLocal(0, 1f, 0);
-        control.setPhysicsLocation(vec);
-
+        locationGL = map.getGLTileCenter(x, z);
+        m.setLocalTranslation(locationGL);
         units = new ArrayList<Unit>();
 
-        resetMovePoints();
+    }
 
+    public void addUnit(Unit u) {
+        units.add(u);
+        calculateMovePoints();
     }
 
     public int calculateMovePoints() {
@@ -83,43 +82,39 @@ public class Army {
     public void update(float tpf) {
 
         if (!onRoute) {
-            return;   
+            return;
         }
         if (route == null || route.isEmpty()) {
             route = null;
             onRoute = false;
-            control.setWalkDirection(Vector3f.ZERO);
-
 
         } else {
 
             Tile t = route.peek();
 
             if (currMovePoints < map.getTileCosts(t)) {
+                onRoute = false;
                 return;
             }
 
             Vector3f checkpoint = map.getGLTileCenter(t);
-            Vector3f location = control.getPhysicsLocation();
-            location.subtractLocal(0, 1f, 0);
 
             // next checkpoint reached
-            if (checkpoint.distanceSquared(location) < 0.1f) {
+            if (checkpoint.distance(locationGL) < 0.05f) {
                 route.pop();
-                System.out.println("Checkpoint reached");
-                control.setWalkDirection(Vector3f.ZERO);
+                posX = t.x;
+                posZ = t.z;
+                locationGL = map.getGLTileCenter(t);
+                model.setLocalTranslation(locationGL);
+
                 reduceMovePoints(map.getTileCosts(t));
 
                 if (map.selectedArmy == this) {
-                    map.selectedTiles.clear();
                     map.drawReachableArea(this);
                 }
 
                 if (route.isEmpty()) {
-                    control.setPhysicsLocation(checkpoint.addLocal(0, 1f, 0));
-                    onRoute = false;
                     System.out.println("Goal reached");
-                    control.setWalkDirection(Vector3f.ZERO);
 
 
                     Settlement s = map.getSettlement(t);
@@ -129,14 +124,12 @@ public class Army {
 
                     return;
                 }
-
-                t = route.peek();
-                checkpoint = map.getGLTileCenter(t);
-                Vector3f dir = checkpoint.subtract(location).normalizeLocal();
-                control.setWalkDirection(dir);
-                control.setViewDirection(dir);
             }
-
+            t = route.peek();
+            checkpoint = map.getGLTileCenter(t);
+            Vector3f dir = checkpoint.subtract(locationGL).normalizeLocal();
+            locationGL.addLocal(dir.multLocal(tpf));
+            model.setLocalTranslation(locationGL);
 
 
 
@@ -145,8 +138,18 @@ public class Army {
     }
 
     public void setRoute(Stack<Tile> r) {
+
+//        System.err.println("Planned path:");
+//        route = new Stack<Tile>();
+//        while (!r.empty()) {
+//            Tile t = r.pop();
+//            route.push(t);
+//        }
+        r.pop();
         route = r;
         onRoute = true;
+
+
     }
 
     public void garrisonArmy(Settlement s) {

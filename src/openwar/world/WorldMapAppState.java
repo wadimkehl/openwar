@@ -28,7 +28,7 @@ public class WorldMapAppState extends AbstractAppState {
     public boolean showGrid = false;
     public WorldMap map;
     public Main game;
-    public WorldMapUI controller;
+    public WorldMapUI uiController;
     public ActionListener actionListener = new ActionListener() {
 
         @Override
@@ -49,7 +49,7 @@ public class WorldMapAppState extends AbstractAppState {
                     if (Main.devMode) {
                         System.err.println(map.worldTiles[x][z]);
                     }
-                    
+
                     map.deselectAll();
                     return;
 
@@ -87,7 +87,7 @@ public class WorldMapAppState extends AbstractAppState {
 
 
                 // Check if we ordered a march command
-                if (r.getGeometry() instanceof TerrainPatch  || r.getGeometry().getName().equals("reachableArea")) {
+                if (r.getGeometry() instanceof TerrainPatch || r.getGeometry().getName().equals("reachableArea")) {
                     map.marchTo(map.selectedArmy, x, z);
                     return;
                 }
@@ -106,12 +106,8 @@ public class WorldMapAppState extends AbstractAppState {
                     return;
                 }
 
-            } else if (name.equals("lol") && !pressed) {
-                map.fadeSeason();
-
             } else if (name.equals("show_grid") && !pressed) {
-                showGrid = !showGrid;
-                map.showGrid(showGrid);
+                map.showGrid(showGrid = !showGrid);
             }
         }
     };
@@ -129,6 +125,14 @@ public class WorldMapAppState extends AbstractAppState {
             } else if (name.equals("map_straferight")) {
                 game.getCamera().setLocation(game.getCamera().getLocation().addLocal(tpf * 50f, 0, 0));
             }
+
+
+            Vector3f loc = game.getCamera().getLocation().clone();
+            loc.x = ensureMinMax((int) loc.x, 0, map.width);
+            loc.z = ensureMinMax((int) loc.z, (int) (map.height * 0.3f), (int) (map.height * 1.3f));
+            game.getCamera().setLocation(loc);
+
+
         }
     };
 
@@ -144,10 +148,10 @@ public class WorldMapAppState extends AbstractAppState {
 
         game = main;
 
-        controller = new WorldMapUI();
-        game.nifty.fromXml("ui" + File.separator + "worldmap" 
-                + File.separator + "ui.xml", "start",controller);
-        controller.game = game;
+        uiController = new WorldMapUI();
+        game.nifty.fromXml("ui" + File.separator + "worldmap"
+                + File.separator + "ui.xml", "start", uiController);
+        uiController.game = game;
 
         game.getInputManager().addListener(actionListener, "mouse_left");
         game.getInputManager().addListener(actionListener, "mouse_right");
@@ -166,8 +170,10 @@ public class WorldMapAppState extends AbstractAppState {
         }
 
         game.getRootNode().attachChild(sceneNode);
-        game.getCamera().setLocation(new Vector3f(map.width / 2, 15, map.height / 2));
-        game.getCamera().lookAtDirection(new Vector3f(0f, -.9f, -1f).normalizeLocal(), Vector3f.UNIT_Y);
+        game.getCamera().lookAtDirection(new Vector3f(0f, -1f, -1f).normalizeLocal(), Vector3f.UNIT_Y);
+        game.getCamera().getLocation().y = 15f;
+
+        moveCameraTo(map.Armies.get(0));
 
         initialized = true;
 
@@ -180,13 +186,31 @@ public class WorldMapAppState extends AbstractAppState {
         map.update(tpf);
 
 
-        if (Main.devMode) {
-            return;
-        }
+    }
 
-        Vector3f loc = game.getCamera().getLocation();
-        loc.x = Math.max(Math.min(map.width, loc.x), 0);
-        loc.z = Math.max(Math.min(map.height + map.height / 3, loc.z), map.height / 3);
+    public void moveCameraTo(Tile t) {
+        moveCameraTo(t.x, t.z);
+    }
+
+    public void moveCameraTo(Army a) {
+        moveCameraTo(a.posX, a.posZ);
+    }
+
+    public void moveCameraTo(Settlement s) {
+        moveCameraTo(s.posX, s.posZ);
+    }
+
+    public void moveCameraTo(int x, int z) {
+        Vector3f l = game.getCamera().getLocation();
+        Vector3f d = game.getCamera().getDirection();
+        Vector3f goal = new Vector3f(x+0.5f, 0f, z+0.5f);
+        game.getCamera().setLocation(goal.add(d.mult(l.y / d.y)));
+
+    }
+
+    public int ensureMinMax(int value, int min, int max) {
+        return Math.min(max, Math.max(min, value));
+
 
     }
 }

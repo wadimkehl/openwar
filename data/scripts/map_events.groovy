@@ -49,7 +49,6 @@ def onBeginRound()
 // button is which button was pressed: 0=left,1=right,2=middle
 def onWorldMapUIClicked(String element, int button)
 {
-    println button + " clicked"
     if(element == "turn")
     {
         playSound("ui_close")
