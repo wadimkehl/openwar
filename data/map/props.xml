@@ -40,10 +40,11 @@
         <tile type="14" name="deep water"       color="0 0 128"     walkable="false" sailable="true" cost="3" textureid="0"/> 
         <tile type="15" name="ocean"            color="0 0 64"      walkable="false" sailable="true" cost="5" textureid="0"/> 
         <tile type="16" name="impassable"       color="0 0 0"       walkable="false" sailable="false" cost="1000" textureid="11"/> 
-
-        
-        <heightmap factor0="0.009" factor1="0.0" offset="-0.3"/>
+       
+        <heightmap factor0="0.009" factor1="0.0" cutoff="0.0"/>
+        <water height="0.3" color="5 128 200" />
         <sun color="255 230 230" direction="-0.3 -1.5  -1" />
+        
     </terrain>
     
     <climates>
@@ -71,10 +72,7 @@
             <army posx="17" posz="12" >
                 <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
-                <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
-                <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
-                <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
-                <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />                 
+                                 
             </army>  
         </faction>
         

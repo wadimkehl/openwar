@@ -10,7 +10,7 @@ package openwar.world;
  */
  public class Tile {
 
-        int x, z;
+        public int x, z;
 
         public Tile(int x, int z) {
             this.x = x;

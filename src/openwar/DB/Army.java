@@ -2,10 +2,8 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package openwar.world;
+package openwar.DB;
 
-import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
-import com.jme3.bullet.control.CharacterControl;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Spatial;
@@ -13,8 +11,8 @@ import com.jme3.scene.control.UpdateControl;
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.concurrent.Callable;
-import openwar.DB.Settlement;
-import openwar.DB.Unit;
+import openwar.world.Tile;
+import openwar.world.WorldMap;
 
 /**
  *
@@ -33,7 +31,7 @@ public class Army {
     public Vector3f locationGL;
 
     public Army() {
-        
+
         units = new ArrayList<Unit>();
 
     }
@@ -162,7 +160,9 @@ public class Army {
 
 
                 map.removeArmy(a);
-                map.deselectAll();
+                if (map.selectedArmy == a) {
+                    map.selectSettlement(s);
+                }
                 return null;
             }
         });

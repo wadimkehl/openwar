@@ -23,7 +23,6 @@ import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import openwar.Main;
-import openwar.world.Army;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -184,16 +183,18 @@ public class XMLDataLoader {
                 Document dom = db.parse(props.getCanonicalPath());
                 Element root = dom.getDocumentElement();
 
-                boolean result= true;
+                boolean result = true;
                 if ("units".equals(folder)) {
-                    result= loadUnit(root);
+                    result = loadUnit(root);
                 } else if ("buildings".equals(folder)) {
-                    result= loadBuilding(root);
+                    result = loadBuilding(root);
                 } else if ("factions".equals(folder)) {
-                    result= loadFaction(root);
+                    result = loadFaction(root);
                 }
-                
-                if (!result) return false;
+
+                if (!result) {
+                    return false;
+                }
             }
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Error while reading {0} data...", folder);
@@ -363,7 +364,15 @@ public class XMLDataLoader {
             Main.DB.heightmapParams = new Vector3f();
             Main.DB.heightmapParams.x = Float.parseFloat(hm.getAttribute("factor0"));
             Main.DB.heightmapParams.y = Float.parseFloat(hm.getAttribute("factor1"));
-            Main.DB.heightmapParams.z = Float.parseFloat(hm.getAttribute("offset"));
+            Main.DB.heightmapParams.z = Float.parseFloat(hm.getAttribute("cutoff"));
+
+            if (terrain.getElementsByTagName("water") != null) {
+                Element water = (Element) terrain.getElementsByTagName("water").item(0);
+                Main.DB.hasWater = true;
+                Main.DB.waterHeight = Float.parseFloat(water.getAttribute("height"));
+                Scanner s = new Scanner(water.getAttribute("color"));
+                Main.DB.water_color = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
+            }
 
             Element sun = (Element) terrain.getElementsByTagName("sun").item(0);
             Scanner s = new Scanner(sun.getAttribute("color"));
@@ -410,6 +419,29 @@ public class XMLDataLoader {
                     reg.settlement = se;
                     Main.DB.settlements.add(se);
                     Main.DB.hashedSettlements.put(reg.refName, se);
+
+                    NodeList units = sett.getElementsByTagName("unit");
+                    for (int j = 0; j < units.getLength(); j++) {
+                        Element unit = (Element) units.item(j);
+                        Unit u = new Unit();
+                        u.refName = unit.getAttribute("refname");
+                        u.count = Integer.parseInt(unit.getAttribute("count"));
+                        u.exp = Integer.parseInt(unit.getAttribute("exp"));
+                        u.att_bonus = Integer.parseInt(unit.getAttribute("att_bonus"));
+                        u.def_bonus = Integer.parseInt(unit.getAttribute("def_bonus"));
+                        u.resetMovePoints();
+                        se.units.add(u);
+                    }
+
+                    NodeList buildings = sett.getElementsByTagName("building");
+                    for (int j = 0; j < buildings.getLength(); j++) {
+                        Element building = (Element) buildings.item(j);
+                        Building b = new Building();
+                        b.refName = building.getAttribute("refname");
+                        b.level = Integer.parseInt(building.getAttribute("level"));
+                        se.buildings.add(b);
+                    }
+
                 }
 
 

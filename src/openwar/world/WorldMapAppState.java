@@ -4,6 +4,7 @@
  */
 package openwar.world;
 
+import openwar.DB.Army;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;

@@ -34,10 +34,12 @@ public class GameDatabase {
     public HashMap<String, Climate> hashedClimates;
     public ArrayList<Faction> factions;
     public HashMap<String, Faction> hashedFactions;
-    public Vector3f heightmapParams, sun_color, sun_direction;
     public String playerFaction = "humans";
-    public int currentRound=0;
-    public String currentTurn="humans";
+    public int currentRound = 0;
+    public String currentTurn = "humans";
+    public Vector3f heightmapParams, sun_color, sun_direction, water_color;
+    public boolean hasWater;
+    public float waterHeight;
 
     public GameDatabase() {
 
