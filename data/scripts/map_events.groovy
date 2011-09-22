@@ -41,7 +41,14 @@ def onBeginTurn(String faction,int round)
 def onBeginRound()
 {
     game.DB.currentRound++
-    game.worldMapState.map.armies.get(0).resetMovePoints()
+
+    for(f in game.DB.factions)
+    {
+        for(a in f.armies)
+        {
+            a.resetMovePoints()
+        }
+    }
     
 }
 

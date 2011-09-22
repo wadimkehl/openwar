@@ -5,19 +5,15 @@
 package openwar.world;
 
 import com.jme3.asset.AssetManager;
-import com.jme3.asset.DesktopAssetManager;
-import com.jme3.asset.TextureKey;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.light.DirectionalLight;
 
 import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
-import com.jme3.material.RenderState.FaceCullMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
-import com.jme3.niftygui.RenderImageJme;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.BloomFilter;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
@@ -27,21 +23,14 @@ import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer.Type;
-import com.jme3.scene.control.UpdateControl;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
-import com.jme3.shadow.BasicShadowRenderer;
 import com.jme3.shadow.PssmShadowRenderer;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import com.jme3.texture.Image;
 import com.jme3.texture.Texture;
 import com.jme3.texture.Texture2D;
-import com.jme3.util.BufferUtils;
 import com.jme3.water.WaterFilter;
-import de.lessvoid.nifty.elements.Element;
-import de.lessvoid.nifty.elements.render.ImageRenderer;
-import de.lessvoid.nifty.render.NiftyImage;
-import de.lessvoid.nifty.spi.render.RenderImage;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Stack;
@@ -65,7 +54,6 @@ public class WorldMap {
     Main game;
     public int width, height;
     public TerrainQuad terrain;
-    BulletAppState bulletState;
     public Node scene = new Node("worldmap"), rootScene;
     public Material matTerrain;
     AssetManager assetManager;
@@ -82,7 +70,6 @@ public class WorldMap {
 
     public WorldMap(Main app, Node scene) {
         game = app;
-        bulletState = app.bulletState;
         assetManager = app.getAssetManager();
         rootScene = scene;
         heightMap = null;
@@ -233,8 +220,6 @@ public class WorldMap {
                 continue;
             }
 
-
-
             //Spatial m = Main.DB.genBuildings.get("city").levels.get(0).model.clone();
             Spatial m = (Spatial) new Geometry("city", new Box(Vector3f.ZERO, 1.2f, 0.25f, 1.2f));
             Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
@@ -244,7 +229,10 @@ public class WorldMap {
             vec.y += 0.25f;
             m.setLocalTranslation(vec);
             r.settlement.model = m;
+            
             scene.attachChild(m);
+            
+            r.settlement.updateBillBoard(game);
         }
 
         for (Faction f : Main.DB.factions) {
@@ -325,9 +313,6 @@ public class WorldMap {
         reachableArea = new Geometry();
         scene.attachChild(terrain);
         rootScene.attachChild(scene);
-        terrain.addControl(new RigidBodyControl(0));
-        bulletState.getPhysicsSpace().addAll(terrain);
-
 
         terrain.setShadowMode(ShadowMode.Receive);
 
@@ -484,7 +469,6 @@ public class WorldMap {
         for (int i = 0; i < s.units.size(); i++) {
             game.worldMapState.uiController.setImage("unit" + i, Main.DB.genUnits.get(s.units.get(i).refName).image);
         }
-        System.out.println(s.name);
 
     }
 
