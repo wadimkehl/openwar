@@ -26,7 +26,7 @@
         <tile type="0" name="desert"            color="255 255 0"   walkable="true" sailable="false" cost="2" textureid="0"/> 
         <tile type="1" name="desert fertile"    color="255 255 100" walkable="true" sailable="false" cost="2" textureid="1"/> 
         <tile type="2" name="desert rough"      color="200 200 0"   walkable="true" sailable="false" cost="2" textureid="2"/> 
-        <tile type="3" name="desert hilly"      color="128 128 0"   walkable="true" sailable="false" cost="2" textureid="3"/> 
+        <tile type="3" name="desert hilly"      color="128 128 0"   walkable="false" sailable="false" cost="2" textureid="3"/> 
         <tile type="4" name="grass"             color="0 255 0"     walkable="true" sailable="false" cost="2" textureid="4"/> 
         <tile type="5" name="grass fertile"     color="0 255 100" walkable="true" sailable="false" cost="2" textureid="5"/> 
         <tile type="6" name="grass rough"       color="0 200 0"     walkable="true" sailable="false" cost="2" textureid="6"/> 

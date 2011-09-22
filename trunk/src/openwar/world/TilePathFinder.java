@@ -12,23 +12,25 @@ import java.util.Stack;
  *
  * @author kehl
  */
-public class PathFinder {
+public class TilePathFinder {
 
     // Serves for path finding things
     public class PathTile extends Tile {
 
         public int distance;
+        public double heuristic;
         public PathTile ancestor;
 
-        public PathTile(int x, int z, int d, PathTile a) {
+        public PathTile(int x, int z, int d, double h, PathTile a) {
             super(x, z);
             distance = d;
+            heuristic = h;
             ancestor = a;
         }
     }
     WorldMap map;
 
-    public PathFinder(WorldMap m) {
+    public TilePathFinder(WorldMap m) {
         this.map = m;
     }
 
@@ -44,7 +46,8 @@ public class PathFinder {
         
         LinkedList<PathTile> open = new LinkedList<PathTile>();
         LinkedList<PathTile> closed = new LinkedList<PathTile>();
-        open.add(new PathTile(start.x, start.z, 0, null));
+        double h = Math.sqrt((end.x-start.x)*(end.x-start.x)+(end.z-start.z)*(end.z-start.z));
+        open.add(new PathTile(start.x, start.z, 0,h, null));
 
         PathTile p = null;
         while (!open.isEmpty()) {
@@ -53,7 +56,7 @@ public class PathFinder {
             int min = 100000;
             PathTile best = null;
             for (PathTile temp : open) {
-                if (temp.distance < min && map.walkableTile(temp)) {
+                if ((temp.distance + temp.heuristic) < min && map.walkableTile(temp)) {
                     min = temp.distance;
                     best = temp;
                 }
@@ -107,7 +110,8 @@ public class PathFinder {
                     }
 
                     if (!alreadyOpen) {
-                        open.add(new PathTile(newx, newz, new_distance, best));
+                        h = Math.sqrt((end.x-newx)*(end.x-newx)+(end.z-newz)*(end.z-newz));
+                        open.add(new PathTile(newx, newz, new_distance,h, best));
                     }
 
                 }
@@ -148,7 +152,7 @@ public class PathFinder {
 
         // Do BFS for all tiles in question starting from army's position
         LinkedList<PathTile> q = new LinkedList<PathTile>();
-        q.add(new PathTile(army.posX, army.posZ, 0, null));
+        q.add(new PathTile(army.posX, army.posZ, 0,0, null));
         while (!q.isEmpty()) {
 
             PathTile t = q.remove();
@@ -179,7 +183,7 @@ public class PathFinder {
                     }
                     if (new_d < distance[offset_x][offset_z]) {
                         distance[offset_x][offset_z] = new_d;
-                        q.add(new PathTile(t.x + x, t.z + z, new_d, t));
+                        q.add(new PathTile(t.x + x, t.z + z, new_d,0, t));
                     }
                 }
             }

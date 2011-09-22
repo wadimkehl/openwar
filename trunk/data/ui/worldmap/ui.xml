@@ -9,10 +9,10 @@
 
        
 
-        <layer id="back_layer" childLayout="vertical">
+        <layer id="back_layer" childLayout="vertical" >
             <panel height="75%"/>
-            <panel childLayout="horizontal">           
-                <image filename="ui/worldmap/menue.tga" imageMode="subImage:0,0,1000,150" width="*" height="*"/>
+            <panel childLayout="horizontal" >           
+                <image filename="ui/worldmap/menue.tga" imageMode="subImage:0,0,1000,150" width="*" height="*" visibleToMouse="true"/>
             </panel>
         </layer>
         
