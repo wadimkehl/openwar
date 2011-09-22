@@ -61,6 +61,12 @@ public class WorldMapUI implements ScreenController {
         }
 
     }
+    
+    public void onUnitClick(String n, String b)
+    {
+        int number = Integer.parseInt(n);
+        int button = Integer.parseInt(b);
+    }
 
     public void onMinimapClick(final int mouseX, final int mouseY) {
         Tile t  = game.worldMapState.map.minimap.screenToMinimap(mouseX,mouseY);

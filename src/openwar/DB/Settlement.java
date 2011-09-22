@@ -4,10 +4,7 @@
  */
 package openwar.DB;
 
-import com.jme3.asset.AssetManager;
-import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
-import com.jme3.font.Rectangle;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
@@ -34,7 +31,7 @@ public class Settlement {
     public String region;
     public int level, population, posX, posZ;
     public ArrayList<Building> buildings;
-    public ArrayList<Unit> units;
+    public ArrayList<Unit> units, selectedUnits;
     public Spatial model;
     public Spatial billBoard;
     public Spatial banner;
@@ -44,18 +41,19 @@ public class Settlement {
     public Settlement() {
         buildings = new ArrayList<Building>();
         units = new ArrayList<Unit>();
+        selectedUnits = new ArrayList<Unit>();
         node = new Node();
     }
 
     public void createData(WorldMap m) {
         map = m;
 
-        //Spatial m = Main.DB.genBuildings.get("city").levels.get(0).model.clone();
+        //Spatial m = Main.DB.genBuildings.get("city").levels.get(level).model.clone();
         model = (Spatial) new Geometry("city", new Box(Vector3f.ZERO, 1.2f, 0.25f, 1.2f));
         Material mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
         model.setMaterial(mat);
         model.setShadowMode(ShadowMode.CastAndReceive);
-        model.setLocalTranslation(0f,0.25f,0f);
+        model.setLocalTranslation(0f, 0.25f, 0f);
         node.attachChild(model);
 
         banner = (Spatial) new Geometry("", new Quad(1f, 2f));
@@ -67,18 +65,18 @@ public class Settlement {
         banner.setMaterial(mat);
         node.attachChild(banner);
 
+        createBillBoard();
+
+
         node.setLocalTranslation(map.getGLTileCenter(posX, posZ));
         map.scene.attachChild(node);
 
-        createBillBoard();
     }
 
     public void createBillBoard() {
 
 
-
-        BitmapFont fnt = map.game.getAssetManager().loadFont("ui/fonts/palatino.fnt");
-        BitmapText label = new BitmapText(fnt, false);
+        BitmapText label = new BitmapText(map.game.getAssetManager().loadFont("ui/fonts/palatino.fnt"), false);
         label.setSize(1f);
         label.setText(name);
         float width = label.getLineWidth();
@@ -87,7 +85,7 @@ public class Settlement {
         label.setColor(ColorRGBA.Black);
         label.setQueueBucket(Bucket.Translucent);
 
-        label.setLocalTranslation(- 1.25f , 7 - height / 2, 0.0001f);
+        label.setLocalTranslation(-1.25f, 7 - height / 2, 0.0001f);
         label.addControl(new BillboardControl());
         node.attachChild(label);
 
@@ -98,7 +96,7 @@ public class Settlement {
         billBoard.setMaterial(mat);
         billBoard.setQueueBucket(Bucket.Transparent);
         billBoard.addControl(new BillboardControl());
-        billBoard.setLocalTranslation(- 1.5f, 5, 0);
+        billBoard.setLocalTranslation(-1.5f, 5, 0);
 
         node.attachChild(billBoard);
 
