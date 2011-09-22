@@ -76,7 +76,7 @@ public class WorldMap {
     Army selectedArmy;
     Settlement selectedSettlement;
     FilterPostProcessor fpp;
-    PathFinder pathFinder = new PathFinder(this);
+    TilePathFinder pathFinder = new TilePathFinder(this);
     private static final Logger logger = Logger.getLogger(WorldMap.class.getName());
     public WorldMinimap minimap;
 
@@ -233,10 +233,12 @@ public class WorldMap {
                 continue;
             }
 
+
+
             //Spatial m = Main.DB.genBuildings.get("city").levels.get(0).model.clone();
             Spatial m = (Spatial) new Geometry("city", new Box(Vector3f.ZERO, 1.2f, 0.25f, 1.2f));
-            m.setMaterial(new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"));
-
+            Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+            m.setMaterial(mat);
             m.setShadowMode(ShadowMode.CastAndReceive);
             Vector3f vec = getGLTileCenter(r.settlement.posX, r.settlement.posZ);
             vec.y += 0.25f;
