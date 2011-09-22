@@ -130,7 +130,19 @@ public class Army {
                 if (route.isEmpty()) {
                     Army a = map.getArmy(t);
                     if (a != null) {
+                        
+                        if (a.owner.equals(owner) )                       
                         mergeWith(a);
+                        else
+                        {
+                            ArrayList<Army> a1=new ArrayList<Army>();
+                            ArrayList<Army> a2=new ArrayList<Army>();
+                            a1.add(this);
+                            a2.add(a);
+                            int result =map.game.worldMapState.battle(a1, a2);
+                            
+                                
+                        }
                     }
                 }
 

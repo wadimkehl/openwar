@@ -16,6 +16,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.TerrainPatch;
 import java.io.File;
+import java.util.ArrayList;
 import openwar.DB.Settlement;
 import openwar.Main;
 
@@ -168,7 +169,7 @@ public class WorldMapAppState extends AbstractAppState {
         sceneNode = new Node("WorldMap");
         map = new WorldMap(main, sceneNode);
         if (!map.createWorldMap()) {
-            game.forceQuit=true;
+            game.forceQuit = true;
         }
 
         game.rootNode.attachChild(sceneNode);
@@ -179,8 +180,10 @@ public class WorldMapAppState extends AbstractAppState {
 
         initialized = true;
 
-        if(Main.devMode) return;
-        
+        if (Main.devMode) {
+            return;
+        }
+
         game.doScript("playMusic('main_menu')");
     }
 
@@ -197,7 +200,7 @@ public class WorldMapAppState extends AbstractAppState {
     }
 
     public void moveCameraTo(Spatial s) {
-        moveCameraTo((int)s.getWorldTranslation().x, (int) s.getWorldTranslation().z);
+        moveCameraTo((int) s.getWorldTranslation().x, (int) s.getWorldTranslation().z);
     }
 
     public void moveCameraTo(Army a) {
@@ -220,5 +223,31 @@ public class WorldMapAppState extends AbstractAppState {
         return Math.min(max, Math.max(min, value));
 
 
+    }
+
+    public int battle(ArrayList<Army> a1, ArrayList<Army> a2) {
+        int power1 = 0, power2 = 0;
+
+        for (Army a : a1) {
+            power1 += a.units.size();
+        }
+        for (Army a : a2) {
+            power2 += a.units.size();
+        }
+
+        if (power1 > power2) {
+            for (Army a : a2) {
+                map.removeArmy(a);
+            }
+            return 1;
+        }
+        if (power1 < power2) {
+            for (Army a : a1) {
+                map.removeArmy(a);
+            }
+            return 2;
+        } else {
+            return 0;
+        }
     }
 }
