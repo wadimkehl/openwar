@@ -156,7 +156,7 @@ public class XMLDataLoader {
 
             // else run through each subfolder
             for (File u : f.listFiles()) {
-                if (!f.isDirectory()) {
+                if (!u.isDirectory()) {
                     logger.log(Level.WARNING, "Entity unloadable in {0}", f.getName());
                     continue;
                 }

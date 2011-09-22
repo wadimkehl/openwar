@@ -122,13 +122,22 @@ public class Army {
             Vector3f checkpoint = map.getGLTileCenter(t);
 
             // next checkpoint reached
-            if (checkpoint.distance(node.getLocalTranslation()) < 0.05f) {
+            if (checkpoint.distanceSquared(node.getLocalTranslation()) < 0.0025f) {
                 route.pop();
+                reduceMovePoints(map.getTileCosts(t));
+
+
+                if (route.isEmpty()) {
+                    Army a = map.getArmy(t);
+                    if (a != null) {
+                        mergeWith(a);
+                    }
+                }
+
                 posX = t.x;
                 posZ = t.z;
                 node.setLocalTranslation(map.getGLTileCenter(t));
 
-                reduceMovePoints(map.getTileCosts(t));
 
                 if (map.selectedArmy == this) {
                     map.drawReachableArea(this);
@@ -139,11 +148,12 @@ public class Army {
                     Settlement s = map.getSettlement(t);
                     if (s != null) {
                         garrisonArmy(s);
-                    }
-
+                    } 
                     return;
                 }
+
             }
+            
             t = route.peek();
             checkpoint = map.getGLTileCenter(t);
             Vector3f dir = checkpoint.subtract(node.getLocalTranslation()).normalizeLocal();
@@ -161,6 +171,29 @@ public class Army {
         route = r;
         onRoute = true;
 
+
+    }
+
+    public void mergeWith(final Army a) {
+        final Army l = this;
+        for (Unit u : l.units) {
+            a.units.add(u);
+        }
+
+        map.scene.addControl(new UpdateControl());
+        map.scene.getControl(UpdateControl.class).enqueue(new Callable() {
+
+            @Override
+            public Object call() throws Exception {
+
+
+                map.removeArmy(l);
+                if (map.selectedArmy == l) {
+                    map.selectArmy(a);
+                }
+                return null;
+            }
+        });
 
     }
 
