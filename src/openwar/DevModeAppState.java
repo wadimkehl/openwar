@@ -29,6 +29,7 @@ public class DevModeAppState extends AbstractAppState {
     String currTexture = "types";
     int currType;
     boolean drawing;
+    boolean flyMode;
     Material matTerrainDev;
     private static final Logger logger = Logger.getLogger(DevModeAppState.class.getName());
     public ActionListener actionListener = new ActionListener() {
@@ -131,8 +132,9 @@ public class DevModeAppState extends AbstractAppState {
 
 
             } else if (name.equals("cursor") && !pressed) {
-                game.getInputManager().setCursorVisible(game.getFlyByCamera().isEnabled());
-                game.getFlyByCamera().setEnabled(!game.getFlyByCamera().isEnabled());
+                flyMode = !flyMode;
+                game.camera.setEnabled(flyMode);
+                game.getInputManager().setCursorVisible(!flyMode);
             } else if (name.equals("dump") && !pressed) {
                 dumpImage();
             } else if (name.equals("show_grid") && !pressed) {

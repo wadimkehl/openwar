@@ -167,10 +167,10 @@ public class WorldMapAppState extends AbstractAppState {
         sceneNode = new Node("WorldMap");
         map = new WorldMap(main, sceneNode);
         if (!map.createWorldMap()) {
-            game.stop();
+            game.forceQuit=true;
         }
 
-        game.getRootNode().attachChild(sceneNode);
+        game.rootNode.attachChild(sceneNode);
         game.getCamera().lookAtDirection(new Vector3f(0f, -1f, -1f).normalizeLocal(), Vector3f.UNIT_Y);
         game.getCamera().getLocation().y = 15f;
 
