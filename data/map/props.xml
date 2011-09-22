@@ -69,7 +69,7 @@
         </faction>
         
         <faction refname="aliens" gold="1000" capital="sweden">
-            <army posx="17" posz="12" >
+            <army posx="20" posz="11" >
                 <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
                                  
