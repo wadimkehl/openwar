@@ -39,7 +39,7 @@ public class XMLDataLoader {
         assets = appl.getAssetManager();
     }
 
-    private void loadSounds(Element root) {
+    private boolean loadSounds(Element root) {
         AudioNode entity = new AudioNode();
         String refname = null;
         String file = null;
@@ -56,12 +56,14 @@ public class XMLDataLoader {
 
 
             logger.log(Level.WARNING, "*Sound loaded: {0} *", refname);
+            return true;
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Sound CANNOT be loaded: {0}", refname);
+            return false;
         }
     }
 
-    private void loadMusic(Element root) {
+    private boolean loadMusic(Element root) {
         AudioNode entity = new AudioNode();
         String refname = null;
         String file = null;
@@ -77,12 +79,14 @@ public class XMLDataLoader {
             }
 
             logger.log(Level.WARNING, "*Music loaded: {0} *", refname);
+            return true;
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Music CANNOT be loaded: {0}", refname);
+            return false;
         }
     }
 
-    private void loadData(String folder) {
+    private boolean loadData(String folder) {
 
         try {
             // go into meta folder
@@ -101,7 +105,7 @@ public class XMLDataLoader {
 
                     }
                 }
-                return;
+                return true;
             }
 
             // if we load the map, check in meta folder for props.xml
@@ -115,15 +119,14 @@ public class XMLDataLoader {
                 }
                 if (props == null) {
                     logger.log(Level.WARNING, "Cannot find props.xml in {0}", f.getName());
-                    return;
+                    return false;
                 }
 
                 // open props file and load everything into the database
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                 DocumentBuilder db = dbf.newDocumentBuilder();
                 Document dom = db.parse(props.getCanonicalPath());
-                loadMap(dom.getDocumentElement());
-                return;
+                return loadMap(dom.getDocumentElement());
             }
 
             // if we load the sounds or music, check in meta folder for props.xml
@@ -137,7 +140,7 @@ public class XMLDataLoader {
                 }
                 if (props == null) {
                     logger.log(Level.WARNING, "Cannot find props.xml in {0}", f.getName());
-                    return;
+                    return false;
                 }
 
                 // open props file and load everything into the database
@@ -146,12 +149,10 @@ public class XMLDataLoader {
                 Document dom = db.parse(props.getCanonicalPath());
 
                 if ("sounds".equals(folder)) {
-                    loadSounds(dom.getDocumentElement());
+                    return loadSounds(dom.getDocumentElement());
                 } else {
-                    loadMusic(dom.getDocumentElement());
+                    return loadMusic(dom.getDocumentElement());
                 }
-
-                return;
             }
 
             // else run through each subfolder
@@ -183,20 +184,26 @@ public class XMLDataLoader {
                 Document dom = db.parse(props.getCanonicalPath());
                 Element root = dom.getDocumentElement();
 
+                boolean result= true;
                 if ("units".equals(folder)) {
-                    loadUnit(root);
+                    result= loadUnit(root);
                 } else if ("buildings".equals(folder)) {
-                    loadBuilding(root);
+                    result= loadBuilding(root);
                 } else if ("factions".equals(folder)) {
-                    loadFaction(root);
+                    result= loadFaction(root);
                 }
+                
+                if (!result) return false;
             }
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Error while reading {0} data...", folder);
+            return false;
         }
+        return true;
+
     }
 
-    private void loadUnit(Element root) {
+    private boolean loadUnit(Element root) {
         GenericUnit entity = new GenericUnit();
         try {
             Element unit = (Element) root.getElementsByTagName("unit").item(0);
@@ -211,10 +218,13 @@ public class XMLDataLoader {
             logger.log(Level.WARNING, "*Unit loaded: {0} *", entity.refName);
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Unit CANNOT be loaded: {0}", entity.refName);
+            return false;
         }
+        return true;
+
     }
 
-    private void loadBuilding(Element root) {
+    private boolean loadBuilding(Element root) {
         GenericBuilding entity = new GenericBuilding();
         try {
             Element building = (Element) root.getElementsByTagName("building").item(0);
@@ -241,10 +251,13 @@ public class XMLDataLoader {
             logger.log(Level.WARNING, "*Building loaded: {0} *", entity.refName);
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Building CANNOT be loaded: {0}", entity.refName);
+            return false;
         }
+        return true;
+
     }
 
-    private void loadFaction(Element root) {
+    private boolean loadFaction(Element root) {
         GenericFaction entity = new GenericFaction();
         try {
             Element faction = (Element) root.getElementsByTagName("faction").item(0);
@@ -282,10 +295,13 @@ public class XMLDataLoader {
             logger.log(Level.WARNING, "*Faction loaded: {0} *", entity.refName);
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Faction CANNOT be loaded: {0}", entity.refName);
+            return false;
         }
+        return true;
+
     }
 
-    private void loadMap(Element root) {
+    private boolean loadMap(Element root) {
         try {
             Element textures = (Element) root.getElementsByTagName("textures").item(0);
             Element terrain = (Element) root.getElementsByTagName("terrain").item(0);
@@ -399,7 +415,7 @@ public class XMLDataLoader {
 
 
             }
-            
+
             c = factions.getElementsByTagName("faction");
             for (int i = 0; i < c.getLength(); i++) {
                 Element r = (Element) c.item(i);
@@ -408,7 +424,7 @@ public class XMLDataLoader {
                 fac.refName = r.getAttribute("refname");
                 fac.gold = Integer.parseInt(r.getAttribute("gold"));
                 fac.capital = r.getAttribute("capital");
-                
+
 
                 Main.DB.factions.add(fac);
                 Main.DB.hashedFactions.put(fac.refName, fac);
@@ -445,35 +461,36 @@ public class XMLDataLoader {
             }
 
             logger.log(Level.WARNING, "*Map loaded*");
+            return true;
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Map CANNOT be loaded");
+            return false;
         }
     }
 
     public boolean loadAll() {
 
         try {
-
+            boolean result = true;
             logger.log(Level.WARNING, "Loading factions");
-            loadData("factions");
+            result = result & loadData("factions");
             logger.log(Level.WARNING, "Loading units");
-            loadData("units");
+            result = result & loadData("units");
             logger.log(Level.WARNING, "Loading buildings");
-            loadData("buildings");
+            result = result & loadData("buildings");
             logger.log(Level.WARNING, "Loading sounds");
-            loadData("sounds");
+            result = result & loadData("sounds");
             logger.log(Level.WARNING, "Loading music");
-            loadData("music");
+            result = result & loadData("music");
             logger.log(Level.WARNING, "Loading map");
-            loadData("map");
+            result = result & loadData("map");
             logger.log(Level.WARNING, "Loading scripts");
-            loadData("scripts");
+            result = result & loadData("scripts");
 
+            return result;
         } catch (Exception E) {
             return false;
         }
 
-
-        return true;
     }
 }

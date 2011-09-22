@@ -4,6 +4,7 @@
  */
 package openwar;
 
+import com.jme3.app.Application;
 import java.io.FileNotFoundException;
 import javax.script.ScriptException;
 import openwar.DB.XMLDataLoader;
@@ -15,7 +16,9 @@ import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
+import com.jme3.input.FlyByCamera;
 import com.jme3.input.KeyInput;
+import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 
@@ -23,8 +26,11 @@ import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
+import com.jme3.renderer.Camera;
+import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
+import com.jme3.system.JmeSystem;
 import de.lessvoid.nifty.Nifty;
 import java.io.File;
 import java.io.FileReader;
@@ -37,7 +43,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import openwar.DB.GameDatabase;
 
-public class Main extends SimpleApplication {
+public class Main extends Application {
 
     static public int version = 3;
     public String locatorRoot = "data" + File.separator;
@@ -52,6 +58,32 @@ public class Main extends SimpleApplication {
     static public ScriptEngine scriptEngine;
     static public boolean devMode;
     static public boolean debugUI;
+    private AppActionListener actionListener = new AppActionListener();
+    public Node rootNode = new Node("Root Node");
+    protected float secondCounter = 0.0f;
+    protected FlyByCamera camera;
+    public boolean forceQuit;
+
+    @Override
+    public void start() {
+        // set some default settings in-case
+        // settings dialog is not shown
+        boolean loadSettings = false;
+        if (settings == null) {
+            setSettings(new AppSettings(true));
+            loadSettings = true;
+        }
+
+        // show settings dialog
+        if (true) {
+            if (!JmeSystem.showSettingsDialog(settings, loadSettings)) {
+                return;
+            }
+        }
+        //re-setting settings they can have been merged from the registry.
+        setSettings(settings);
+        super.start();
+    }
 
     public static void main(String[] args) {
 
@@ -60,7 +92,6 @@ public class Main extends SimpleApplication {
         Main app = new Main();
         Logger.getLogger("").setLevel(Level.SEVERE);
 
-        app.setShowSettings(true);
         app.setSettings(new AppSettings(true));
         app.settings.setTitle("openwar    r" + version);
         app.settings.setFrameRate(30);
@@ -81,8 +112,14 @@ public class Main extends SimpleApplication {
 
     }
 
+    public Main() {
+        super();
+    }
+
     @Override
-    public void simpleInitApp() {
+    public void initialize() {
+        super.initialize();
+        viewPort.attachScene(rootNode);
 
         assetManager.registerLocator(locatorRoot, FileLocator.class.getName());
 
@@ -93,10 +130,12 @@ public class Main extends SimpleApplication {
         scriptEngine.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
 
         DataLoader = new XMLDataLoader(this);
-        DataLoader.loadAll();
+        if(!DataLoader.loadAll())
+        {
+            forceQuit = true;
+            return;
+        }
 
-
-        guiNode.detachAllChildren();
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
                 assetManager, inputManager, audioRenderer, guiViewPort);
         nifty = niftyDisplay.getNifty();
@@ -116,11 +155,27 @@ public class Main extends SimpleApplication {
         this.stateManager.attach(worldMapState);
         this.stateManager.attach(screenshotState);
 
-        
+
+        camera = new FlyByCamera(cam);
+        camera.registerWithInput(inputManager);
+        camera.setMoveSpeed(50);
+
+        if (!devMode) {
+            inputManager.clearMappings();
+            getInputManager().addMapping("map_strafeup", new KeyTrigger(KeyInput.KEY_W));
+            getInputManager().addMapping("map_strafedown", new KeyTrigger(KeyInput.KEY_S));
+            getInputManager().addMapping("map_strafeleft", new KeyTrigger(KeyInput.KEY_A));
+            getInputManager().addMapping("map_straferight", new KeyTrigger(KeyInput.KEY_D));
+
+        }
+
+
+
+
         //doScript("onGameBegin()");
 
-
-        getFlyByCamera().setMoveSpeed(50);
+        getInputManager().addMapping("quit_game", new KeyTrigger(KeyInput.KEY_ESCAPE));
+        getInputManager().addListener(actionListener, "quit_game");
 
         getInputManager().addMapping("ScreenShot", new KeyTrigger(KeyInput.KEY_P));
 
@@ -145,15 +200,16 @@ public class Main extends SimpleApplication {
         getInputManager().addMapping("show_grid", new KeyTrigger(KeyInput.KEY_G));
 
 
-        getInputManager().setCursorVisible(getFlyByCamera().isEnabled());
-        getFlyByCamera().setEnabled(!getFlyByCamera().isEnabled());
+        getInputManager().setCursorVisible(true);
+        camera.setEnabled(false);
+        
 
 
     }
 
 // Calculates a mouse pick with a spatial and returns nearest result or null
     public CollisionResult getMousePick(Spatial s) {
-        
+
         Vector2f mouse = inputManager.getCursorPosition();
         Vector3f t0 = cam.getWorldCoordinates(mouse, 0f);
         Vector3f t1 = cam.getWorldCoordinates(mouse, 1f);
@@ -175,7 +231,44 @@ public class Main extends SimpleApplication {
 
     }
 
+    private class AppActionListener implements ActionListener {
+
+        @Override
+        public void onAction(String name, boolean value, float tpf) {
+            if (!value) {
+                return;
+            }
+
+            if (name.equals("quit_game")) {
+                forceQuit = true;
+
+            }
+        }
+    }
+
     @Override
-    public void simpleUpdate(float tpf) {
+    public void update() {
+        super.update(); // makes sure to execute AppTasks
+        if (speed == 0 || paused) {
+            return;
+        }
+
+        float tpf = timer.getTimePerFrame() * speed;
+
+        // update states
+        stateManager.update(tpf);
+
+        // simple update and root node
+        rootNode.updateLogicalState(tpf);
+        rootNode.updateGeometricState();
+
+        // render states
+        stateManager.render(renderManager);
+        renderManager.render(tpf, context.isRenderable());
+        stateManager.postRender();
+
+        if (forceQuit) {
+            stop();
+        }
     }
 }

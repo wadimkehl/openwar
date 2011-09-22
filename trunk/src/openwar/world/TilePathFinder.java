@@ -36,18 +36,23 @@ public class TilePathFinder {
 
     public Stack<Tile> findPath(Tile start, Tile end, boolean walks, boolean sails) {
 
-        if (walks &&  !map.walkableTile(end)) {
+        if (walks && !map.walkableTile(end)) {
             return null;
         }
 
         if (sails && !map.sailableTile(end)) {
             return null;
         }
+
+        double h = Math.sqrt((end.x - start.x) * (end.x - start.x) + (end.z - start.z) * (end.z - start.z));
+
+        if (h > 150)
+            return null;
+        
         
         LinkedList<PathTile> open = new LinkedList<PathTile>();
         LinkedList<PathTile> closed = new LinkedList<PathTile>();
-        double h = Math.sqrt((end.x-start.x)*(end.x-start.x)+(end.z-start.z)*(end.z-start.z));
-        open.add(new PathTile(start.x, start.z, 0,h, null));
+        open.add(new PathTile(start.x, start.z, 0, h, null));
 
         PathTile p = null;
         while (!open.isEmpty()) {
@@ -86,12 +91,14 @@ public class TilePathFinder {
                     if (alreadyClosed) {
                         continue;
                     }
-                    
-                    if(walks && !map.walkableTile(newx, newz))
+
+                    if (walks && !map.walkableTile(newx, newz)) {
                         continue;
-                    
-                    if(sails && !map.sailableTile(newx, newz))
+                    }
+
+                    if (sails && !map.sailableTile(newx, newz)) {
                         continue;
+                    }
 
                     int new_distance = best.distance + map.worldTiles[newx][newz].cost;
 
@@ -110,8 +117,8 @@ public class TilePathFinder {
                     }
 
                     if (!alreadyOpen) {
-                        h = Math.sqrt((end.x-newx)*(end.x-newx)+(end.z-newz)*(end.z-newz));
-                        open.add(new PathTile(newx, newz, new_distance,h, best));
+                        h = Math.sqrt((end.x - newx) * (end.x - newx) + (end.z - newz) * (end.z - newz));
+                        open.add(new PathTile(newx, newz, new_distance, h, best));
                     }
 
                 }
@@ -152,7 +159,7 @@ public class TilePathFinder {
 
         // Do BFS for all tiles in question starting from army's position
         LinkedList<PathTile> q = new LinkedList<PathTile>();
-        q.add(new PathTile(army.posX, army.posZ, 0,0, null));
+        q.add(new PathTile(army.posX, army.posZ, 0, 0, null));
         while (!q.isEmpty()) {
 
             PathTile t = q.remove();
@@ -166,8 +173,8 @@ public class TilePathFinder {
                     if (walks && !map.walkableTile(t.x + x, t.z + z)) {
                         continue;
                     }
-                    
-                     if (sails && !map.sailableTile(t.x + x, t.z + z)) {
+
+                    if (sails && !map.sailableTile(t.x + x, t.z + z)) {
                         continue;
                     }
 
@@ -183,7 +190,7 @@ public class TilePathFinder {
                     }
                     if (new_d < distance[offset_x][offset_z]) {
                         distance[offset_x][offset_z] = new_d;
-                        q.add(new PathTile(t.x + x, t.z + z, new_d,0, t));
+                        q.add(new PathTile(t.x + x, t.z + z, new_d, 0, t));
                     }
                 }
             }
@@ -191,7 +198,7 @@ public class TilePathFinder {
 
         for (int z = -points; z < points; z++) {
             for (int x = -points; x < points; x++) {
-                if (distance[points + x][points + z] <= points)  {
+                if (distance[points + x][points + z] <= points) {
                     area.add(new Tile(army.posX + x, army.posZ + z));
                 }
             }
