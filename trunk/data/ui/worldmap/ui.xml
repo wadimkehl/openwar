@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <nifty xmlns="http://nifty-gui.sourceforge.net/nifty.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nifty-gui.sourceforge.net/nifty.xsd http://nifty-gui.sourceforge.net/nifty.xsd">
 
-  <useStyles filename="nifty-default-styles.xml" />
-  <useControls filename="nifty-default-controls.xml" />
+    <useStyles filename="nifty-default-styles.xml" />
+    <useControls filename="nifty-default-controls.xml" />
 
 
     <screen id="start" controller="openwar.world.WorldMapUI">
@@ -59,25 +59,45 @@
 
                         <!-- upper units row --> 
                                 <panel height="*" width="*" childLayout="horizontal">
-                                    <image id="unit0" width="9.975%" height="*" /> 
+                                    <image id="unit0" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(0,0)" onSecondaryClick="onUnitClick(0,1)" />
+                                    </image>
                                     <panel height="*" width="0.25%"/>
-                                    <image id="unit1" width="9.975%" height="*" /> 
+                                    <image id="unit1" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(1,0)" onSecondaryClick="onUnitClick(1,1)" />
+                                    </image>
                                     <panel height="*" width="0.25%"/>
-                                    <image id="unit2" width="9.975%" height="*" /> 
+                                    <image id="unit2" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(2,0)" onSecondaryClick="onUnitClick(2,1)" />
+                                    </image>                                    
                                     <panel height="*" width="0.25%"/>
-                                    <image id="unit3" width="9.975%" height="*" /> 
+                                    <image id="unit3" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(3,0)" onSecondaryClick="onUnitClick(3,1)" />
+                                    </image>                                    
                                     <panel height="*" width="0.25%"/>
-                                    <image id="unit4" width="9.975%" height="*" /> 
+                                    <image id="unit4" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(4,0)" onSecondaryClick="onUnitClick(4,1)" />
+                                    </image>                                    
                                     <panel height="*" width="0.25%"/>
-                                    <image id="unit5" width="9.975%" height="*" />
+                                    <image id="unit5" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(5,0)" onSecondaryClick="onUnitClick(5,1)" />
+                                    </image>                                    
                                     <panel height="*" width="0.25%"/>
-                                    <image id="unit6" width="9.975%" height="*" />
+                                    <image id="unit6" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(6,0)" onSecondaryClick="onUnitClick(6,1)" />
+                                    </image>                                    
                                     <panel height="*" width="0.25%"/>
-                                    <image id="unit7" width="9.975%" height="*" /> 
+                                    <image id="unit7" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(7,0)" onSecondaryClick="onUnitClick(7,1)" />
+                                    </image>                                    
                                     <panel height="*" width="0.25%"/>
-                                    <image id="unit8" width="9.975%" height="*" /> 
+                                    <image id="unit8" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(8,0)" onSecondaryClick="onUnitClick(8,1)" />
+                                    </image>                                    
                                     <panel height="*" width="0.25%"/>
-                                    <image id="unit9" width="9.975%" height="*" />         
+                                    <image id="unit9" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(9,0)" onSecondaryClick="onUnitClick(9,1)" />
+                                    </image>                                
                                 </panel>
                             </panel>
                            
@@ -87,25 +107,45 @@
                             <panel height="45%" width="*" childLayout="horizontal">
 
                                 <panel height="*" width="*" childLayout="horizontal">
-                                    <image id="unit10" width="9.975%" height="*" /> 
+                                    <image id="unit10" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(10,0)" onSecondaryClick="onUnitClick(10,1)" />
+                                    </image>
                                     <panel height="*" width="0.25%"/>
-                                    <image id="unit11" width="9.975%" height="*" /> 
+                                    <image id="unit11" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(11,0)" onSecondaryClick="onUnitClick(11,1)" />
+                                    </image>
                                     <panel height="*" width="0.25%"/>
-                                    <image id="unit12" width="9.975%" height="*" /> 
+                                    <image id="unit12" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(12,0)" onSecondaryClick="onUnitClick(12,1)" />
+                                    </image>                                    
                                     <panel height="*" width="0.25%"/>
-                                    <image id="unit13" width="9.975%" height="*" /> 
+                                    <image id="unit13" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(13,0)" onSecondaryClick="onUnitClick(13,1)" />
+                                    </image>                                    
                                     <panel height="*" width="0.25%"/>
-                                    <image id="unit14" width="9.975%" height="*" /> 
+                                    <image id="unit14" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(14,0)" onSecondaryClick="onUnitClick(14,1)" />
+                                    </image>                                    
                                     <panel height="*" width="0.25%"/>
-                                    <image id="unit15" width="9.975%" height="*" />
+                                    <image id="unit15" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(15,0)" onSecondaryClick="onUnitClick(15,1)" />
+                                    </image>                                    
                                     <panel height="*" width="0.25%"/>
-                                    <image id="unit16" width="9.975%" height="*" />
+                                    <image id="unit16" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(16,0)" onSecondaryClick="onUnitClick(16,1)" />
+                                    </image>                                    
                                     <panel height="*" width="0.25%"/>
-                                    <image id="unit17" width="9.975%" height="*" /> 
+                                    <image id="unit17" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(17,0)" onSecondaryClick="onUnitClick(17,1)" />
+                                    </image>                                    
                                     <panel height="*" width="0.25%"/>
-                                    <image id="unit18" width="9.975%" height="*" /> 
+                                    <image id="unit18" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(18,0)" onSecondaryClick="onUnitClick(18,1)" />
+                                    </image>                                    
                                     <panel height="*" width="0.25%"/>
-                                    <image id="unit19" width="9.975%" height="*" />         
+                                    <image id="unit19" width="9.975%" height="*">
+                                        <interact onPrimaryClick="onUnitClick(19,0)" onSecondaryClick="onUnitClick(19,1)" />
+                                    </image>          
                                 </panel>                     
                             </panel>     
                         </panel>

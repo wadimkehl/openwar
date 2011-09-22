@@ -35,21 +35,23 @@ public class Army {
     public Spatial banner;
     public Node node;
     public WorldMap map;
-    public ArrayList<Unit> units;
+    public ArrayList<Unit> units, selectedUnits;
     public Stack<Tile> route;
     public boolean onRoute = false;
 
     public Army() {
 
         units = new ArrayList<Unit>();
+        selectedUnits = new ArrayList<Unit>();
+
         node = new Node();
 
     }
 
     public void CreateData(WorldMap m) {
-        
+
         this.map = m;
-        
+
         model = (Spatial) new Geometry("", new Sphere(10, 10, 0.5f));
         model.setMaterial(new Material(map.game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md"));
         model.setShadowMode(ShadowMode.CastAndReceive);
