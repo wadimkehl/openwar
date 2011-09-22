@@ -52,7 +52,7 @@ import openwar.Main;
  */
 public class WorldMap {
 
-    Main game;
+    public Main game;
     public int width, height;
     public TerrainQuad terrain;
     public Node scene = new Node("worldmap"), rootScene;
@@ -175,9 +175,9 @@ public class WorldMap {
         Geometry plane = new Geometry("", new Quad(2 * width, 2 * height));
         Material mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         plane.setMaterial(mat);
-        plane.setLocalRotation(new Quaternion().fromAngles((float)Math.PI / 2f, 0f, 0f));
-        plane.setLocalTranslation(-width/2, 1f, -height/2);
-       // this.scene.attachChild(plane);
+        plane.setLocalRotation(new Quaternion().fromAngles((float) Math.PI / 2f, 0f, 0f));
+        plane.setLocalTranslation(-width / 2, 1f, -height / 2);
+        // this.scene.attachChild(plane);
         return true;
     }
 
@@ -228,32 +228,13 @@ public class WorldMap {
                 continue;
             }
 
-            //Spatial m = Main.DB.genBuildings.get("city").levels.get(0).model.clone();
-            Spatial m = (Spatial) new Geometry("city", new Box(Vector3f.ZERO, 1.2f, 0.25f, 1.2f));
-            Material mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
-            m.setMaterial(mat);
-            m.setShadowMode(ShadowMode.CastAndReceive);
-            Vector3f vec = getGLTileCenter(r.settlement.posX, r.settlement.posZ);
-            vec.y += 0.25f;
-            m.setLocalTranslation(vec);
-            r.settlement.model = m;
+           r.settlement.createData(this);
 
-            scene.attachChild(m);
-
-            r.settlement.updateBillBoard(game);
         }
 
         for (Faction f : Main.DB.factions) {
             for (Army a : f.armies) {
-                a.model = (Spatial) new Geometry("army", new Sphere(10, 10, 0.5f));
-                a.model.setMaterial(new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md"));
-                a.model.setShadowMode(ShadowMode.CastAndReceive);
-                a.locationGL = getGLTileCenter(a.posX, a.posZ);
-                a.model.setLocalTranslation(a.locationGL.add(0, 0.5f, 0));
-                a.map = this;
-
-                scene.attachChild(a.model);
-
+                a.CreateData(this);
             }
         }
 
@@ -286,31 +267,31 @@ public class WorldMap {
 
         DirectionalLight dlight = new DirectionalLight();
         Vector3f col = Main.DB.sun_color;
-        dlight.setColor(new ColorRGBA(col.x / 255f,col.y / 255f,col.z / 255f, 1));
+        dlight.setColor(new ColorRGBA(col.x / 255f, col.y / 255f, col.z / 255f, 1));
         dlight.setDirection(Main.DB.sun_direction);
         scene.addLight(dlight);
 
         fpp = new FilterPostProcessor(assetManager);
 
-        
-        if (Main.DB.hasWater)
-        {
-        WaterFilter water = new WaterFilter(scene, new Vector3f(0.3f, -0.9f, 1f));
-        water.setMaxAmplitude(0.2f);
-        water.setWaterTransparency(15f);
-        col = Main.DB.water_color;
-        water.setWaterColor(new ColorRGBA(col.x / 255f,col.y / 255f,col.z / 255f, 1));
-        water.setWaterHeight(Main.DB.waterHeight);
-        water.setSpeed(0.1f);
-        water.setFoamHardness(2f);
-        water.setFoamExistence(new Vector3f(0.1f, 0.2f, 0.18f));
-        fpp.addFilter(water);
+
+        if (Main.DB.hasWater) {
+            WaterFilter water = new WaterFilter(scene, new Vector3f(0.3f, -0.9f, 1f));
+            water.setMaxAmplitude(0.2f);
+            water.setWaterTransparency(15f);
+            col = Main.DB.water_color;
+            water.setWaterColor(new ColorRGBA(col.x / 255f, col.y / 255f, col.z / 255f, 1));
+            water.setWaterHeight(Main.DB.waterHeight);
+            water.setSpeed(0.1f);
+            water.setFoamHardness(2f);
+            water.setFoamExistence(new Vector3f(0.1f, 0.2f, 0.18f));
+            fpp.addFilter(water);
         }
 
 
         if (!Main.devMode) {
             BloomFilter bloom = new BloomFilter();
             bloom.setExposurePower(8f);
+            bloom.setBloomIntensity(1f);
             fpp.addFilter(bloom);
 
             PssmShadowRenderer pssm = new PssmShadowRenderer(assetManager, 1024, 8);
@@ -385,8 +366,8 @@ public class WorldMap {
     // Removes an army from the world map
     public void removeArmy(Army a) {
 
-        Main.DB.hashedFactions.get(a.player).armies.remove(a);
-        scene.detachChild(a.model);
+        Main.DB.hashedFactions.get(a.owner).armies.remove(a);
+        scene.detachChild(a.node);
 
 
     }
@@ -523,6 +504,7 @@ public class WorldMap {
             colors[i * 4] = 0f;
             colors[i * 4 + 1] = 1f;
             colors[i * 4 + 2] = 0f;
+
 
         }
 

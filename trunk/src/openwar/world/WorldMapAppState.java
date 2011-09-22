@@ -179,7 +179,9 @@ public class WorldMapAppState extends AbstractAppState {
 
         initialized = true;
 
-        //game.doScript("playMusic('ambient1')");
+        if(Main.devMode) return;
+        
+        game.doScript("playMusic('main_menu')");
     }
 
     @Override

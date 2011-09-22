@@ -416,6 +416,7 @@ public class XMLDataLoader {
                     se.posZ = Integer.parseInt(sett.getAttribute("posz"));
                     se.level = Integer.parseInt(sett.getAttribute("level"));
                     se.population = Integer.parseInt(sett.getAttribute("population"));
+                    se.region = reg.refName;
                     reg.settlement = se;
                     Main.DB.settlements.add(se);
                     Main.DB.hashedSettlements.put(reg.refName, se);
@@ -469,7 +470,7 @@ public class XMLDataLoader {
                     Army a = new Army();
                     a.posX = Integer.parseInt(army.getAttribute("posx"));
                     a.posZ = Integer.parseInt(army.getAttribute("posz"));
-                    a.player = fac.refName;
+                    a.owner = fac.refName;
 
                     NodeList units = army.getElementsByTagName("unit");
                     for (int k = 0; k < units.getLength(); k++) {
