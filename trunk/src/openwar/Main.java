@@ -5,14 +5,11 @@
 package openwar;
 
 import com.jme3.app.Application;
-import java.io.FileNotFoundException;
 import javax.script.ScriptException;
 import openwar.DB.XMLDataLoader;
 import openwar.world.WorldMapAppState;
 import com.jme3.asset.plugins.*;
-import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.ScreenshotAppState;
-import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
@@ -26,14 +23,12 @@ import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
-import com.jme3.renderer.Camera;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeSystem;
 import de.lessvoid.nifty.Nifty;
 import java.io.File;
-import java.io.FileReader;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -60,7 +55,6 @@ public class Main extends Application {
     static public boolean debugUI;
     private AppActionListener actionListener = new AppActionListener();
     public Node rootNode = new Node("Root Node");
-    protected float secondCounter = 0.0f;
     protected FlyByCamera camera;
     public boolean forceQuit;
 
@@ -158,7 +152,7 @@ public class Main extends Application {
 
         camera = new FlyByCamera(cam);
         camera.registerWithInput(inputManager);
-        camera.setMoveSpeed(50);
+        camera.setMoveSpeed(35);
 
         if (!devMode) {
             inputManager.clearMappings();
