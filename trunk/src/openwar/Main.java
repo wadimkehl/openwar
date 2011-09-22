@@ -54,7 +54,7 @@ public class Main extends Application {
     static public boolean devMode;
     static public boolean debugUI;
     private AppActionListener actionListener = new AppActionListener();
-    public Node rootNode = new Node("Root Node");
+    public Node rootNode = new Node("Root Node"), guiNode = new Node("GUI Node");
     protected FlyByCamera camera;
     public boolean forceQuit;
 
@@ -114,7 +114,7 @@ public class Main extends Application {
     public void initialize() {
         super.initialize();
         viewPort.attachScene(rootNode);
-
+        guiViewPort.attachScene(guiNode);
         assetManager.registerLocator(locatorRoot, FileLocator.class.getName());
 
         ScriptEngineManager factory = new ScriptEngineManager();
@@ -124,8 +124,7 @@ public class Main extends Application {
         scriptEngine.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
 
         DataLoader = new XMLDataLoader(this);
-        if(!DataLoader.loadAll())
-        {
+        if (!DataLoader.loadAll()) {
             forceQuit = true;
             return;
         }
@@ -196,7 +195,7 @@ public class Main extends Application {
 
         getInputManager().setCursorVisible(true);
         camera.setEnabled(false);
-        
+
 
 
     }
@@ -242,21 +241,17 @@ public class Main extends Application {
 
     @Override
     public void update() {
-        super.update(); // makes sure to execute AppTasks
+        super.update();
         if (speed == 0 || paused) {
             return;
         }
 
         float tpf = timer.getTimePerFrame() * speed;
-
-        // update states
         stateManager.update(tpf);
-
-        // simple update and root node
         rootNode.updateLogicalState(tpf);
         rootNode.updateGeometricState();
-
-        // render states
+        guiNode.updateLogicalState(tpf);
+        guiNode.updateGeometricState();
         stateManager.render(renderManager);
         renderManager.render(tpf, context.isRenderable());
         stateManager.postRender();

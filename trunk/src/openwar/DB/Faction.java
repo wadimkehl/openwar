@@ -5,7 +5,6 @@
 package openwar.DB;
 
 import java.util.ArrayList;
-import openwar.world.Army;
 
 /**
  *

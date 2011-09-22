@@ -4,14 +4,14 @@
  */
 package openwar.world;
 
+import openwar.DB.Army;
 import com.jme3.asset.AssetManager;
-import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.light.DirectionalLight;
 
 import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
@@ -24,6 +24,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.scene.shape.Box;
+import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.shadow.PssmShadowRenderer;
 import com.jme3.terrain.geomipmap.TerrainQuad;
@@ -60,9 +61,9 @@ public class WorldMap {
     WorldHeightMap heightMap;
     public Texture key0Image, key1Image, key2Image, gridImage;
     public WorldTile[][] worldTiles;
-    Geometry reachableArea;
-    Army selectedArmy;
-    Settlement selectedSettlement;
+    public Geometry reachableArea;
+    public Army selectedArmy;
+    public Settlement selectedSettlement;
     FilterPostProcessor fpp;
     TilePathFinder pathFinder = new TilePathFinder(this);
     private static final Logger logger = Logger.getLogger(WorldMap.class.getName());
@@ -170,6 +171,13 @@ public class WorldMap {
         terrain.setMaterial(matTerrain);
         terrain.setLocalTranslation(width / 2f, 0f, height / 2f);
 
+        // Create 4 planes that hide the water effect outside of the game map
+        Geometry plane = new Geometry("", new Quad(2 * width, 2 * height));
+        Material mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        plane.setMaterial(mat);
+        plane.setLocalRotation(new Quaternion().fromAngles((float)Math.PI / 2f, 0f, 0f));
+        plane.setLocalTranslation(-width/2, 1f, -height/2);
+       // this.scene.attachChild(plane);
         return true;
     }
 
@@ -229,9 +237,9 @@ public class WorldMap {
             vec.y += 0.25f;
             m.setLocalTranslation(vec);
             r.settlement.model = m;
-            
+
             scene.attachChild(m);
-            
+
             r.settlement.updateBillBoard(game);
         }
 
@@ -277,23 +285,27 @@ public class WorldMap {
 
 
         DirectionalLight dlight = new DirectionalLight();
-        dlight.setColor(new ColorRGBA(
-                Main.DB.sun_color.x / 255f,
-                Main.DB.sun_color.y / 255f,
-                Main.DB.sun_color.z / 255f, 1));
+        Vector3f col = Main.DB.sun_color;
+        dlight.setColor(new ColorRGBA(col.x / 255f,col.y / 255f,col.z / 255f, 1));
         dlight.setDirection(Main.DB.sun_direction);
         scene.addLight(dlight);
 
         fpp = new FilterPostProcessor(assetManager);
 
+        
+        if (Main.DB.hasWater)
+        {
         WaterFilter water = new WaterFilter(scene, new Vector3f(0.3f, -0.9f, 1f));
         water.setMaxAmplitude(0.2f);
         water.setWaterTransparency(15f);
-        water.setWaterColor(new ColorRGBA(0.01f, 0.5f, 0.7f, 1f));
+        col = Main.DB.water_color;
+        water.setWaterColor(new ColorRGBA(col.x / 255f,col.y / 255f,col.z / 255f, 1));
+        water.setWaterHeight(Main.DB.waterHeight);
         water.setSpeed(0.1f);
         water.setFoamHardness(2f);
         water.setFoamExistence(new Vector3f(0.1f, 0.2f, 0.18f));
         fpp.addFilter(water);
+        }
 
 
         if (!Main.devMode) {

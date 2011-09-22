@@ -17,7 +17,7 @@ import jme3tools.converters.ImageToAwt;
  */
 public class WorldHeightMap extends ImageBasedHeightMap {
     
-    float factor0, factor1, offset;
+    float factor0, factor1, cutoff;
 
     public WorldHeightMap(Image colorImage) {
         super(colorImage, 1.0f);
@@ -35,7 +35,7 @@ public class WorldHeightMap extends ImageBasedHeightMap {
      this(ImageToAwt.convert(image.getImage(), false, false, 0)); 
      factor0 = f0;
      factor1 = f1;
-     offset = offs;
+     cutoff = offs;
     }
 
 
@@ -43,7 +43,7 @@ public class WorldHeightMap extends ImageBasedHeightMap {
     public float calculateHeight(float r, float g, float b) {
 
         float value = (r + g + b) * factor0 + r*factor1;
-        return Math.max(0f,value)  + offset;
+        return value <= cutoff ? 0f : Math.max(0f,value);
        
     }
 }
