@@ -47,7 +47,7 @@ public class Settlement {
         BitmapFont fnt = game.getAssetManager().loadFont("ui/fonts/palatino.fnt");
         BitmapText label = new BitmapText(fnt, false);
         label.setSize(1f);
-        label.setText(name.toUpperCase());
+        label.setText(name);
         float width = label.getLineWidth();
         float height = label.getLineHeight();
 
