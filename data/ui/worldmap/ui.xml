@@ -61,42 +61,77 @@
                                 <panel height="*" width="*" childLayout="horizontal">
                                     <image id="unit0" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(0,0)" onSecondaryClick="onUnitClick(0,1)" />
+                                        <effect>
+                                            <onCustom name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
+
                                     </image>
                                     <panel height="*" width="0.25%"/>
                                     <image id="unit1" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(1,0)" onSecondaryClick="onUnitClick(1,1)" />
+                                        <effect>
+                                            <onCustom name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
                                     </image>
                                     <panel height="*" width="0.25%"/>
                                     <image id="unit2" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(2,0)" onSecondaryClick="onUnitClick(2,1)" />
+                                        <effect>
+                                            <onCustom name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
                                     </image>                                    
                                     <panel height="*" width="0.25%"/>
                                     <image id="unit3" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(3,0)" onSecondaryClick="onUnitClick(3,1)" />
+                                        <effect>
+                                            <onCustom name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
                                     </image>                                    
                                     <panel height="*" width="0.25%"/>
                                     <image id="unit4" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(4,0)" onSecondaryClick="onUnitClick(4,1)" />
+                                        <effect>
+                                            <onCustom name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
+                                        
                                     </image>                                    
                                     <panel height="*" width="0.25%"/>
                                     <image id="unit5" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(5,0)" onSecondaryClick="onUnitClick(5,1)" />
+                                        <effect>
+                                            <onCustom name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
                                     </image>                                    
                                     <panel height="*" width="0.25%"/>
                                     <image id="unit6" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(6,0)" onSecondaryClick="onUnitClick(6,1)" />
+                                        <effect>
+                                            <onCustom name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
                                     </image>                                    
                                     <panel height="*" width="0.25%"/>
                                     <image id="unit7" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(7,0)" onSecondaryClick="onUnitClick(7,1)" />
+                                        <effect>
+                                            <onCustom name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
                                     </image>                                    
                                     <panel height="*" width="0.25%"/>
                                     <image id="unit8" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(8,0)" onSecondaryClick="onUnitClick(8,1)" />
+                                        <effect>
+                                            <onCustom name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
                                     </image>                                    
                                     <panel height="*" width="0.25%"/>
                                     <image id="unit9" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(9,0)" onSecondaryClick="onUnitClick(9,1)" />
+                                        <effect>
+                                            <onCustom name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
+                                        <effect>
+                                            <onCustom name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
                                     </image>                                
                                 </panel>
                             </panel>

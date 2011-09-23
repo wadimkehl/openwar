@@ -19,34 +19,32 @@ import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Quad;
 import java.util.ArrayList;
 import openwar.Main;
+import openwar.world.WorldEntity;
 import openwar.world.WorldMap;
 
 /**
  *
  * @author kehl
  */
-public class Settlement {
+public class Settlement extends WorldEntity {
 
     public String name;
     public String region;
-    public int level, population, posX, posZ;
+    public int level, population;
     public ArrayList<Building> buildings;
-    public ArrayList<Unit> units, selectedUnits;
-    public Spatial model;
     public Spatial billBoard;
-    public Spatial banner;
-    public Node node;
-    public WorldMap map;
 
     public Settlement() {
+        super();
         buildings = new ArrayList<Building>();
-        units = new ArrayList<Unit>();
-        selectedUnits = new ArrayList<Unit>();
-        node = new Node();
+
     }
 
+    @Override
     public void createData(WorldMap m) {
         map = m;
+        
+        owner = Main.DB.hashedRegions.get(region).owner;
 
         //Spatial m = Main.DB.genBuildings.get("city").levels.get(level).model.clone();
         model = (Spatial) new Geometry("city", new Box(Vector3f.ZERO, 1.2f, 0.25f, 1.2f));
@@ -60,7 +58,7 @@ public class Settlement {
         banner.setLocalTranslation(-0.5f, 1f, 0);
         mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-        mat.setTexture("ColorMap", Main.DB.genFactions.get(Main.DB.hashedRegions.get(region).owner).banner);
+        mat.setTexture("ColorMap", Main.DB.genFactions.get(owner).banner);
         banner.setQueueBucket(Bucket.Translucent);
         banner.setMaterial(mat);
         node.attachChild(banner);
@@ -104,6 +102,20 @@ public class Settlement {
 
     }
 
-    public void update() {
+    @Override
+    public void update(float tpf) {
+    }
+
+ 
+    public Army dispatchArmy(ArrayList<Unit> split) {
+        Army a = new Army();
+        Main.DB.hashedFactions.get(owner).armies.add(a);
+        a.owner = owner;
+        a.posX = posX;
+        a.posZ = posZ;
+        mergeUnitsTo(a, split);
+        a.createData(map);
+        map.scene.attachChild(a.node);
+        return a;
     }
 }

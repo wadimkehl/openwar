@@ -20,35 +20,27 @@ import java.util.Stack;
 import java.util.concurrent.Callable;
 import openwar.Main;
 import openwar.world.Tile;
+import openwar.world.WorldEntity;
 import openwar.world.WorldMap;
 
 /**
  *
  * @author kehl
  */
-public class Army {
+public class Army extends WorldEntity {
 
-    public int posX, posZ;
-    public String owner;
     public int currMovePoints;
-    public Spatial model;
-    public Spatial banner;
-    public Node node;
-    public WorldMap map;
-    public ArrayList<Unit> units, selectedUnits;
     public Stack<Tile> route;
     public boolean onRoute = false;
 
     public Army() {
 
-        units = new ArrayList<Unit>();
-        selectedUnits = new ArrayList<Unit>();
-
-        node = new Node();
+        super();
 
     }
 
-    public void CreateData(WorldMap m) {
+    @Override
+    public void createData(WorldMap m) {
 
         this.map = m;
 
@@ -69,6 +61,7 @@ public class Army {
         node.attachChild(banner);
 
         map.scene.attachChild(node);
+        calculateMovePoints();
 
     }
 
@@ -101,6 +94,7 @@ public class Army {
         return calculateMovePoints();
     }
 
+    @Override
     public void update(float tpf) {
 
         if (!onRoute) {
@@ -130,18 +124,17 @@ public class Army {
                 if (route.isEmpty()) {
                     Army a = map.getArmy(t);
                     if (a != null) {
-                        
-                        if (a.owner.equals(owner) )                       
-                        mergeWith(a);
-                        else
-                        {
-                            ArrayList<Army> a1=new ArrayList<Army>();
-                            ArrayList<Army> a2=new ArrayList<Army>();
+
+                        if (a.owner.equals(owner)) {
+                            mergeWith(a);
+                        } else {
+                            ArrayList<Army> a1 = new ArrayList<Army>();
+                            ArrayList<Army> a2 = new ArrayList<Army>();
                             a1.add(this);
                             a2.add(a);
-                            int result =map.game.worldMapState.battle(a1, a2);
-                            
-                                
+                            int result = map.game.worldMapState.battle(a1, a2);
+
+
                         }
                     }
                 }
@@ -160,12 +153,12 @@ public class Army {
                     Settlement s = map.getSettlement(t);
                     if (s != null) {
                         garrisonArmy(s);
-                    } 
+                    }
                     return;
                 }
 
             }
-            
+
             t = route.peek();
             checkpoint = map.getGLTileCenter(t);
             Vector3f dir = checkpoint.subtract(node.getLocalTranslation()).normalizeLocal();
@@ -200,12 +193,40 @@ public class Army {
 
 
                 map.removeArmy(l);
-                if (map.selectedArmy == l) {
+                if (map.selectedArmy == l || map.selectedArmy == a) {
                     map.selectArmy(a);
                 }
+
                 return null;
             }
         });
+
+    }
+
+    public Army cloneSimple() {
+        Army a = new Army();
+        Main.DB.hashedFactions.get(owner).armies.add(a);
+        a.owner = owner;
+        a.posX = posX;
+        a.posZ = posZ;
+
+        return a;
+    }
+
+    public Army splitThisArmy(ArrayList<Unit> split) {
+
+        Army a = cloneSimple();
+        mergeUnitsTo(a, split);
+        a.createData(map);
+        map.scene.attachChild(a.node);
+
+
+        return a;
+    }
+
+    public void splitOtherArmy(Army from, ArrayList<Unit> split) {
+
+        mergeUnitsFrom(from, split);
 
     }
 

@@ -18,6 +18,7 @@ import com.jme3.terrain.geomipmap.TerrainPatch;
 import java.io.File;
 import java.util.ArrayList;
 import openwar.DB.Settlement;
+import openwar.DB.Unit;
 import openwar.Main;
 
 /**
@@ -27,7 +28,8 @@ import openwar.Main;
 public class WorldMapAppState extends AbstractAppState {
 
     public Node sceneNode;
-    public boolean showGrid = false;
+    public boolean showGrid;
+    public boolean shiftPressed;
     public WorldMap map;
     public Main game;
     public WorldMapUI uiController;
@@ -75,7 +77,7 @@ public class WorldMapAppState extends AbstractAppState {
 
             } else if (name.equals("mouse_right") && !pressed) {
 
-                if (map.selectedArmy == null) {
+                if (map.selectedArmy == null && uiController.selectedUnits.isEmpty()) {
                     return;
                 }
 
@@ -87,30 +89,47 @@ public class WorldMapAppState extends AbstractAppState {
                 int x = (int) pt.x;
                 int z = (int) pt.z;
 
+                Army a = null;
+                if (!uiController.selectedUnits.isEmpty()) {
+                    if (map.selectedArmy != null) {
+                        a = map.selectedArmy.splitThisArmy(uiController.selectedUnits);
+                    } else {
+                        a = map.selectedSettlement.dispatchArmy(uiController.selectedUnits);
+                    }
+                    uiController.deselectAll();
+                    map.selectArmy(a);
+
+
+                } else if (map.selectedArmy != null) {
+                    a = map.selectedArmy;
+                }
+
 
                 // Check if we ordered a march command
                 if (r.getGeometry() instanceof TerrainPatch || r.getGeometry().getName().equals("reachableArea")) {
-                    map.marchTo(map.selectedArmy, x, z);
+                    map.marchTo(a, x, z);
                     return;
                 }
 
                 // TODO: BLENDER exports spatial into two cascaded nodes!
                 //Spatial s = (Spatial) r.getGeometry().getParent().getParent();
                 Spatial s = (Spatial) r.getGeometry();
-                Army a = map.getArmy(s);
-                if (a != null) {
-                    map.marchTo(map.selectedArmy, a);
+                Army ar = map.getArmy(s);
+                if (ar != null) {
+                    map.marchTo(a, ar);
                     return;
                 }
 
                 Settlement c = map.getSettlement(s);
                 if (c != null) {
-                    map.marchTo(map.selectedArmy, c);
+                    map.marchTo(a, c);
                     return;
                 }
 
             } else if (name.equals("show_grid") && !pressed) {
                 map.showGrid(showGrid = !showGrid);
+            } else if (name.equals("shift")) {
+                shiftPressed = pressed;
             }
         }
     };
@@ -159,6 +178,7 @@ public class WorldMapAppState extends AbstractAppState {
         game.getInputManager().addListener(actionListener, "mouse_left");
         game.getInputManager().addListener(actionListener, "mouse_right");
         game.getInputManager().addListener(actionListener, "show_grid");
+        game.getInputManager().addListener(actionListener, "shift");
 
 
         game.getInputManager().addListener(analogListener, "map_strafeup");
