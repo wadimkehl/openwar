@@ -60,16 +60,20 @@ public class WorldMapAppState extends AbstractAppState {
                 }
 
                 // TODO: BLENDER exports spatial into two cascaded nodes!
-                Spatial s = (Spatial) r.getGeometry();
-                Army a = map.getArmy(s);
-                if (a != null) {
+                Spatial spat = (Spatial) r.getGeometry();
+                Army a = map.getArmy(spat);
+                if (a != null && a != map.selectedArmy) {
                     map.selectArmy(a);
+                    game.playSound("world_select_army");
+
                     return;
                 }
 
-                Settlement c = map.getSettlement(s);
-                if (c != null) {
-                    map.selectSettlement(c);
+                Settlement s = map.getSettlement(spat);
+                if (s != null && s != map.selectedSettlement) {
+                    map.selectSettlement(s);
+                    game.playSound("world_select_settlement");
+
                     return;
                 }
 
@@ -93,11 +97,19 @@ public class WorldMapAppState extends AbstractAppState {
                 if (!uiController.selectedUnits.isEmpty()) {
                     if (map.selectedArmy != null) {
                         a = map.selectedArmy.splitThisArmy(uiController.selectedUnits);
+                        map.game.playSound("army_split");
+
                     } else {
                         a = map.selectedSettlement.dispatchArmy(uiController.selectedUnits);
+                        map.game.playSound("army_dispatch");
+
                     }
+
                     uiController.deselectAll();
                     map.selectArmy(a);
+                    map.marchTo(a, x, z);
+
+                    return;
 
 
                 } else if (map.selectedArmy != null) {
@@ -108,6 +120,7 @@ public class WorldMapAppState extends AbstractAppState {
                 // Check if we ordered a march command
                 if (r.getGeometry() instanceof TerrainPatch || r.getGeometry().getName().equals("reachableArea")) {
                     map.marchTo(a, x, z);
+                    game.playSound("army_march");
                     return;
                 }
 
@@ -116,6 +129,11 @@ public class WorldMapAppState extends AbstractAppState {
                 Spatial s = (Spatial) r.getGeometry();
                 Army ar = map.getArmy(s);
                 if (ar != null) {
+                    if (!ar.owner.equals(a.owner)) {
+                        game.playSound("army_attack");
+                    } else {
+                        game.playSound("army_march");
+                    }
                     map.marchTo(a, ar);
                     return;
                 }
@@ -123,6 +141,7 @@ public class WorldMapAppState extends AbstractAppState {
                 Settlement c = map.getSettlement(s);
                 if (c != null) {
                     map.marchTo(a, c);
+                    game.playSound("army_march");
                     return;
                 }
 
@@ -139,13 +158,13 @@ public class WorldMapAppState extends AbstractAppState {
         public void onAnalog(String name, float value, float tpf) {
 
             if (name.equals("map_strafeup")) {
-                game.getCamera().setLocation(game.getCamera().getLocation().addLocal(0, 0, tpf * -50f));
+                game.getCamera().setLocation(game.getCamera().getLocation().addLocal(0, 0, tpf * -35f));
             } else if (name.equals("map_strafedown")) {
-                game.getCamera().setLocation(game.getCamera().getLocation().addLocal(0, 0, tpf * 50f));
+                game.getCamera().setLocation(game.getCamera().getLocation().addLocal(0, 0, tpf * 35f));
             } else if (name.equals("map_strafeleft")) {
-                game.getCamera().setLocation(game.getCamera().getLocation().addLocal(tpf * -50f, 0, 0));
+                game.getCamera().setLocation(game.getCamera().getLocation().addLocal(tpf * -35f, 0, 0));
             } else if (name.equals("map_straferight")) {
-                game.getCamera().setLocation(game.getCamera().getLocation().addLocal(tpf * 50f, 0, 0));
+                game.getCamera().setLocation(game.getCamera().getLocation().addLocal(tpf * 35f, 0, 0));
             }
 
 
@@ -204,7 +223,7 @@ public class WorldMapAppState extends AbstractAppState {
             return;
         }
 
-        game.doScript("playMusic('main_menu')");
+        game.doScript("playMusic('ambient1')");
     }
 
     @Override
@@ -258,12 +277,15 @@ public class WorldMapAppState extends AbstractAppState {
         if (power1 > power2) {
             for (Army a : a2) {
                 map.removeArmy(a);
+                game.playSound("army_death");
             }
             return 1;
         }
         if (power1 < power2) {
             for (Army a : a1) {
                 map.removeArmy(a);
+                game.playSound("army_death");
+
             }
             return 2;
         } else {

@@ -23,6 +23,7 @@ import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer.Type;
+import com.jme3.scene.control.UpdateControl;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
@@ -35,6 +36,7 @@ import com.jme3.water.WaterFilter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import openwar.DB.Climate;
@@ -329,21 +331,6 @@ public class WorldMap {
         return new Vector3f(x, heightMap.getInterpolatedHeight(x, z), z);
     }
 
-    public void deselectAll() {
-        selectedArmy = null;
-        selectedSettlement = null;
-        game.worldMapState.uiController.deselectAll();
-        scene.detachChild(reachableArea);
-
-        for (int i = 0; i < 20; i++) {
-            game.worldMapState.uiController.setImage("unit" + i, null);
-        }
-
-        game.doScript("playSound('ui_deselect_all')");
-
-
-    }
-
     public void update(float tpf) {
 
 
@@ -367,10 +354,22 @@ public class WorldMap {
     }
 
     // Removes an army from the world map
-    public void removeArmy(Army a) {
+    public void removeArmy(final Army a) {
 
-        Main.DB.hashedFactions.get(a.owner).armies.remove(a);
-        scene.detachChild(a.node);
+        scene.addControl(new UpdateControl());
+        scene.getControl(UpdateControl.class).enqueue(new Callable() {
+
+            @Override
+            public Object call() throws Exception {
+
+                Main.DB.hashedFactions.get(a.owner).armies.remove(a);
+                scene.detachChild(a.node);
+                
+                return null;
+            }
+        });
+
+
 
 
     }
@@ -436,6 +435,21 @@ public class WorldMap {
         return null;
     }
 
+    public void deselectAll() {
+        selectedArmy = null;
+        selectedSettlement = null;
+        game.worldMapState.uiController.deselectAll();
+        scene.detachChild(reachableArea);
+
+        for (int i = 0; i < 20; i++) {
+            game.worldMapState.uiController.setImage("unit" + i, null);
+        }
+
+        //game.playSound("world_deselect_all");
+
+
+    }
+
     // Marks the army as currently selected
     public void selectArmy(Army army) {
         if (army == null) {
@@ -460,6 +474,9 @@ public class WorldMap {
         if (s == null) {
             return;
         }
+
+
+
         deselectAll();
 
         selectedSettlement = s;

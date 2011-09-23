@@ -51,7 +51,10 @@ def onBeginTurn(String faction,int round)
 
 // called when a new round begins (i.e. all factions had their turn)
 def onBeginRound()
-{
+{        
+    
+    playSound("turn_begin")
+
     game.DB.currentRound++
 
     for(f in game.DB.factions)
@@ -79,7 +82,6 @@ def onWorldMapUIClicked(String element, int button)
 {
     if(element == "turn")
     {
-        playSound("ui_close")
         onEndTurn("player",game.DB.currentRound)  
         onBeginRound()
         
@@ -88,7 +90,7 @@ def onWorldMapUIClicked(String element, int button)
     
     if (element == "build")
     {
-        playSound("ui_open")
+        playSound("ui_window_open")
         toggleUIElement("scrolls_layer")
 
     }
@@ -99,17 +101,14 @@ def onWorldMapUIClicked(String element, int button)
 
 def onSettlementSelected()
 {
-    playSound("ui_select_settlement")
 }
 
 def onUnitSelected()
 {
-    playSound("ui_select_unit")
 
 }
 
 def onArmySelected()
 {
-    playSound("ui_select_army")
 
 }

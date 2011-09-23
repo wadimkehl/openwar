@@ -2,12 +2,27 @@
 
 <root>
 
- <sound refname="ui_open" file="ui_open.wav" />
- <sound refname="ui_close" file="ui_close.wav" />
- <sound refname="ui_select_army" file="ui_open.wav" />
- <sound refname="ui_select_settlement" file="ui_open.wav" />
- <sound refname="ui_select_unit" file="ui_open.wav" />
- <sound refname="ui_deselect_all" file="ui_open.wav" />
+    <sound refname="ui_window_open" file="ui_open.wav" />
+    <sound refname="ui_window_close" file="ui_close.wav" />
+    
+    
+    <sound refname="turn_end" file="gong.wav" />
+    <sound refname="turn_begin" file="light_gong.wav" />
+
+
+    <sound refname="world_select_army" file="yes_my_lord.wav" />
+    <sound refname="world_select_settlement" file="ping.wav" />
+    <sound refname="world_select_unit" file="yes_sire.wav" />
+    <sound refname="world_deselect_all" file="pong.wav" />
+
+    <sound refname="army_merge" file="merging_the_armys.wav" />
+    <sound refname="army_split" file="splitting_the_army.wav" />
+    <sound refname="army_attack" file="attacking_the_enemy.wav" />
+    <sound refname="army_march" file="as_you_wish_sire.wav" />
+    <sound refname="army_death" file="death.wav" />
+    <sound refname="army_dispatch" file="dispatching_army.wav" /> 
+
+ 
 
 
 

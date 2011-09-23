@@ -10,6 +10,7 @@ import openwar.DB.XMLDataLoader;
 import openwar.world.WorldMapAppState;
 import com.jme3.asset.plugins.*;
 import com.jme3.app.state.ScreenshotAppState;
+import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
@@ -57,6 +58,7 @@ public class Main extends Application {
     public Node rootNode = new Node("Root Node"), guiNode = new Node("GUI Node");
     protected FlyByCamera camera;
     public boolean forceQuit;
+    private static final Logger logger = Logger.getLogger(Main.class.getName());
 
     @Override
     public void start() {
@@ -128,7 +130,7 @@ public class Main extends Application {
             forceQuit = true;
             return;
         }
-        
+        setMusicVolume(0.2f);
 
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
                 assetManager, inputManager, audioRenderer, guiViewPort);
@@ -259,6 +261,43 @@ public class Main extends Application {
 
         if (forceQuit) {
             stop();
+        }
+    }
+
+    public void playSound(String name) {
+        AudioNode n = DB.soundNodes.get(name);
+        if (n == null) {
+            logger.log(Level.SEVERE, "Cannot find sound: {0}", name);
+            return;
+        }
+        if (n.getStatus() != AudioNode.Status.Playing) {
+            n.play();
+        }
+    }
+
+    public void playMusic(String name) {
+        AudioNode n = DB.musicNodes.get(name);
+        if (n == null) {
+            logger.log(Level.SEVERE, "Cannot find music: {0}", name);
+            return;
+        }
+        n.play();
+
+    }
+    
+    public void setMusicVolume(float v)
+    {
+        for(AudioNode n : DB.musicNodes.values())
+        {
+            n.setVolume(v);
+        }
+    }
+    
+    public void setSoundVolume(float v)
+    {
+        for(AudioNode n : DB.soundNodes.values())
+        {
+            n.setVolume(v);
         }
     }
 }
