@@ -19,11 +19,11 @@ public class TilePathFinder {
     // Serves for path finding things
     public class PathTile extends Tile {
 
-        public int distance;
+        public double distance;
         public double heuristic;
         public PathTile ancestor;
 
-        public PathTile(int x, int z, int d, double h, PathTile a) {
+        public PathTile(int x, int z, double d, double h, PathTile a) {
             super(x, z);
             distance = d;
             heuristic = h;
@@ -35,10 +35,10 @@ public class TilePathFinder {
     public TilePathFinder(WorldMap m) {
         this.map = m;
     }
-    
-        public Stack<Tile> findPath(int sx, int sz, int gx, int gz, boolean walks, boolean sails) {
-            return findPath(new Tile(sx,sz),new Tile(gx,gz),walks,sails);
-        }
+
+    public Stack<Tile> findPath(int sx, int sz, int gx, int gz, boolean walks, boolean sails) {
+        return findPath(new Tile(sx, sz), new Tile(gx, gz), walks, sails);
+    }
 
     public Stack<Tile> findPath(Tile start, Tile end, boolean walks, boolean sails) {
 
@@ -52,10 +52,11 @@ public class TilePathFinder {
 
         double h = Math.sqrt((end.x - start.x) * (end.x - start.x) + (end.z - start.z) * (end.z - start.z));
 
-        if (h > 150)
+        if (h > 150) {
             return null;
-        
-        
+        }
+
+
         LinkedList<PathTile> open = new LinkedList<PathTile>();
         LinkedList<PathTile> closed = new LinkedList<PathTile>();
         open.add(new PathTile(start.x, start.z, 0, h, null));
@@ -64,11 +65,11 @@ public class TilePathFinder {
         while (!open.isEmpty()) {
 
             // find in open list best candidate (minimal distance) and remove
-            int min = 100000;
+            double min = 100000;
             PathTile best = null;
             for (PathTile temp : open) {
                 if ((temp.distance + temp.heuristic) < min && map.walkableTile(temp)) {
-                    min = temp.distance;
+                    min = temp.distance + temp.heuristic;
                     best = temp;
                 }
             }
@@ -106,7 +107,7 @@ public class TilePathFinder {
                         continue;
                     }
 
-                    int new_distance = best.distance + map.worldTiles[newx][newz].cost;
+                    double new_distance = best.distance + map.worldTiles[newx][newz].cost;
 
                     // check if in open list
                     boolean alreadyOpen = false;
@@ -145,22 +146,21 @@ public class TilePathFinder {
         return path;
     }
 
-    
-     public ArrayList<Tile> getReachableArea(ArrayList<Unit> units, int posX, int posZ,boolean walks, boolean sails) {
+    public ArrayList<Tile> getReachableArea(ArrayList<Unit> units, int posX, int posZ, boolean walks, boolean sails) {
         ArrayList<Tile> area = new ArrayList<Tile>();
 
         int points = 10000;
         for (Unit u : units) {
             points = Math.min(u.currMovePoints, points);
         }
-        
+
         if (points <= 0) {
             area.add(new Tile(posX, posZ));
             return area;
         }
 
         // Holds global distance values discovered yet
-        int[][] distance = new int[2 * points][2 * points];
+        double[][] distance = new double[2 * points][2 * points];
         for (int x = 0; x < 2 * points; x++) {
             for (int z = 0; z < 2 * points; z++) {
                 distance[x][z] = 10000;
@@ -195,8 +195,8 @@ public class TilePathFinder {
                         continue;
                     }
 
-                    int new_d = map.getTileCosts(t.x + x, t.z + z) + t.distance;
-                    if (new_d >= points) {
+                    double new_d = map.getTileCosts(t.x + x, t.z + z) + t.distance;
+                    if (new_d > points) {
                         continue;
                     }
                     if (new_d < distance[offset_x][offset_z]) {
@@ -217,9 +217,9 @@ public class TilePathFinder {
 
         return area;
     }
-     
+
     public ArrayList<Tile> getReachableArea(Army army, boolean walks, boolean sails) {
-        
-        return getReachableArea(army.units,army.posX,army.posZ,walks,sails);
+
+        return getReachableArea(army.units, army.posX, army.posZ, walks, sails);
     }
 }

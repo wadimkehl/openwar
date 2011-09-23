@@ -21,6 +21,7 @@
     <sound refname="army_march" file="as_you_wish_sire.wav" />
     <sound refname="army_death" file="death.wav" />
     <sound refname="army_dispatch" file="dispatching_army.wav" /> 
+    <sound refname="army_deny" file="impossible_sire.wav" /> 
 
  
 

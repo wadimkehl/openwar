@@ -57,7 +57,7 @@
     
     <factions>
         
-        <faction refname="humans" gold="1000" capital="germany">
+        <faction refname="humans" gold="1000" capital="portugal">
             <army posx="31" posz="20" >
                 <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
