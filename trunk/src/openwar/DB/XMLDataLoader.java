@@ -51,10 +51,9 @@ public class XMLDataLoader {
                 file = l.getAttribute("file");
                 entity = new AudioNode(assets, "sounds" + File.separator + file, false);
                 Main.DB.soundNodes.put(refname, entity);
+                logger.log(Level.WARNING, "*Sound loaded: {0} *", refname);
             }
 
-
-            logger.log(Level.WARNING, "*Sound loaded: {0} *", refname);
             return true;
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Sound CANNOT be loaded: {0}", refname);
@@ -75,9 +74,10 @@ public class XMLDataLoader {
                 file = l.getAttribute("file");
                 entity = new AudioNode(assets, "music" + File.separator + file, true);
                 Main.DB.musicNodes.put(refname, entity);
+                logger.log(Level.WARNING, "*Music loaded: {0} *", refname);
+
             }
 
-            logger.log(Level.WARNING, "*Music loaded: {0} *", refname);
             return true;
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Music CANNOT be loaded: {0}", refname);
@@ -101,6 +101,7 @@ public class XMLDataLoader {
                     if (l.isFile()) {
                         Main.scriptEngine.eval(new FileReader(game.locatorRoot
                                 + f.getName() + File.separator + l.getName()));
+                        logger.log(Level.WARNING, "*Script loaded: {0} *", l.getName());
 
                     }
                 }

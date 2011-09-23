@@ -1,7 +1,6 @@
 
-// this file gives auxilliary functions to the scripts for easy engine interoperability
-// you can include this file with every custom campaign BUT MAKE SURE that these functions are loaded first!
-// Either by naming the file with the lowest lexicographical order or by incorporating these functions into other files
+// this file gives utility functions to the scripts for easy engine interoperability
+// you can include this file with every custom campaign 
 
 
 // plays a sound, really. Does not interfere with other sounds playing
@@ -13,7 +12,7 @@ def playSound(String name)
     {
         println "Cannot find sound: " + name
         return
-    }
+    }    
     n.play()   
 }
 

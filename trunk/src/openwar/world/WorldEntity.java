@@ -32,6 +32,31 @@ public abstract class WorldEntity {
 
     public abstract void update(float tpf);
     
+    public int calculateMovePoints() {
+
+        int points = 10000;
+        for (Unit u : units) {
+            points = Math.min(u.currMovePoints, points);
+        }
+        return points;
+
+    }
+
+    public int resetMovePoints() {
+        for (Unit u : units) {
+            u.resetMovePoints();
+        }
+        return calculateMovePoints();
+    }
+
+    public int reduceMovePoints(int minus) {
+        for (Unit u : units) {
+            u.currMovePoints = Math.max(0, u.currMovePoints - minus);
+        }
+        return calculateMovePoints();
+    }
+
+    
     public void mergeUnitsTo(WorldEntity to, ArrayList<Unit> split)
     {
          if (split != null) {
