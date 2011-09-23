@@ -8,6 +8,7 @@ import openwar.DB.Army;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Stack;
+import openwar.DB.Unit;
 
 /**
  *
@@ -34,6 +35,10 @@ public class TilePathFinder {
     public TilePathFinder(WorldMap m) {
         this.map = m;
     }
+    
+        public Stack<Tile> findPath(int sx, int sz, int gx, int gz, boolean walks, boolean sails) {
+            return findPath(new Tile(sx,sz),new Tile(gx,gz),walks,sails);
+        }
 
     public Stack<Tile> findPath(Tile start, Tile end, boolean walks, boolean sails) {
 
@@ -140,12 +145,17 @@ public class TilePathFinder {
         return path;
     }
 
-    public ArrayList<Tile> getReachableArea(Army army, boolean walks, boolean sails) {
+    
+     public ArrayList<Tile> getReachableArea(ArrayList<Unit> units, int posX, int posZ,boolean walks, boolean sails) {
         ArrayList<Tile> area = new ArrayList<Tile>();
 
-        int points = army.currMovePoints;
+        int points = 10000;
+        for (Unit u : units) {
+            points = Math.min(u.currMovePoints, points);
+        }
+        
         if (points <= 0) {
-            area.add(new Tile(army.posX, army.posZ));
+            area.add(new Tile(posX, posZ));
             return area;
         }
 
@@ -160,7 +170,7 @@ public class TilePathFinder {
 
         // Do BFS for all tiles in question starting from army's position
         LinkedList<PathTile> q = new LinkedList<PathTile>();
-        q.add(new PathTile(army.posX, army.posZ, 0, 0, null));
+        q.add(new PathTile(posX, posZ, 0, 0, null));
         while (!q.isEmpty()) {
 
             PathTile t = q.remove();
@@ -179,8 +189,8 @@ public class TilePathFinder {
                         continue;
                     }
 
-                    int offset_x = t.x - army.posX + x + points;
-                    int offset_z = t.z - army.posZ + z + points;
+                    int offset_x = t.x - posX + x + points;
+                    int offset_z = t.z - posZ + z + points;
                     if (offset_x < 0 || offset_x > points * 2 - 1 || offset_z < 0 || offset_z > points * 2 - 1) {
                         continue;
                     }
@@ -200,11 +210,16 @@ public class TilePathFinder {
         for (int z = -points; z < points; z++) {
             for (int x = -points; x < points; x++) {
                 if (distance[points + x][points + z] <= points) {
-                    area.add(new Tile(army.posX + x, army.posZ + z));
+                    area.add(new Tile(posX + x, posZ + z));
                 }
             }
         }
 
         return area;
+    }
+     
+    public ArrayList<Tile> getReachableArea(Army army, boolean walks, boolean sails) {
+        
+        return getReachableArea(army.units,army.posX,army.posZ,walks,sails);
     }
 }

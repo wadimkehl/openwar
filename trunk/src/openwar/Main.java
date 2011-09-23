@@ -128,6 +128,7 @@ public class Main extends Application {
             forceQuit = true;
             return;
         }
+        
 
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
                 assetManager, inputManager, audioRenderer, guiViewPort);

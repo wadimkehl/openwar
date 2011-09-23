@@ -65,7 +65,7 @@ public class WorldMap {
     public Army selectedArmy;
     public Settlement selectedSettlement;
     FilterPostProcessor fpp;
-    TilePathFinder pathFinder = new TilePathFinder(this);
+    public TilePathFinder pathFinder = new TilePathFinder(this);
     private static final Logger logger = Logger.getLogger(WorldMap.class.getName());
     public WorldMinimap minimap;
 
@@ -228,13 +228,13 @@ public class WorldMap {
                 continue;
             }
 
-           r.settlement.createData(this);
+            r.settlement.createData(this);
 
         }
 
         for (Faction f : Main.DB.factions) {
             for (Army a : f.armies) {
-                a.CreateData(this);
+                a.createData(this);
             }
         }
 
@@ -332,7 +332,7 @@ public class WorldMap {
     public void deselectAll() {
         selectedArmy = null;
         selectedSettlement = null;
-
+        game.worldMapState.uiController.deselectAll();
         scene.detachChild(reachableArea);
 
         for (int i = 0; i < 20; i++) {
@@ -476,10 +476,10 @@ public class WorldMap {
 
     }
 
-    // Run BFS to find the reachable tiles for the army
-    public void drawReachableArea(Army army) {
+    public void drawReachableArea(ArrayList<Unit> units, int posX,int posZ) {
 
-        ArrayList<Tile> area = pathFinder.getReachableArea(army, true, false);
+        ArrayList<Tile> area = pathFinder.getReachableArea(units,posX,posZ,true, false);
+
 
         ArrayList<Vector2f> corners = new ArrayList<Vector2f>();
         for (Tile t : area) {
@@ -534,6 +534,14 @@ public class WorldMap {
         reachableArea.setMaterial(mat);
         reachableArea.setQueueBucket(Bucket.Transparent);
         scene.attachChild(reachableArea);
+
+    }
+
+    // Run BFS to find the reachable tiles for the army
+    public void drawReachableArea(Army army) {
+
+        drawReachableArea(army.units,army.posX,army.posZ);
+
     }
 
     // These four functions check if a tile can be walked or sailed on
@@ -569,7 +577,7 @@ public class WorldMap {
 
         Stack<Tile> p = pathFinder.findPath(new Tile(a.posX, a.posZ), new Tile(x, z), true, false);
         if (p != null) {
-            selectedArmy.setRoute(p);
+            a.setRoute(p);
         }
     }
 
