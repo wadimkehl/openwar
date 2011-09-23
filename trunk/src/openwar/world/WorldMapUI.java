@@ -4,24 +4,16 @@
  */
 package openwar.world;
 
-import com.jme3.math.Vector2f;
-import com.jme3.math.Vector3f;
 import com.jme3.niftygui.RenderImageJme;
 import com.jme3.texture.Texture2D;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.effects.EffectEventId;
-import de.lessvoid.nifty.effects.impl.ImageSizePulsate;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.ImageRenderer;
 import de.lessvoid.nifty.render.NiftyImage;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.script.ScriptException;
-import openwar.DB.Army;
-import openwar.DB.Settlement;
 import openwar.DB.Unit;
 import openwar.Main;
 
@@ -85,8 +77,11 @@ public class WorldMapUI implements ScreenController {
     }
 
     public void selectUnit(int number) {
+        // TODO: Nifty always throws exceptions here 
         unitImage[number].startEffect(EffectEventId.onCustom, null, "selected");
         selectedUnits.add(selectedFrom.units.get(number));
+        game.playSound("world_select_unit");
+
         game.doScript("onUnitSelected()");
 
     }

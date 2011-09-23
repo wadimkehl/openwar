@@ -1,5 +1,5 @@
 
-// this file gives utility functions to the scripts for easy engine interoperability
+// this file gives utility functions to the scripts for easier engine interoperability
 // you can include this file with every custom campaign 
 
 
@@ -7,13 +7,7 @@
 // name is the specified refname of the sound file
 def playSound(String name)
 {
-    n = game.DB.soundNodes.get(name)
-    if(n == null)
-    {
-        println "Cannot find sound: " + name
-        return
-    }    
-    n.play()   
+   game.playSound(name)  
 }
 
 
@@ -21,13 +15,8 @@ def playSound(String name)
 // name is the specified refname of the music file
 def playMusic(String name)
 {
-    n = game.DB.musicNodes.get(name)
-    if(n == null)
-    {
-        println "Cannot find music: " + name
-        return
-    }
-    n.play()
+       game.playMusic(name)  
+
 }
 
 

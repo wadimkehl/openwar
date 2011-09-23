@@ -76,7 +76,7 @@ public class Army extends WorldEntity {
         return currMovePoints = super.calculateMovePoints();
 
     }
-    
+
     @Override
     public void update(float tpf) {
 
@@ -168,21 +168,10 @@ public class Army extends WorldEntity {
             a.units.add(u);
         }
 
-        map.scene.addControl(new UpdateControl());
-        map.scene.getControl(UpdateControl.class).enqueue(new Callable() {
-
-            @Override
-            public Object call() throws Exception {
+        map.game.playSound("army_merge");
+        map.removeArmy(this);
 
 
-                map.removeArmy(l);
-                if (map.selectedArmy == l || map.selectedArmy == a) {
-                    map.selectArmy(a);
-                }
-
-                return null;
-            }
-        });
 
     }
 
@@ -202,6 +191,7 @@ public class Army extends WorldEntity {
         mergeUnitsTo(a, split);
         a.createData(map);
         map.scene.attachChild(a.node);
+        map.game.playSound("army_split");
 
 
         return a;
@@ -210,6 +200,8 @@ public class Army extends WorldEntity {
     public void splitOtherArmy(Army from, ArrayList<Unit> split) {
 
         mergeUnitsFrom(from, split);
+        map.game.playSound("army_split");
+
 
     }
 
@@ -219,20 +211,7 @@ public class Army extends WorldEntity {
         for (Unit u : a.units) {
             s.units.add(u);
         }
+        map.removeArmy(a);
 
-        map.scene.addControl(new UpdateControl());
-        map.scene.getControl(UpdateControl.class).enqueue(new Callable() {
-
-            @Override
-            public Object call() throws Exception {
-
-
-                map.removeArmy(a);
-                if (map.selectedArmy == a) {
-                    map.selectSettlement(s);
-                }
-                return null;
-            }
-        });
     }
 }

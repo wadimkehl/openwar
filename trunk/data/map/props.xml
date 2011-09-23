@@ -103,7 +103,7 @@
         </region>
 
         <region name="Portugal" refname="portugal" color="0 0 255" owner="humans">
-            <settlement name="Lisabon" posx="38" posz="16" level="0" population="1000" >          
+            <settlement name="Lisbon" posx="38" posz="16" level="0" population="1000" >          
                 <building refname="irrigation" level="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>
