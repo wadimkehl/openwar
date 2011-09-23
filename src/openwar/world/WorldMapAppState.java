@@ -29,7 +29,7 @@ public class WorldMapAppState extends AbstractAppState {
 
     public Node sceneNode;
     public boolean showGrid;
-    public boolean shiftPressed;
+    public boolean shiftPressed, ctrlPressed;
     public WorldMap map;
     public Main game;
     public WorldMapUI uiController;
@@ -95,7 +95,17 @@ public class WorldMapAppState extends AbstractAppState {
 
                 Army a = null;
                 if (!uiController.selectedUnits.isEmpty()) {
-                    if (map.selectedArmy != null) {
+
+                    // TODO: a proper check when splitting or merging not possible
+                    int points = 10000;
+                    for (Unit u : uiController.selectedUnits) {
+                        points = Math.min(u.currMovePoints, points);
+                    }
+                    if (points == 0) {
+                        map.game.playSound("army_deny");
+                        return;
+
+                    } else if (map.selectedArmy != null) {
                         a = map.selectedArmy.splitThisArmy(uiController.selectedUnits);
                         map.game.playSound("army_split");
 
@@ -108,7 +118,6 @@ public class WorldMapAppState extends AbstractAppState {
                     uiController.deselectAll();
                     map.selectArmy(a);
                     map.marchTo(a, x, z);
-
                     return;
 
 
@@ -116,6 +125,11 @@ public class WorldMapAppState extends AbstractAppState {
                     a = map.selectedArmy;
                 }
 
+                // TODO: a proper check when marching not possible
+                if (map.selectedArmy.currMovePoints == 0) {
+                    map.game.playSound("army_deny");
+                    return;
+                }
 
                 // Check if we ordered a march command
                 if (r.getGeometry() instanceof TerrainPatch || r.getGeometry().getName().equals("reachableArea")) {
@@ -149,6 +163,8 @@ public class WorldMapAppState extends AbstractAppState {
                 map.showGrid(showGrid = !showGrid);
             } else if (name.equals("shift")) {
                 shiftPressed = pressed;
+            } else if (name.equals("ctrl")) {
+                ctrlPressed = pressed;
             }
         }
     };
@@ -198,7 +214,7 @@ public class WorldMapAppState extends AbstractAppState {
         game.getInputManager().addListener(actionListener, "mouse_right");
         game.getInputManager().addListener(actionListener, "show_grid");
         game.getInputManager().addListener(actionListener, "shift");
-
+        game.getInputManager().addListener(actionListener, "ctrl");
 
         game.getInputManager().addListener(analogListener, "map_strafeup");
         game.getInputManager().addListener(analogListener, "map_strafedown");

@@ -364,7 +364,13 @@ public class WorldMap {
 
                 Main.DB.hashedFactions.get(a.owner).armies.remove(a);
                 scene.detachChild(a.node);
-                
+
+                if (selectedArmy == a) {
+                    deselectAll();
+                } else if (selectedArmy != null) {
+                    selectArmy(selectedArmy);
+                }
+
                 return null;
             }
         });
@@ -598,7 +604,8 @@ public class WorldMap {
     }
 
     public void marchTo(Army a, int x, int z) {
-
+        
+        a.calculateMovePoints();
         Stack<Tile> p = pathFinder.findPath(new Tile(a.posX, a.posZ), new Tile(x, z), true, false);
         if (p != null) {
             a.setRoute(p);

@@ -29,6 +29,7 @@ public class WorldMapUI implements ScreenController {
     public Element unitImage[] = new Element[20];
     public ArrayList<Unit> selectedUnits = new ArrayList<Unit>();
     public WorldEntity selectedFrom = null;
+    public int lastIndex;
 
     public WorldMapUI() {
     }
@@ -77,7 +78,6 @@ public class WorldMapUI implements ScreenController {
     }
 
     public void selectUnit(int number) {
-        // TODO: Nifty always throws exceptions here 
         unitImage[number].startEffect(EffectEventId.onCustom, null, "selected");
         selectedUnits.add(selectedFrom.units.get(number));
         game.playSound("world_select_unit");
@@ -88,15 +88,15 @@ public class WorldMapUI implements ScreenController {
 
     public void drawReachableArea() {
         if (!selectedUnits.isEmpty()) {
-            int x = game.worldMapState.map.selectedSettlement.posX;
-            int z = game.worldMapState.map.selectedSettlement.posZ;
+            int x = selectedFrom.posX;
+            int z = selectedFrom.posZ;
             game.worldMapState.map.drawReachableArea(selectedUnits, x, z);
         }
     }
 
-    public void onUnitClick(String n, String b) {
+    public void onUnitClick(String ind, String b) {
 
-        int number = Integer.parseInt(n);
+        int index = Integer.parseInt(ind);
         int button = Integer.parseInt(b);
         if (button > 0) {
             return;
@@ -112,31 +112,28 @@ public class WorldMapUI implements ScreenController {
         selectedFrom = e;
 
 
-        if (e.units.size() - 1 < number) {
+        if (e.units.size() - 1 < index) {
             deselectUnits();
             return;
         }
 
-
-        if (!game.worldMapState.shiftPressed) {
+        // TODO: check why this is not working
+        if (!game.worldMapState.ctrlPressed) {
             deselectUnits();
-            selectUnit(number);
-            drawReachableArea();
+        }
 
-            if (game.worldMapState.map.selectedSettlement != null) {
-                drawReachableArea();
+
+        if (game.worldMapState.shiftPressed) {
+            for (int i = Math.min(index, lastIndex); i <= Math.max(index, lastIndex); i++) {
+                selectUnit(i);
             }
 
-            return;
+        } else {
+            selectUnit(index);
         }
 
-//        int index = e.units.indexOf(selectedUnit);
-//        for (int i = Math.min(index, number); i < Math.min(index, number); i++) {
-//            selectUnit(i);
-//        }
-
-        return;
-
+        drawReachableArea();
+        lastIndex = index;
     }
 
     public void onMinimapClick(final int mouseX, final int mouseY) {

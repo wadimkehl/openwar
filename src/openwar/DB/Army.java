@@ -52,7 +52,8 @@ public class Army extends WorldEntity {
         node.attachChild(model);
 
         banner = (Spatial) new Geometry("", new Quad(1f, 2f));
-        banner.setLocalTranslation(-0.5f, 2f, 0);
+        float random_offset = (((float) Math.random()) - 0.5f) * 0.01f;
+        banner.setLocalTranslation(-0.5f, 2f, random_offset);
         Material mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         mat.setTexture("ColorMap", Main.DB.genFactions.get(owner).banner);
@@ -87,15 +88,9 @@ public class Army extends WorldEntity {
             route = null;
             onRoute = false;
 
-        } else {
+        }  else {
 
             Tile t = route.peek();
-
-            if (currMovePoints < map.getTileCosts(t)) {
-                onRoute = false;
-                return;
-            }
-
             Vector3f checkpoint = map.getGLTileCenter(t);
 
             // next checkpoint reached
@@ -116,7 +111,7 @@ public class Army extends WorldEntity {
                             a1.add(this);
                             a2.add(a);
                             int result = map.game.worldMapState.battle(a1, a2);
-
+                            return;
 
                         }
                     }
@@ -137,6 +132,11 @@ public class Army extends WorldEntity {
                     if (s != null) {
                         garrisonArmy(s);
                     }
+                    return;
+                }
+
+                if (currMovePoints < map.getTileCosts(route.peek())) {
+                    onRoute = false;
                     return;
                 }
 

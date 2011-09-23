@@ -178,6 +178,13 @@ public class Main extends Application {
         getInputManager().addMapping("mouse_left", new MouseButtonTrigger(0));
         getInputManager().addMapping("mouse_right", new MouseButtonTrigger(1));
 
+        getInputManager().addMapping("shift", new KeyTrigger(KeyInput.KEY_LSHIFT));
+        getInputManager().addMapping("shift", new KeyTrigger(KeyInput.KEY_RSHIFT));
+        getInputManager().addMapping("ctrl", new KeyTrigger(KeyInput.KEY_LCONTROL));
+        getInputManager().addMapping("ctrl", new KeyTrigger(KeyInput.KEY_RCONTROL));
+
+
+
         getInputManager().addMapping("map_strafeup", new KeyTrigger(KeyInput.KEY_U));
         getInputManager().addMapping("map_strafedown", new KeyTrigger(KeyInput.KEY_J));
         getInputManager().addMapping("map_strafeleft", new KeyTrigger(KeyInput.KEY_H));
@@ -284,19 +291,15 @@ public class Main extends Application {
         n.play();
 
     }
-    
-    public void setMusicVolume(float v)
-    {
-        for(AudioNode n : DB.musicNodes.values())
-        {
+
+    public void setMusicVolume(float v) {
+        for (AudioNode n : DB.musicNodes.values()) {
             n.setVolume(v);
         }
     }
-    
-    public void setSoundVolume(float v)
-    {
-        for(AudioNode n : DB.soundNodes.values())
-        {
+
+    public void setSoundVolume(float v) {
+        for (AudioNode n : DB.soundNodes.values()) {
             n.setVolume(v);
         }
     }
