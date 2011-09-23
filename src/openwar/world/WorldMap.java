@@ -339,6 +339,9 @@ public class WorldMap {
             game.worldMapState.uiController.setImage("unit" + i, null);
         }
 
+        game.doScript("playSound('ui_deselect_all')");
+
+
     }
 
     public void update(float tpf) {
@@ -447,6 +450,7 @@ public class WorldMap {
         for (int i = 0; i < army.units.size(); i++) {
             game.worldMapState.uiController.setImage("unit" + i, Main.DB.genUnits.get(army.units.get(i).refName).image);
         }
+        game.doScript("onArmySelected()");
 
 
     }
@@ -463,6 +467,9 @@ public class WorldMap {
             game.worldMapState.uiController.setImage("unit" + i, Main.DB.genUnits.get(s.units.get(i).refName).image);
         }
 
+        game.doScript("onSettlementSelected()");
+
+
     }
 
     public int ensureInTerrainX(float value) {
@@ -476,9 +483,9 @@ public class WorldMap {
 
     }
 
-    public void drawReachableArea(ArrayList<Unit> units, int posX,int posZ) {
+    public void drawReachableArea(ArrayList<Unit> units, int posX, int posZ) {
 
-        ArrayList<Tile> area = pathFinder.getReachableArea(units,posX,posZ,true, false);
+        ArrayList<Tile> area = pathFinder.getReachableArea(units, posX, posZ, true, false);
 
 
         ArrayList<Vector2f> corners = new ArrayList<Vector2f>();
@@ -540,7 +547,7 @@ public class WorldMap {
     // Run BFS to find the reachable tiles for the army
     public void drawReachableArea(Army army) {
 
-        drawReachableArea(army.units,army.posX,army.posZ);
+        drawReachableArea(army.units, army.posX, army.posZ);
 
     }
 

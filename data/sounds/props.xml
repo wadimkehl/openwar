@@ -4,6 +4,11 @@
 
  <sound refname="ui_open" file="ui_open.wav" />
  <sound refname="ui_close" file="ui_close.wav" />
+ <sound refname="ui_select_army" file="ui_open.wav" />
+ <sound refname="ui_select_settlement" file="ui_open.wav" />
+ <sound refname="ui_select_unit" file="ui_open.wav" />
+ <sound refname="ui_deselect_all" file="ui_open.wav" />
+
 
 
 </root>

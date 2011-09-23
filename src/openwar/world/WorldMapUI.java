@@ -62,11 +62,8 @@ public class WorldMapUI implements ScreenController {
     }
 
     public void onClick(String s, String b) {
-        try {
-            Main.scriptEngine.eval("onWorldMapUIClicked('" + s + "'," + b + ")");
-        } catch (ScriptException ex) {
-            Logger.getLogger(WorldMapUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        game.doScript("onWorldMapUIClicked('" + s + "'," + b + ")");
+
 
     }
 
@@ -88,9 +85,18 @@ public class WorldMapUI implements ScreenController {
     }
 
     public void selectUnit(int number) {
-        unitImage[number].getEffects(EffectEventId.onCustom, ImageSizePulsate.class).get(0).setActive(true);
-        unitImage[number].startEffect(EffectEventId.onCustom, null, "imageSizePulsate");
+        unitImage[number].startEffect(EffectEventId.onCustom, null, "selected");
         selectedUnits.add(selectedFrom.units.get(number));
+        game.doScript("onUnitSelected()");
+
+    }
+
+    public void drawReachableArea() {
+        if (!selectedUnits.isEmpty()) {
+            int x = game.worldMapState.map.selectedSettlement.posX;
+            int z = game.worldMapState.map.selectedSettlement.posZ;
+            game.worldMapState.map.drawReachableArea(selectedUnits, x, z);
+        }
     }
 
     public void onUnitClick(String n, String b) {
@@ -120,11 +126,10 @@ public class WorldMapUI implements ScreenController {
         if (!game.worldMapState.shiftPressed) {
             deselectUnits();
             selectUnit(number);
+            drawReachableArea();
 
             if (game.worldMapState.map.selectedSettlement != null) {
-                int x = game.worldMapState.map.selectedSettlement.posX;
-                int z = game.worldMapState.map.selectedSettlement.posZ;
-                game.worldMapState.map.drawReachableArea(selectedUnits, x, z);
+                drawReachableArea();
             }
 
             return;

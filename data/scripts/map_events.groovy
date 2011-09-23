@@ -1,4 +1,7 @@
 
+// this file holds all world map event functions that are called during the game
+
+
 // this function is called once at the beginning of the game
 def onGameBegin()
 {
@@ -35,6 +38,15 @@ def onEndTurn(String faction, int round)
 def onBeginTurn(String faction,int round)
 {
     println faction + " began round " + round
+    
+    if(game.worldMapState.map.selectedArmy != null)
+    {
+        game.worldMapState.map.selectArmy(game.worldMapState.map.selectedArmy);
+    }
+    else if (game.worldMapState.map.selectedSettlement != null) {
+        game.worldMapState.uiController.drawReachableArea()
+    }
+    
 }
 
 // called when a new round begins (i.e. all factions had their turn)
@@ -50,6 +62,14 @@ def onBeginRound()
         }
     }
     
+    for(s in game.DB.settlements)
+    {
+        s.resetMovePoints()
+        
+    }
+    
+    onBeginTurn("lol",    game.DB.currentRound)
+    
 }
 
 // called when the player clicks any element on the world map gui
@@ -62,6 +82,7 @@ def onWorldMapUIClicked(String element, int button)
         playSound("ui_close")
         onEndTurn("player",game.DB.currentRound)  
         onBeginRound()
+        
         return;
     }
     
@@ -72,5 +93,23 @@ def onWorldMapUIClicked(String element, int button)
 
     }
     
+    
+    
 }
 
+def onSettlementSelected()
+{
+    playSound("ui_select_settlement")
+}
+
+def onUnitSelected()
+{
+    playSound("ui_select_unit")
+
+}
+
+def onArmySelected()
+{
+    playSound("ui_select_army")
+
+}
