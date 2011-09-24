@@ -29,7 +29,9 @@ import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeSystem;
 import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.elements.Element;
 import java.io.File;
+import java.util.HashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,6 +61,7 @@ public class Main extends Application {
     protected FlyByCamera camera;
     public boolean forceQuit;
     private static final Logger logger = Logger.getLogger(Main.class.getName());
+    public HashMap<String, String> hashedPopUpId;
 
     @Override
     public void start() {
@@ -166,7 +169,7 @@ public class Main extends Application {
         }
 
 
-
+        hashedPopUpId = new HashMap<String, String>();
 
         //doScript("onGameBegin()");
 
@@ -303,4 +306,56 @@ public class Main extends Application {
             n.setVolume(v);
         }
     }
+
+    public void changeUIScreen(String name) {
+        
+        if (nifty.getScreen(name) == null)
+        {
+            logger.log(Level.SEVERE, "Cannot find ui screen: {0}", name);
+            return;
+        }
+        nifty.gotoScreen(name);
+    }
+
+    
+    
+    public void showUIElement(String name, boolean show) {
+        Element element = nifty.getCurrentScreen().findElementByName(name);
+        if (element == null) {
+            logger.log(Level.SEVERE, "Cannot find ui element: {0}", name);
+            return;
+        }
+        element.setVisible(show);
+        return;
+    }
+
+    public void toggleUIElement(String name) {
+        Element element = nifty.getCurrentScreen().findElementByName(name);
+        if (element == null) {
+            logger.log(Level.SEVERE, "Cannot find ui element: {0}", name);
+            return;
+        }
+        element.setVisible(!element.isVisible());
+        return;
+    }
+
+    public void showUIPopUp(String name) {
+        String element = nifty.createPopup(name).getId();
+        if (element == null) {
+            logger.log(Level.SEVERE, "Cannot find popup template: {0}", name);
+            return;
+        }
+        nifty.showPopup(nifty.getCurrentScreen(), element, null);
+        hashedPopUpId.put(name, element);
+    }
+
+    public void closeUIPopUp(String name) {
+        if (name == null || hashedPopUpId.get(name) == null) {
+            logger.log(Level.SEVERE, "Cannot find popup with id: {0}", name);
+            return;
+        }
+        nifty.closePopup(hashedPopUpId.get(name));
+    }
+    
+    
 }

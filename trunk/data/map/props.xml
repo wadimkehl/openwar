@@ -2,11 +2,13 @@
 
 <root>
 
-    <textures tiletextures="12">           
-        <base name="regions" texture="regions_dump.png"/>
-        <base name="heights" texture="heights.tga"/>
-        <base name="climates" texture="climates_dump.png"/>
-        <base name="types" texture="types_dump.png"/>            
+    <textures tiletextures="12">      
+    
+        <base name="regions" texture="regions_dump.png" flipY="true"/>
+        <base name="heights" texture="heights.tga" flipY="true" />
+        <base name="climates" texture="climates_dump.png" flipY="false" />
+        <base name="types" texture="types_dump.png" flipY="true" />    
+        
         <tile id="0" texture="0.tga" scale="8.0"/>
         <tile id="1" texture="1.tga" scale="8.0"/>
         <tile id="2" texture="2.tga" scale="8.0"/>
@@ -18,7 +20,8 @@
         <tile id="8" texture="8.tga" scale="32.0"/>
         <tile id="9" texture="9.tga" scale="8.0"/>
         <tile id="10" texture="10.tga" scale="8.0"/>
-        <tile id="11" texture="11.tga" scale="8.0"/>      
+        <tile id="11" texture="11.tga" scale="8.0"/>
+        
     </textures>
         
     <terrain>

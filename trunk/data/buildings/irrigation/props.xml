@@ -5,9 +5,9 @@
  <building name="Irrigation" refname="irrigation" maxlevel="2" />
  
  <levels>
-     <level level="0" name="Low irrigation" refname="low_irrigation" cost="500" turns="1" image="image.png"/>
-     <level level="1" name="Medium irrigation" refname="medium_irrigation" cost="2500" turns="2" image="image.png"/>
-     <level level="2" name="High irrigation" refname="high_irrigation" cost="5000" turns="3" image="image.png"/>
+     <level level="0" name="Low irrigation" refname="low_irrigation" cost="500" turns="1" card="image.jpg"/>
+     <level level="1" name="Medium irrigation" refname="medium_irrigation" cost="2500" turns="2" card="image.jpg"/>
+     <level level="2" name="High irrigation" refname="high_irrigation" cost="5000" turns="3" card="image.jpg"/>
  </levels>
 
 </root>

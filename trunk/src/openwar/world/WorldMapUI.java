@@ -4,12 +4,15 @@
  */
 package openwar.world;
 
+import com.jme3.math.Vector2f;
 import com.jme3.niftygui.RenderImageJme;
 import com.jme3.texture.Texture2D;
 import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.effects.Effect;
 import de.lessvoid.nifty.effects.EffectEventId;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.ImageRenderer;
+import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.render.NiftyImage;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
@@ -30,6 +33,8 @@ public class WorldMapUI implements ScreenController {
     public ArrayList<Unit> selectedUnits = new ArrayList<Unit>();
     public WorldEntity selectedFrom = null;
     public int lastIndex;
+    public Effect hintEffect;
+    public Element hintText;
 
     public WorldMapUI() {
     }
@@ -47,7 +52,8 @@ public class WorldMapUI implements ScreenController {
             unitImage[i] = nifty.getCurrentScreen().findElementByName("unit" + i);
         }
 
-
+        hintEffect = screen.findElementByName("minimap").getEffects(EffectEventId.onCustom, de.lessvoid.nifty.effects.impl.Hint.class).get(0);
+        hintText = screen.findElementByName("hint-text");
     }
 
     @Override
@@ -136,9 +142,32 @@ public class WorldMapUI implements ScreenController {
         lastIndex = index;
     }
 
-    public void onMinimapClick(final int mouseX, final int mouseY) {
-        Tile t = game.worldMapState.map.minimap.screenToMinimap(mouseX, mouseY);
-        game.worldMapState.moveCameraTo(t);
+    public void onMinimapClick() {
+        Vector2f m = game.getInputManager().getCursorPosition();
+        Tile temp = game.worldMapState.map.minimap.screenToMinimapJME((int) m.x, (int) m.y);
+        temp = game.worldMapState.map.ensureInTerrain(temp);
+        game.worldMapState.moveCameraTo(temp);
+    }
+
+    public void onMinimapHover() {
+        Vector2f m = game.getInputManager().getCursorPosition();
+        Tile temp = game.worldMapState.map.minimap.screenToMinimapJME((int) m.x, (int) m.y);
+        temp.x--;
+        temp.z--;
+        temp = game.worldMapState.map.ensureInTerrain(temp);
+        WorldTile t = game.worldMapState.map.worldTiles[temp.x][temp.z];
+        
+        //hintText.getRenderer(TextRenderer.class).setText(t.region);
+
+        //screen.findElementByName("#hint-text").getEffectManager().resetSingleEffect(EffectEventId.onHover);
+
+        //hintEffect.getParameters().put("hintText", t.shortInfo());
+       // screen.findElementByName("#hint-text");
+//        startEffect(EffectEventId.onCustom, null, "hover");
+//
+//
+
+
     }
 
     public void setUnitImage(int number, Texture2D t) {

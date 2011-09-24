@@ -19,7 +19,8 @@ import java.util.Map;
         public int maxMovePoints;
 
         public Map<String,Integer> stats;
-        public Texture2D image;
+        public Texture2D card;
+        public Texture2D detail;
         
         
     }

@@ -16,6 +16,9 @@
             </panel>
         </layer>
         
+        <layer id="hint_layer" childLayout="absolute">
+            <text id="hint-text" font="ui/fonts/palatino.fnt" text="" size="0.1"/>
+        </layer>
         
         <layer id="minimap_layer"   childLayout="vertical" >           
             <panel height="75%" width="*"/>
@@ -29,7 +32,10 @@
                         <!-- panel for mini map -->
                         <panel id="minimap_panel" height="75%" width="*" childLayout="center">
                             <image id="minimap" height="100%" width="100%" align="center" valign="center">
-                                <interact onClick="onMinimapClick()" />                
+                                <interact onClick="onMinimapClick()" onMouseOver="onMinimapHover()" /> 
+                                <effect>
+                                    <onCustom customKey="hover" name="hint" hintText="" hintDelay="0" />
+                                </effect>
                             </image>
                         </panel>
                         <panel height="*" width="*"/> 
@@ -38,9 +44,8 @@
                 </panel>                 
             </panel>
         </layer>
-           
         
-        <layer id="front_layer"   childLayout="vertical" >
+        <layer id="front_unit_layer"   childLayout="vertical" >
             
             <panel height="75%" width="*"/>
             <panel height="25%" width="*" childLayout="horizontal">
@@ -142,42 +147,72 @@
                                 <panel height="*" width="*" childLayout="horizontal">
                                     <image id="unit10" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(10,0)" onSecondaryClick="onUnitClick(10,1)" />
+                                        <effect>
+                                            <onCustom customKey="selected" name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
                                     </image>
                                     <panel height="*" width="0.25%"/>
                                     <image id="unit11" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(11,0)" onSecondaryClick="onUnitClick(11,1)" />
+                                        <effect>
+                                            <onCustom customKey="selected" name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
                                     </image>
                                     <panel height="*" width="0.25%"/>
                                     <image id="unit12" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(12,0)" onSecondaryClick="onUnitClick(12,1)" />
+                                        <effect>
+                                            <onCustom customKey="selected" name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
                                     </image>                                    
                                     <panel height="*" width="0.25%"/>
                                     <image id="unit13" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(13,0)" onSecondaryClick="onUnitClick(13,1)" />
+                                        <effect>
+                                            <onCustom customKey="selected" name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
                                     </image>                                    
                                     <panel height="*" width="0.25%"/>
                                     <image id="unit14" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(14,0)" onSecondaryClick="onUnitClick(14,1)" />
+                                        <effect>
+                                            <onCustom customKey="selected" name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
                                     </image>                                    
                                     <panel height="*" width="0.25%"/>
                                     <image id="unit15" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(15,0)" onSecondaryClick="onUnitClick(15,1)" />
+                                        <effect>
+                                            <onCustom customKey="selected" name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
                                     </image>                                    
                                     <panel height="*" width="0.25%"/>
                                     <image id="unit16" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(16,0)" onSecondaryClick="onUnitClick(16,1)" />
+                                        <effect>
+                                            <onCustom customKey="selected" name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
                                     </image>                                    
                                     <panel height="*" width="0.25%"/>
                                     <image id="unit17" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(17,0)" onSecondaryClick="onUnitClick(17,1)" />
+                                        <effect>
+                                            <onCustom customKey="selected" name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
                                     </image>                                    
                                     <panel height="*" width="0.25%"/>
                                     <image id="unit18" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(18,0)" onSecondaryClick="onUnitClick(18,1)" />
+                                        <effect>
+                                            <onCustom customKey="selected" name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
                                     </image>                                    
                                     <panel height="*" width="0.25%"/>
                                     <image id="unit19" width="9.975%" height="*">
                                         <interact onPrimaryClick="onUnitClick(19,0)" onSecondaryClick="onUnitClick(19,1)" />
+                                        <effect>
+                                            <onCustom customKey="selected" name="imageSizePulsate"  startSize="100%" endSize="105%"/>
+                                        </effect>
                                     </image>          
                                 </panel>                     
                             </panel>     
@@ -185,7 +220,105 @@
                         <panel height="*" width="3.5%"/>
                     </panel>             
                 </panel> 
+            </panel>
+        </layer>
+             
+           
+        
+        <layer id="front_building_layer"   childLayout="vertical" >
+            
+            <panel height="75%" width="*"/>
+            <panel height="25%" width="*" childLayout="horizontal">
                 
+                <!-- left part of bottom ui -->
+                <panel height="*" width="25%" />
+                  
+                <!-- center part of bottom ui -->
+                <panel height="*" width="50%"  childLayout="vertical">
+                    <panel height="16%" width="*"/> 
+                    <panel height="*" width="*" childLayout="horizontal">
+                        <panel height="*" width="3.75%"/>
+                        <panel height="*" width="*" childLayout="vertical" >
+                      
+                            <!-- upper buildings row --> 
+                            <panel height="45%" width="*" childLayout="vertical">
+                                <panel height="*" width="*" childLayout="horizontal">
+                                    <image id="building0" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                        <interact onPrimaryClick="onBuildingClick(0,0)" onSecondaryClick="onBuildingClick(0,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/>
+                                    <image id="building1" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                        <interact onPrimaryClick="onBuildingClick(1,0)" onSecondaryClick="onBuildingClick(1,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/>
+                                    <image id="building2" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                        <interact onPrimaryClick="onBuildingClick(2,0)" onSecondaryClick="onBuildingClick(2,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/>
+                                    <image id="building3" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                        <interact onPrimaryClick="onBuildingClick(3,0)" onSecondaryClick="onBuildingClick(3,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/>
+                                    <image id="building4" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                        <interact onPrimaryClick="onBuildingClick(4,0)" onSecondaryClick="onBuildingClick(4,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/>
+                                    <image id="building5" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                        <interact onPrimaryClick="onBuildingClick(5,0)" onSecondaryClick="onBuildingClick(5,1)" />                                     
+                                    </image>                                                                 
+                                </panel>
+                            </panel>
+                           
+                            <panel height="1%" width="*"/>
+
+                        <!-- lower buildings row --> 
+                            <panel height="45%" width="*" childLayout="horizontal">
+                                <panel height="*" width="*" childLayout="horizontal">
+                                  <image id="building6" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                        <interact onPrimaryClick="onBuildingClick(6,0)" onSecondaryClick="onBuildingClick(6,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/>
+                                    <image id="building7" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                        <interact onPrimaryClick="onBuildingClick(7,0)" onSecondaryClick="onBuildingClick(7,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/>
+                                    <image id="building8" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                        <interact onPrimaryClick="onBuildingClick(8,0)" onSecondaryClick="onBuildingClick(8,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/>
+                                    <image id="building9" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                        <interact onPrimaryClick="onBuildingClick(9,0)" onSecondaryClick="onBuildingClick(9,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/>
+                                    <image id="building10" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                        <interact onPrimaryClick="onBuildingClick(10,0)" onSecondaryClick="onBuildingClick(10,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/>
+                                    <image id="building11" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                        <interact onPrimaryClick="onBuildingClick(11,0)" onSecondaryClick="onBuildingClick(11,1)" />                                     
+                                    </image>            
+                                </panel>                     
+                            </panel>     
+                        </panel>
+                        <panel height="*" width="3.5%"/>
+                    </panel>             
+                </panel>         
+            </panel>
+                       
+        </layer>
+        
+        
+        <layer id="front_buttons_layer"   childLayout="vertical" >
+            
+            <panel height="75%" width="*"/>
+            <panel height="25%" width="*" childLayout="horizontal">
+                
+                <!-- left part of bottom ui -->
+                <panel height="*" width="25%" />
+                  
+                <!-- center part of bottom ui -->
+                <panel height="*" width="50%"  />
+                  
                 
                 <!-- right part of bottom ui -->
                 <panel height="*" width="25%" childLayout="vertical">
@@ -214,6 +347,7 @@
             </panel>
                        
         </layer>
+        
         
         
         <layer id="scrolls_layer" childLayout="vertical" visible="false">
