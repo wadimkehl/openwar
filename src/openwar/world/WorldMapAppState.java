@@ -33,146 +33,6 @@ public class WorldMapAppState extends AbstractAppState {
     public WorldMap map;
     public Main game;
     public WorldMapUI uiController;
-    public ActionListener actionListener = new ActionListener() {
-
-        @Override
-        public void onAction(String name, boolean pressed, float tpf) {
-
-            if (name.equals("mouse_left") && !pressed) {
-                CollisionResult r = game.getMousePick(map.scene);
-                if (r == null) {
-                    return;
-                }
-
-                Vector3f pt = r.getContactPoint();
-                int x = (int) pt.x;
-                int z = (int) pt.z;
-
-                if (r.getGeometry() instanceof TerrainPatch || r.getGeometry().getName().equals("reachableArea")) {
-
-                    if (Main.devMode) {
-                        System.err.println(map.worldTiles[x][z]);
-                    }
-
-                    map.deselectAll();
-                    return;
-
-                }
-
-                Spatial spat = (Spatial) r.getGeometry();
-                Army a = map.getArmy(spat);
-                if (a != null && a != map.selectedArmy) {
-                    map.selectArmy(a);
-                    game.playSound("world_select_army");
-
-                    return;
-                }
-
-                Settlement s = map.getSettlement(spat);
-                if (s != null && s != map.selectedSettlement) {
-                    map.selectSettlement(s);
-                    game.playSound("world_select_settlement");
-
-                    return;
-                }
-
-
-
-            } else if (name.equals("mouse_right") && !pressed) {
-
-                if (map.selectedArmy == null && uiController.selectedUnits.isEmpty()) {
-                    return;
-                }
-
-                CollisionResult r = game.getMousePick(map.scene);
-                if (r == null) {
-                    return;
-                }
-                Vector3f pt = r.getContactPoint();
-                int x = (int) pt.x;
-                int z = (int) pt.z;
-
-                Army a = null;
-                if (!uiController.selectedUnits.isEmpty()) {
-
-
-                    int points = 10000;
-                    for (Unit u : uiController.selectedUnits) {
-                        points = Math.min(u.currMovePoints, points);
-                    }
-                    if (points < map.getTileCosts(x, z)) {
-                        map.game.playSound("army_deny");
-                        return;
-
-                    } else if (map.selectedArmy != null) {
-
-                        if (uiController.selectedUnits.size() < map.selectedArmy.units.size()) {
-                            a = map.selectedArmy.splitThisArmy(uiController.selectedUnits);
-                            map.game.playSound("army_split");
-                        } else {
-                            a = map.selectedArmy;
-                            map.game.playSound("army_march");
-
-                        }
-
-                    } else {
-                        a = map.selectedSettlement.dispatchArmy(uiController.selectedUnits);
-                        map.game.playSound("army_dispatch");
-
-                    }
-
-                    uiController.deselectAll();
-                    map.selectArmy(a);
-                    map.marchTo(a, x, z);
-                    return;
-
-
-                } else if (map.selectedArmy != null) {
-                    a = map.selectedArmy;
-                }
-
-                if (map.selectedArmy.currMovePoints < map.getTileCosts(x, z)) {
-                    map.game.playSound("army_deny");
-                    return;
-                }
-
-                // Check if we ordered a march command
-                if (r.getGeometry() instanceof TerrainPatch || r.getGeometry().getName().equals("reachableArea")) {
-                    map.marchTo(a, x, z);
-                    game.playSound("army_march");
-                    return;
-                }
-
-                // TODO: BLENDER exports spatial into two cascaded nodes!
-                //Spatial s = (Spatial) r.getGeometry().getParent().getParent();
-                Spatial s = (Spatial) r.getGeometry();
-                Army ar = map.getArmy(s);
-                if (ar != null) {
-                    if (!ar.owner.equals(a.owner)) {
-                        game.playSound("army_attack");
-                    } else {
-                        game.playSound("army_march");
-                    }
-                    map.marchTo(a, ar);
-                    return;
-                }
-
-                Settlement c = map.getSettlement(s);
-                if (c != null) {
-                    map.marchTo(a, c);
-                    game.playSound("army_march");
-                    return;
-                }
-
-            } else if (name.equals("show_grid") && !pressed) {
-                map.showGrid(showGrid = !showGrid);
-            } else if (name.equals("shift")) {
-                shiftPressed = pressed;
-            } else if (name.equals("ctrl")) {
-                ctrlPressed = pressed;
-            }
-        }
-    };
     private AnalogListener analogListener = new AnalogListener() {
 
         @Override
@@ -197,23 +57,164 @@ public class WorldMapAppState extends AbstractAppState {
 
         }
     };
+    public ActionListener actionListener = new ActionListener() {
+
+        @Override
+        public void onAction(String name, boolean pressed, float tpf) {
+
+            if (name.equals("mouse_left") && !pressed) {
+
+                CollisionResult r = game.getMousePick(map.scene);
+                if (r != null) {
+                    leftMouseClick(r);
+                }
+
+
+            } else if (name.equals("mouse_right") && !pressed) {
+
+                if ((map.selectedArmy != null) || !uiController.selectedUnits.isEmpty()) {
+                    CollisionResult r = game.getMousePick(map.scene);
+                    if (r != null) {
+                        rightMouseClick(r);
+                    }
+                }
+
+            } else if (name.equals("show_grid") && !pressed) {
+                map.showGrid(showGrid = !showGrid);
+            } else if (name.equals("shift")) {
+                shiftPressed = pressed;
+            } else if (name.equals("ctrl")) {
+                ctrlPressed = pressed;
+            }
+        }
+    };
+
+    public void leftMouseClick(CollisionResult r) {
+        Vector3f pt = r.getContactPoint();
+        int x = (int) pt.x;
+        int z = (int) pt.z;
+
+        if (r.getGeometry() instanceof TerrainPatch || r.getGeometry().getName().equals("reachableArea")) {
+
+            if (Main.devMode) {
+                System.err.println(map.worldTiles[x][z]);
+            }
+
+            map.deselectAll();
+            return;
+
+        }
+
+        Spatial spat = (Spatial) r.getGeometry();
+        Army a = map.getArmy(spat);
+        if (a != null && a != map.selectedArmy) {
+            map.selectArmy(a);
+            game.playSound("world_select_army");
+
+            return;
+        }
+
+        Settlement s = map.getSettlement(spat);
+        if (s != null && s != map.selectedSettlement) {
+            map.selectSettlement(s);
+            game.playSound("world_select_settlement");
+
+            return;
+        }
+
+    }
+
+    public void rightMouseClick(CollisionResult r) {
+
+        Vector3f pt = r.getContactPoint();
+        int x = (int) pt.x;
+        int z = (int) pt.z;
+
+        Army a = null;
+        if (!uiController.selectedUnits.isEmpty()) {
+
+
+            int points = 10000;
+            for (Unit u : uiController.selectedUnits) {
+                points = Math.min(u.currMovePoints, points);
+            }
+            if (points < map.getTileCosts(x, z)) {
+                map.game.playSound("army_deny");
+                return;
+
+            } else if (map.selectedArmy != null) {
+
+                if (uiController.selectedUnits.size() < map.selectedArmy.units.size()) {
+                    a = map.selectedArmy.splitThisArmy(uiController.selectedUnits);
+                    map.game.playSound("army_split");
+                } else {
+                    a = map.selectedArmy;
+                    map.game.playSound("army_march");
+
+                }
+
+            } else {
+                a = map.selectedSettlement.dispatchArmy(uiController.selectedUnits);
+                map.game.playSound("army_dispatch");
+
+            }
+
+            map.selectArmy(a);
+            map.marchTo(a, x, z);
+            return;
+
+
+        } else if (map.selectedArmy != null) {
+            a = map.selectedArmy;
+        }
+
+        if (map.selectedArmy.currMovePoints < map.getTileCosts(x, z)) {
+            map.game.playSound("army_deny");
+            return;
+        }
+
+        // Check if we ordered a march command
+        if (r.getGeometry() instanceof TerrainPatch || r.getGeometry().getName().equals("reachableArea")) {
+            map.marchTo(a, x, z);
+            game.playSound("army_march");
+            return;
+        }
+
+        // TODO: BLENDER exports spatial into two cascaded nodes!
+        //Spatial s = (Spatial) r.getGeometry().getParent().getParent();
+        Spatial s = (Spatial) r.getGeometry();
+        Army ar = map.getArmy(s);
+        if (ar != null) {
+            if (!ar.owner.equals(a.owner)) {
+                game.playSound("army_attack");
+            } else {
+                game.playSound("army_march");
+            }
+            map.marchTo(a, ar);
+            return;
+        }
+
+        Settlement c = map.getSettlement(s);
+        if (c != null) {
+            map.marchTo(a, c);
+            game.playSound("army_march");
+            return;
+        }
+
+    }
 
     public WorldMapAppState() {
     }
 
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
-        this.initialize(stateManager, (Main) app);
-    }
-
-    public void initialize(AppStateManager stateManager, Main main) {
-
-        game = main;
+        game = (Main) app;
 
         uiController = new WorldMapUI();
         game.nifty.fromXml("ui" + File.separator + "worldmap"
                 + File.separator + "ui.xml", "start", uiController);
         uiController.game = game;
+       
 
         game.getInputManager().addListener(actionListener, "mouse_left");
         game.getInputManager().addListener(actionListener, "mouse_right");
@@ -227,7 +228,7 @@ public class WorldMapAppState extends AbstractAppState {
         game.getInputManager().addListener(analogListener, "map_straferight");
 
         sceneNode = new Node("WorldMap");
-        map = new WorldMap(main, sceneNode);
+        map = new WorldMap(game, sceneNode);
         if (!map.createWorldMap()) {
             game.forceQuit = true;
         }
@@ -246,6 +247,7 @@ public class WorldMapAppState extends AbstractAppState {
 
         game.doScript("playMusic('ambient1')");
     }
+
 
     @Override
     public void update(float tpf) {

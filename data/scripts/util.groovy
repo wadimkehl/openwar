@@ -7,7 +7,7 @@
 // name is the specified refname of the sound file
 def playSound(String name)
 {
-   game.playSound(name)  
+    game.playSound(name)  
 }
 
 
@@ -15,8 +15,7 @@ def playSound(String name)
 // name is the specified refname of the music file
 def playMusic(String name)
 {
-       game.playMusic(name)  
-
+    game.playMusic(name)  
 }
 
 
@@ -24,7 +23,7 @@ def playMusic(String name)
 // name is the id of the screen
 def changeUIScreen(String name)
 {
-    game.nifty.gotoScreen(name)
+    game.changeUIScreen(name)
 }
 
 
@@ -32,55 +31,27 @@ def changeUIScreen(String name)
 // name is the id of the element, show is a boolean
 def showUIElement(String name,boolean show)
 {
-    element = game.nifty.getCurrentScreen().findElementByName(name)   
-    if(element == null)
-    {
-        println "Cannot find gui element: " + name
-        return
-    }  
-    element.setVisible(show)
-    return
+    game.showUIElement(name,show)
 }
 
 // toggles the visibility of an UI element (e.g. a layer or an image)
 // name is the id of the element, show is a boolean
 def toggleUIElement(String name)
 {
-    element = game.nifty.getCurrentScreen().findElementByName(name)   
-    if(element == null)
-    {
-        println "Cannot find gui element: " + name
-        return
-    }  
-    element.setVisible(!element.isVisible())
-    return
+    game.toggleUIElement(name)
 }
-
 
 
 // displays a blocking ui popup of the current active screen
 // name is the id of the popup template in the xml file
-// returns the popup element, needed to close the popup again!
-def String showUIPopUp(String name)
+def showUIPopUp(String name)
 {
-    element = game.nifty.createPopup(name).getId()
-    if(element == null)
-    {
-        println "Cannot find popup template: " + name
-        return
-    } 
-    game.nifty.showPopup(game.nifty.getCurrentScreen(), element, null)
-    return element
-
+    showUIPopUp(name)
 }
 
 // closes a blocking ui popup that has been displayed with showUIPopUp()
-// element is the id of the popup that was returned by showUIPopUp()
-def closeUIPopUp(String element)
-{    if(element == null)
-    {
-        println "Cannot find popup with id: " + element
-        return
-    } 
-    game.nifty.closePopup(element);
+// name is the id of the popup template in the xml file
+def closeUIPopUp(String name)
+{   
+    closeUIPopUp(name)
 }

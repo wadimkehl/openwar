@@ -28,7 +28,7 @@ public class WorldMinimap {
     public Vector3f minimapNoOwnerColor = new Vector3f(50, 50, 255);
     public WorldMap map;
     public int mapHeight, mapWidth, imageHeight, imageWidth, panelHeight, panelWidth;
-    public float imageRatio, panelRatio, mapRatio, disparity;
+    public float imageRatio, panelRatio, mapRatio, disparityX, disparityZ;
     public int imageX, imageY;
     public float[][] borderMap;
 
@@ -47,8 +47,8 @@ public class WorldMinimap {
         mapRatio = (float) mapHeight / (float) mapWidth;
         imageRatio = (float) imageHeight / (float) imageWidth;
         panelRatio = (float) panelHeight / (float) panelWidth;
-        float ratio = mapRatio * panelRatio;
-        minimapElement.setWidth((int) (ratio * (float) minimapElement.getWidth()));
+        float ratio = mapRatio * imageRatio;
+//        minimapElement.setWidth((int) (ratio * (float) minimapElement.getWidth()));
         imageX = minimapElement.getX();
         imageY = map.game.getCamera().getHeight() - minimapElement.getY();
 
@@ -58,7 +58,8 @@ public class WorldMinimap {
 //          minimapElement.setConstraintY(new SizeValue(new Integer(200).toString()));    
 //        panel.layoutElements();
 //        
-        disparity = (float) mapHeight / (float) imageHeight;
+        disparityX = (float) mapWidth / (float) imageWidth;
+        disparityZ = (float) mapHeight / (float) imageHeight;
 
         borderMap = new float[mapWidth][mapHeight];
         String lastReg = map.worldTiles[0][0].region;
@@ -89,9 +90,14 @@ public class WorldMinimap {
 
     }
 
-    public Tile screenToMinimap(int x, int y) {
-       return new Tile((int)((x- imageX)*disparity), 
-                (int)((y-(map.game.getCamera().getHeight() - imageY))*disparity));
+    public Tile screenToMinimapNifty(int x, int y) {
+        return new Tile((int) ((x - imageX) * disparityX),
+                (int) ((y - (map.game.getCamera().getHeight() - imageY)) * disparityZ));
+    }
+    
+     public Tile screenToMinimapJME(int x, int y) {
+        return new Tile((int) ((x - imageX) * disparityX),
+                (int) -(((y - imageY)) * disparityZ));
     }
 
     void drawMinimapLine(ByteBuffer data, Vector2f p, Vector2f q) {

@@ -204,7 +204,7 @@ public class WorldMap {
                 g2 = clis.get(base + 1) & 0xff;
                 b2 = clis.get(base + 2) & 0xff;
 
-                // TODO: Find out why the groundtype image is bgr and the others aren't
+                // TODO: Find out why the groundtype card is bgr and the others aren't
                 int type = RGBtoGroundType(b, g, r);
                 Climate climate = getClimateByRGB(r2, g2, b2);
                 Region region = getRegionByRGB(new Vector3f(r1, g1, b1));
@@ -369,6 +369,8 @@ public class WorldMap {
                     deselectAll();
                 } else if (selectedArmy != null) {
                     selectArmy(selectedArmy);
+                }else if (selectedSettlement != null) {
+                    selectSettlement(selectedSettlement);
                 }
 
                 return null;
@@ -468,7 +470,7 @@ public class WorldMap {
         drawReachableArea(army);
 
         for (int i = 0; i < army.units.size(); i++) {
-            game.worldMapState.uiController.setImage("unit" + i, Main.DB.genUnits.get(army.units.get(i).refName).image);
+            game.worldMapState.uiController.setImage("unit" + i, Main.DB.genUnits.get(army.units.get(i).refName).card);
         }
         game.doScript("onArmySelected()");
 
@@ -481,24 +483,24 @@ public class WorldMap {
             return;
         }
 
-
-
         deselectAll();
-
         selectedSettlement = s;
         for (int i = 0; i < s.units.size(); i++) {
-            game.worldMapState.uiController.setImage("unit" + i, Main.DB.genUnits.get(s.units.get(i).refName).image);
+            game.worldMapState.uiController.setImage("unit" + i, Main.DB.genUnits.get(s.units.get(i).refName).card);
         }
 
         game.doScript("onSettlementSelected()");
 
 
     }
+    
+    public Tile ensureInTerrain(Tile t)
+    {
+        return new Tile(ensureInTerrainX(t.x),ensureInTerrainZ(t.z));
+    }
 
     public int ensureInTerrainX(float value) {
         return (int) Math.min(width - 1, Math.max(0, value));
-
-
     }
 
     public int ensureInTerrainZ(float value) {

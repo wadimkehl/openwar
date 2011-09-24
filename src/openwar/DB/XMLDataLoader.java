@@ -214,8 +214,8 @@ public class XMLDataLoader {
             entity.refName = unit.getAttribute("refname");
             entity.maxCount = Integer.parseInt(unit.getAttribute("maxcount"));
             entity.maxMovePoints = Integer.parseInt(unit.getAttribute("maxmovepoints"));
-            String image = "units" + File.separator + entity.refName + File.separator + unit.getAttribute("image");
-            entity.image = (Texture2D) assets.loadTexture(image);
+            String image = "units" + File.separator + entity.refName + File.separator + unit.getAttribute("card");
+            entity.card = (Texture2D) assets.loadTexture(image);
             Main.DB.genUnits.put(entity.refName, entity);
             logger.log(Level.WARNING, "*Unit loaded: {0} *", entity.refName);
         } catch (Exception E) {
@@ -242,7 +242,7 @@ public class XMLDataLoader {
                         l.getAttribute("name"), l.getAttribute("refname"),
                         Integer.parseInt(l.getAttribute("cost")),
                         Integer.parseInt(l.getAttribute("turns")),
-                        assets.loadTexture(s + l.getAttribute("image")),
+                        (Texture2D)assets.loadTexture(s + l.getAttribute("card")),
                         null);
                 if (!"".equals(l.getAttribute("model"))) {
                     entity.levels.get(i).model = assets.loadModel(s + l.getAttribute("model"));
@@ -329,13 +329,13 @@ public class XMLDataLoader {
                 Element l = (Element) basetexs.item(i);
                 String path = "map" + File.separator + l.getAttribute("texture");
                 if ("regions".equals(l.getAttribute("name"))) {
-                    Main.DB.regionsTex = assets.loadTexture(new TextureKey(path, true));
+                    Main.DB.regionsTex = assets.loadTexture(new TextureKey(path, Boolean.parseBoolean(l.getAttribute("flipY"))));
                 } else if ("types".equals(l.getAttribute("name"))) {
-                    Main.DB.typesTex = assets.loadTexture(new TextureKey(path, true));
+                    Main.DB.typesTex = assets.loadTexture(new TextureKey(path, Boolean.parseBoolean(l.getAttribute("flipY"))));
                 } else if ("climates".equals(l.getAttribute("name"))) {
-                    Main.DB.climatesTex = assets.loadTexture(new TextureKey(path, true));
+                    Main.DB.climatesTex = assets.loadTexture(new TextureKey(path, Boolean.parseBoolean(l.getAttribute("flipY"))));
                 } else if ("heights".equals(l.getAttribute("name"))) {
-                    Main.DB.heightmapTex = assets.loadTexture(new TextureKey(path, true));
+                    Main.DB.heightmapTex = assets.loadTexture(new TextureKey(path, Boolean.parseBoolean(l.getAttribute("flipY"))));
 
                 }
             }

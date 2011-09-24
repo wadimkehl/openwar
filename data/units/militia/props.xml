@@ -2,7 +2,7 @@
 
 <root>
 
-    <unit name="Militia" refname="militia" maxcount="100" maxmovepoints="20" image="unitcard.jpg"/>
-    <stats att_melee="5" att_assault="2" armor="2" shield="0" melee="1"/>
+    <unit name="Militia" refname="militia" maxcount="100" maxmovepoints="20" card="unitcard.jpg"/>
+    <stats att_melee="5" att_assault="2" armor="2" shield="0" melee="true"/>
 
 </root>
