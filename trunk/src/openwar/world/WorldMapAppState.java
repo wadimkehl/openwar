@@ -59,7 +59,6 @@ public class WorldMapAppState extends AbstractAppState {
 
                 }
 
-                // TODO: BLENDER exports spatial into two cascaded nodes!
                 Spatial spat = (Spatial) r.getGeometry();
                 Army a = map.getArmy(spat);
                 if (a != null && a != map.selectedArmy) {
@@ -96,18 +95,25 @@ public class WorldMapAppState extends AbstractAppState {
                 Army a = null;
                 if (!uiController.selectedUnits.isEmpty()) {
 
-                    // TODO: a proper check when splitting or merging not possible
+
                     int points = 10000;
                     for (Unit u : uiController.selectedUnits) {
                         points = Math.min(u.currMovePoints, points);
                     }
-                    if (points == 0) {
+                    if (points < map.getTileCosts(x, z)) {
                         map.game.playSound("army_deny");
                         return;
 
                     } else if (map.selectedArmy != null) {
-                        a = map.selectedArmy.splitThisArmy(uiController.selectedUnits);
-                        map.game.playSound("army_split");
+
+                        if (uiController.selectedUnits.size() < map.selectedArmy.units.size()) {
+                            a = map.selectedArmy.splitThisArmy(uiController.selectedUnits);
+                            map.game.playSound("army_split");
+                        } else {
+                            a = map.selectedArmy;
+                            map.game.playSound("army_march");
+
+                        }
 
                     } else {
                         a = map.selectedSettlement.dispatchArmy(uiController.selectedUnits);
@@ -125,8 +131,7 @@ public class WorldMapAppState extends AbstractAppState {
                     a = map.selectedArmy;
                 }
 
-                // TODO: a proper check when marching not possible
-                if (map.selectedArmy.currMovePoints == 0) {
+                if (map.selectedArmy.currMovePoints < map.getTileCosts(x, z)) {
                     map.game.playSound("army_deny");
                     return;
                 }
