@@ -91,7 +91,14 @@ def onWorldMapUIClicked(String element, int button)
     if (element == "build")
     {
         playSound("ui_window_open")
-        toggleUIElement("scrolls_layer")
+        toggleUIElement("settlement_layer")
+
+    }
+    
+    if (element == "recruit")
+    {
+        toggleUIElement("front_unit_layer")
+        toggleUIElement("front_building_layer")
 
     }
     

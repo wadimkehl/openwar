@@ -243,27 +243,27 @@
                             <!-- upper buildings row --> 
                             <panel height="45%" width="*" childLayout="vertical">
                                 <panel height="*" width="*" childLayout="horizontal">
-                                    <image id="building0" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                    <image id="building0" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onBuildingClick(0,0)" onSecondaryClick="onBuildingClick(0,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="building1" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                    <image id="building1" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onBuildingClick(1,0)" onSecondaryClick="onBuildingClick(1,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="building2" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                    <image id="building2" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onBuildingClick(2,0)" onSecondaryClick="onBuildingClick(2,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="building3" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                    <image id="building3" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onBuildingClick(3,0)" onSecondaryClick="onBuildingClick(3,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="building4" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                    <image id="building4" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onBuildingClick(4,0)" onSecondaryClick="onBuildingClick(4,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="building5" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                    <image id="building5" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onBuildingClick(5,0)" onSecondaryClick="onBuildingClick(5,1)" />                                     
                                     </image>                                                                 
                                 </panel>
@@ -274,27 +274,27 @@
                         <!-- lower buildings row --> 
                             <panel height="45%" width="*" childLayout="horizontal">
                                 <panel height="*" width="*" childLayout="horizontal">
-                                  <image id="building6" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                  <image id="building6" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onBuildingClick(6,0)" onSecondaryClick="onBuildingClick(6,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="building7" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                    <image id="building7" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onBuildingClick(7,0)" onSecondaryClick="onBuildingClick(7,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="building8" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                    <image id="building8" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onBuildingClick(8,0)" onSecondaryClick="onBuildingClick(8,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="building9" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                    <image id="building9" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onBuildingClick(9,0)" onSecondaryClick="onBuildingClick(9,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="building10" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                    <image id="building10" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onBuildingClick(10,0)" onSecondaryClick="onBuildingClick(10,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="building11" width="16.5%" height="*" filename="buildings/barracks/image.jpg" >
+                                    <image id="building11" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onBuildingClick(11,0)" onSecondaryClick="onBuildingClick(11,1)" />                                     
                                     </image>            
                                 </panel>                     
@@ -350,15 +350,13 @@
         
         
         
-        <layer id="scrolls_layer" childLayout="vertical" visible="false">
+        <layer id="settlement_layer" childLayout="vertical" visible="false">
             <panel height="75%" childLayout="horizontal">
-                <panel height="*" width="50%" childLayout="horizontal">
+                <panel height="*" width="50%" />
                     
-                    <image id="left" filename="ui/worldmap/menue.tga" imageMode="subImage:70,152,34,50" width="*" height="*" />         
 
-                </panel>
                 <panel height="*" width="*" childLayout="horizontal">
-                    <image id="right" filename="ui/worldmap/menue.tga" imageMode="subImage:70,152,34,50" width="*" height="*" />         
+                    <image filename="ui/worldmap/menue.tga" imageMode="subImage:106,152,182,190," width="*" height="*" />         
 
                 </panel>
             </panel>           

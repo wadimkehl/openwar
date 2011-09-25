@@ -69,7 +69,7 @@
                 <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />                 
             </army> 
-             <army posx="29" posz="20" >
+            <army posx="29" posz="20" >
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />                     
             </army>
         </faction>
@@ -91,6 +91,8 @@
         <region name="Germany" refname="germany" color="255 0 0" owner="humans" >
             <settlement name="Berlin" posx="14" posz="38" level="0" population="1000">          
                 <building refname="irrigation" level="0" />
+                <building refname="barracks" level="0" />
+
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>
             </settlement>
@@ -100,6 +102,8 @@
         <region name="France" refname="france" color="0 255 0" owner="humans" >
             <settlement name="Paris" posx="33" posz="48" level="0" population="1000">          
                 <building refname="irrigation" level="0" />
+                <building refname="barracks" level="0" />
+
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>
             </settlement>
@@ -108,6 +112,8 @@
         <region name="Portugal" refname="portugal" color="0 0 255" owner="humans">
             <settlement name="Lisbon" posx="38" posz="16" level="0" population="1000" >          
                 <building refname="irrigation" level="0" />
+                <building refname="barracks" level="0" />
+
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>
             </settlement>
@@ -116,6 +122,8 @@
         <region name="Spain" refname="spain" color ="255 255 0" owner="aliens"  >
             <settlement name="Madrid" posx="17" posz="9" level="0" population="1000">          
                 <building refname="irrigation" level="0" />
+                <building refname="barracks" level="0" />
+
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>
             </settlement>
@@ -124,6 +132,8 @@
         <region name="Sweden" refname="sweden" color="0 255 255" owner="aliens" >
             <settlement name="Stockholm" posx="54" posz="57" level="0" population="1000" >          
                 <building refname="irrigation" level="0" />
+                <building refname="barracks" level="0" />
+
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>
             </settlement>
