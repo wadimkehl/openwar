@@ -23,8 +23,7 @@ public class GenericBuilding {
         public int cost;
         public int turns;
         public Texture2D card;
-                public Texture2D detail;
-
+        public Texture2D detail;
         public Spatial model;
 
         public Level() {
@@ -50,6 +49,4 @@ public class GenericBuilding {
         lev.model = m;
         levels.put(l, lev);
     }
-
-    
 }

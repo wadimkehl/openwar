@@ -17,6 +17,9 @@ import de.lessvoid.nifty.render.NiftyImage;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.util.ArrayList;
+import openwar.DB.Building;
+import openwar.DB.GenericBuilding;
+import openwar.DB.GenericBuilding.Level;
 import openwar.DB.Unit;
 import openwar.Main;
 
@@ -30,6 +33,7 @@ public class WorldMapUI implements ScreenController {
     Screen screen;
     public Main game;
     public Element unitImage[] = new Element[20];
+    public Element buildingImage[] = new Element[12];
     public ArrayList<Unit> selectedUnits = new ArrayList<Unit>();
     public WorldEntity selectedFrom = null;
     public int lastIndex;
@@ -51,7 +55,9 @@ public class WorldMapUI implements ScreenController {
         for (int i = 0; i < 20; i++) {
             unitImage[i] = nifty.getCurrentScreen().findElementByName("unit" + i);
         }
-
+        for (int i = 0; i < 12; i++) {
+            buildingImage[i] = nifty.getCurrentScreen().findElementByName("building" + i);
+        }
         hintEffect = screen.findElementByName("minimap").getEffects(EffectEventId.onCustom, de.lessvoid.nifty.effects.impl.Hint.class).get(0);
         hintText = screen.findElementByName("hint-text");
     }
@@ -72,6 +78,12 @@ public class WorldMapUI implements ScreenController {
         for (int i = 0; i < 20; i++) {
             setUnitImage(i, null);
         }
+        for (int i = 0; i < 12; i++) {
+            setBuildingImage(i, null);
+        }
+
+        game.showUIElement("settlement_layer", false);
+
     }
 
     public void deselectUnits() {
@@ -97,6 +109,35 @@ public class WorldMapUI implements ScreenController {
             int x = selectedFrom.posX;
             int z = selectedFrom.posZ;
             game.worldMapState.map.drawReachableArea(selectedUnits, x, z);
+        }
+    }
+
+    public void switchToUnitsLayer(ArrayList<Unit> list) {
+        game.showUIElement("front_building_layer", false);
+        game.showUIElement("front_unit_layer", true);
+
+
+        for (int i = 0; i < list.size(); i++) {
+            game.worldMapState.uiController.setBuildingImage(i, null);
+        }
+
+        for (int i = 0; i < list.size(); i++) {
+            game.worldMapState.uiController.setUnitImage(i, Main.DB.genUnits.get(list.get(i).refName).card);
+        }
+    }
+
+    public void switchToBuildingsLayer(ArrayList<Building> list) {
+        game.showUIElement("front_building_layer", true);
+        game.showUIElement("front_unit_layer", false);
+
+        for (int i = 0; i < list.size(); i++) {
+            game.worldMapState.uiController.setUnitImage(i, null);
+        }
+
+        for (int i = 0; i < list.size(); i++) {
+            GenericBuilding b = Main.DB.genBuildings.get(list.get(i).refName);
+            Level l = b.levels.get(list.get(i).level);
+            game.worldMapState.uiController.setBuildingImage(i, l.card);
         }
     }
 
@@ -156,13 +197,13 @@ public class WorldMapUI implements ScreenController {
         temp.z--;
         temp = game.worldMapState.map.ensureInTerrain(temp);
         WorldTile t = game.worldMapState.map.worldTiles[temp.x][temp.z];
-        
+
         //hintText.getRenderer(TextRenderer.class).setText(t.region);
 
         //screen.findElementByName("#hint-text").getEffectManager().resetSingleEffect(EffectEventId.onHover);
 
         //hintEffect.getParameters().put("hintText", t.shortInfo());
-       // screen.findElementByName("#hint-text");
+        // screen.findElementByName("#hint-text");
 //        startEffect(EffectEventId.onCustom, null, "hover");
 //
 //
@@ -180,6 +221,16 @@ public class WorldMapUI implements ScreenController {
 
     }
 
+    public void setBuildingImage(int number, Texture2D t) {
+        if (t == null) {
+            buildingImage[number].getRenderer(ImageRenderer.class).setImage(null);
+        } else {
+            buildingImage[number].getRenderer(ImageRenderer.class).setImage(
+                    new NiftyImage(nifty.getRenderEngine(), new RenderImageJme(t)));
+        }
+
+    }
+
     public void setImage(String id, Texture2D t) {
         Element l = nifty.getCurrentScreen().findElementByName(id);
 
@@ -190,7 +241,10 @@ public class WorldMapUI implements ScreenController {
             l.getRenderer(ImageRenderer.class).setImage(
                     new NiftyImage(nifty.getRenderEngine(), new RenderImageJme(t)));
         }
+    }
 
-
+    public void setText(String id, String t) {
+        Element l = nifty.getCurrentScreen().findElementByName(id);
+        l.getRenderer(TextRenderer.class).setText(t);
     }
 }

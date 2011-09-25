@@ -369,7 +369,7 @@ public class WorldMap {
                     deselectAll();
                 } else if (selectedArmy != null) {
                     selectArmy(selectedArmy);
-                }else if (selectedSettlement != null) {
+                } else if (selectedSettlement != null) {
                     selectSettlement(selectedSettlement);
                 }
 
@@ -466,12 +466,10 @@ public class WorldMap {
 
         deselectAll();
         selectedArmy = army;
+        game.worldMapState.uiController.switchToUnitsLayer(army.units);
         army.calculateMovePoints();
         drawReachableArea(army);
 
-        for (int i = 0; i < army.units.size(); i++) {
-            game.worldMapState.uiController.setImage("unit" + i, Main.DB.genUnits.get(army.units.get(i).refName).card);
-        }
         game.doScript("onArmySelected()");
 
 
@@ -485,18 +483,17 @@ public class WorldMap {
 
         deselectAll();
         selectedSettlement = s;
-        for (int i = 0; i < s.units.size(); i++) {
-            game.worldMapState.uiController.setImage("unit" + i, Main.DB.genUnits.get(s.units.get(i).refName).card);
-        }
+        game.worldMapState.uiController.switchToBuildingsLayer(s.buildings);
+        game.showUIElement("settlement_layer",true);
 
+     
         game.doScript("onSettlementSelected()");
 
 
     }
-    
-    public Tile ensureInTerrain(Tile t)
-    {
-        return new Tile(ensureInTerrainX(t.x),ensureInTerrainZ(t.z));
+
+    public Tile ensureInTerrain(Tile t) {
+        return new Tile(ensureInTerrainX(t.x), ensureInTerrainZ(t.z));
     }
 
     public int ensureInTerrainX(float value) {
@@ -606,7 +603,7 @@ public class WorldMap {
     }
 
     public void marchTo(Army a, int x, int z) {
-        
+
         a.calculateMovePoints();
         Stack<Tile> p = pathFinder.findPath(new Tile(a.posX, a.posZ), new Tile(x, z), true, false);
         if (p != null) {
