@@ -72,7 +72,6 @@ public class Main extends Application {
             setSettings(new AppSettings(true));
             loadSettings = true;
         }
-
         // show settings dialog
         if (true) {
             if (!JmeSystem.showSettingsDialog(settings, loadSettings)) {

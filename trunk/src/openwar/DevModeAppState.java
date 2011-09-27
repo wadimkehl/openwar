@@ -12,11 +12,13 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
 import com.jme3.terrain.geomipmap.TerrainPatch;
+import com.sun.imageio.plugins.png.PNGImageWriter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
 import openwar.world.WorldTile;
 
 /**
@@ -198,7 +200,7 @@ public class DevModeAppState extends AbstractAppState {
     public void dumpImage() {
 
         BufferedImage im = new BufferedImage(game.worldMapState.map.width,
-                game.worldMapState.map.height, 1);
+                game.worldMapState.map.height, BufferedImage.TYPE_INT_RGB);
 
         if ("types".equals(currTexture)) {
             for (int z = 0; z < game.worldMapState.map.height; z++) {
@@ -232,8 +234,6 @@ public class DevModeAppState extends AbstractAppState {
                 }
             }
         }
-
-
         try {
             ImageIO.write(im, "png", new File(currTexture + "_dump.png"));
             logger.log(Level.WARNING, "{0} image dumped", currTexture);
@@ -241,6 +241,7 @@ public class DevModeAppState extends AbstractAppState {
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Error while saving screenshot", ex);
         }
+        
     }
 
     @Override
