@@ -15,35 +15,7 @@
                 <image filename="ui/worldmap/menue.tga" imageMode="subImage:0,0,1000,150" width="*" height="*" visibleToMouse="true"/>
             </panel>
         </layer>
-        
-        <layer id="hint_layer" childLayout="absolute">
-            <text id="hint-text" font="ui/fonts/palatino.fnt" text="" size="0.1"/>
-        </layer>
-        
-        <layer id="minimap_layer"   childLayout="vertical" >           
-            <panel height="75%" width="*"/>
-            <panel height="25%" width="*" childLayout="horizontal">                
-                <!-- left part of bottom ui -->
-                <panel height="*" width="25%" childLayout="horizontal">
-                    <panel height="*" width="10%"/> 
-                    <panel height="*" width="80%"  childLayout="vertical">
-                        <panel height="16%" width="*"/> 
-                        
-                        <!-- panel for mini map -->
-                        <panel id="minimap_panel" height="75%" width="*" childLayout="center">
-                            <image id="minimap" height="100%" width="100%" align="center" valign="center">
-                                <interact onClick="onMinimapClick()" onMouseOver="onMinimapHover()" /> 
-                                <effect>
-                                    <onCustom customKey="hover" name="hint" hintText="" hintDelay="0" />
-                                </effect>
-                            </image>
-                        </panel>
-                        <panel height="*" width="*"/> 
-                    </panel>
-                    <panel height="*" width="10%"/> 
-                </panel>                 
-            </panel>
-        </layer>
+       
         
         <layer id="front_unit_layer"   childLayout="vertical" >
             
@@ -274,7 +246,7 @@
                         <!-- lower buildings row --> 
                             <panel height="45%" width="*" childLayout="horizontal">
                                 <panel height="*" width="*" childLayout="horizontal">
-                                  <image id="building6" width="16.5%" height="*"   >
+                                    <image id="building6" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onBuildingClick(6,0)" onSecondaryClick="onBuildingClick(6,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
@@ -361,5 +333,31 @@
                 </panel>
             </panel>           
         </layer>
+        
+         <layer id="minimap_layer"   childLayout="vertical"  >  
+            <panel height="75%" width="*"  />
+            <panel height="25%" width="*" childLayout="horizontal"> 
+                     <interact onMouseOver="onMinimapLayerHover()" />
+
+                <!-- left part of bottom ui -->
+                <panel height="*" width="25%" childLayout="horizontal">
+                    <panel height="*" width="10%"/> 
+                    <panel height="*" width="80%"  childLayout="vertical">
+                        <panel height="16%" width="*"/> 
+                        
+                        <!-- panel for mini map -->
+                        <panel id="minimap_panel" height="75%" width="*" childLayout="center">
+                            <image id="minimap" height="100%" width="100%" align="center" valign="center">
+                                <interact onClick="onMinimapClick()" onMouseOver="onMinimapHover()" /> 
+                            </image>
+                        </panel>
+                        <panel height="*" width="*"/> 
+                    </panel>
+                    <panel height="*" width="10%"/> 
+                </panel>                 
+            </panel>
+        </layer>
+        
+        
     </screen>
 </nifty>

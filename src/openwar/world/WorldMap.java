@@ -204,10 +204,10 @@ public class WorldMap {
                 g2 = clis.get(base + 1) & 0xff;
                 b2 = clis.get(base + 2) & 0xff;
 
-                // TODO: Find out why the groundtype card is bgr and the others aren't
+                // TODO: Find out why three textures are bgr after dumping them
                 int type = RGBtoGroundType(b, g, r);
-                Climate climate = getClimateByRGB(r2, g2, b2);
-                Region region = getRegionByRGB(new Vector3f(r1, g1, b1));
+                Climate climate = getClimateByRGB(b2, g2, r2);
+                Region region = getRegionByRGB(new Vector3f(b1, g1, r1));
                 GenericTile tile = Main.DB.genTiles.get(type);
                 if (region != null && climate != null && tile != null) {
                     worldTiles[i][height - 1 - j] = new WorldTile(i, height - 1 - j, type, tile.cost, region.refName, climate.refName);
