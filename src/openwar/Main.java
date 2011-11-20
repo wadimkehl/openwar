@@ -307,17 +307,14 @@ public class Main extends Application {
     }
 
     public void changeUIScreen(String name) {
-        
-        if (nifty.getScreen(name) == null)
-        {
+
+        if (nifty.getScreen(name) == null) {
             logger.log(Level.SEVERE, "Cannot find ui screen: {0}", name);
             return;
         }
         nifty.gotoScreen(name);
     }
 
-    
-    
     public void showUIElement(String name, boolean show) {
         Element element = nifty.getCurrentScreen().findElementByName(name);
         if (element == null) {
@@ -355,6 +352,4 @@ public class Main extends Application {
         }
         nifty.closePopup(hashedPopUpId.get(name));
     }
-    
-    
 }
