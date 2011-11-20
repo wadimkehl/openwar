@@ -328,7 +328,8 @@
                     
 
                 <panel height="*" width="*" childLayout="horizontal">
-                    <image filename="ui/worldmap/menue.tga" imageMode="subImage:106,152,182,190," width="*" height="*" />         
+                    <!-- <image filename="ui/worldmap/menue.tga" imageMode="subImage:106,152,182,190," width="*" height="*" />  -->       
+                    <image filename="ui/worldmap/temp.tga" imageMode="resize:55,105,23,55,10,163,10,80,23,105,55,55" width="*" height="*" />       
 
                 </panel>
             </panel>           

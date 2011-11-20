@@ -90,15 +90,27 @@ def onWorldMapUIClicked(String element, int button)
     
     if (element == "build")
     {
-        playSound("ui_window_open")
-        toggleUIElement("settlement_layer")
+        //playSound("ui_window_open")
+        //toggleUIElement("settlement_layer")
+        s = game.worldMapState.map.selectedSettlement
+        if(s != null)
+        {
+          game.worldMapState.uiController.switchToUnitsLayer(s.units)
+
+        }
 
     }
     
     if (element == "recruit")
     {
-        toggleUIElement("front_unit_layer")
-        toggleUIElement("front_building_layer")
+        s = game.worldMapState.map.selectedSettlement
+        if(s != null)
+        {
+          game.worldMapState.uiController.switchToBuildingsLayer(s.buildings)
+
+        }
+        //toggleUIElement("front_unit_layer")
+        //toggleUIElement("front_building_layer")
 
     }
     

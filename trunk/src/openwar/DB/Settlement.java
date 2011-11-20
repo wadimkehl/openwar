@@ -33,17 +33,20 @@ public class Settlement extends WorldEntity {
     public int level, population;
     public ArrayList<Building> buildings;
     public Spatial billBoard;
+    public ArrayList<Building> constructionList;
 
     public Settlement() {
         super();
         buildings = new ArrayList<Building>();
+        constructionList = new ArrayList<Building>();
+
 
     }
 
     @Override
     public void createData(WorldMap m) {
         map = m;
-        
+
         owner = Main.DB.hashedRegions.get(region).owner;
 
         //Spatial m = Main.DB.genBuildings.get("city").levels.get(level).model.clone();
@@ -106,7 +109,6 @@ public class Settlement extends WorldEntity {
     public void update(float tpf) {
     }
 
- 
     public Army dispatchArmy(ArrayList<Unit> split) {
         Army a = new Army();
         Main.DB.hashedFactions.get(owner).armies.add(a);
