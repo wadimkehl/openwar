@@ -90,7 +90,7 @@ def onWorldMapUIClicked(String element, int button)
     
     if (element == "build")
     {
-        //playSound("ui_window_open")
+        playSound("ui_window_open")
         //toggleUIElement("settlement_layer")
         s = game.worldMapState.map.selectedSettlement
         if(s != null)
