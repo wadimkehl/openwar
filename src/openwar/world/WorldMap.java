@@ -266,6 +266,9 @@ public class WorldMap {
 
         minimap = new WorldMinimap(this);
 
+        scene.addControl(new UpdateControl());
+
+
 
         DirectionalLight dlight = new DirectionalLight();
         Vector3f col = Main.DB.sun_color;
@@ -356,7 +359,6 @@ public class WorldMap {
     // Removes an army from the world map
     public void removeArmy(final Army a) {
 
-        scene.addControl(new UpdateControl());
         scene.getControl(UpdateControl.class).enqueue(new Callable() {
 
             @Override
@@ -484,9 +486,9 @@ public class WorldMap {
         deselectAll();
         selectedSettlement = s;
         game.worldMapState.uiController.switchToBuildingsLayer(s.buildings);
-        game.showUIElement("settlement_layer",true);
+        game.showUIElement("settlement_layer", true);
 
-     
+
         game.doScript("onSettlementSelected()");
 
 
