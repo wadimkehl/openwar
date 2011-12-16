@@ -2,9 +2,11 @@ package openwar.DB;
 
 import com.jme3.audio.AudioNode;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Spatial;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
 import java.util.HashMap;
+import openwar.world.WorldDecoration;
 
 /*
  * To change this template, choose Tools | Templates
@@ -21,6 +23,8 @@ public class GameDatabase {
     public HashMap<String, GenericBuilding> genBuildings;
     public HashMap<Integer, GenericTile> genTiles;
     public Texture heightmapTex, regionsTex, climatesTex, typesTex;
+    public HashMap<String, Spatial> decorations;
+    public ArrayList<WorldDecoration> worldDecorations;
     public HashMap<String, AudioNode> musicNodes;
     public HashMap<String, AudioNode> soundNodes;
     public ArrayList<Texture> tileTextures;
@@ -50,6 +54,9 @@ public class GameDatabase {
 
         musicNodes = new HashMap<String, AudioNode>();
         soundNodes = new HashMap<String, AudioNode>();
+
+        decorations = new HashMap<String, Spatial>();
+        worldDecorations = new ArrayList<WorldDecoration>();
 
 
         tileTextures = new ArrayList<Texture>();

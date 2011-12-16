@@ -34,12 +34,17 @@ public class Settlement extends WorldEntity {
     public ArrayList<Building> buildings;
     public Spatial billBoard;
     public ArrayList<Building> constructionList;
+    public ArrayList<Unit> recruitmentList;
+    public ArrayList<Building> constructionPool;
+    public ArrayList<Unit> recruitmentPool;
 
     public Settlement() {
         super();
         buildings = new ArrayList<Building>();
         constructionList = new ArrayList<Building>();
-
+        recruitmentList = new ArrayList<Unit>();
+        constructionPool = new ArrayList<Building>();
+        recruitmentPool = new ArrayList<Unit>();
 
     }
 
@@ -103,6 +108,12 @@ public class Settlement extends WorldEntity {
 
 
 
+    }
+
+    public void calculatePools() {
+        
+        constructionPool.clear();
+        recruitmentPool.clear();
     }
 
     @Override
