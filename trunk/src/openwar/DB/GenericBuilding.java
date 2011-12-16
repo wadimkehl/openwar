@@ -33,6 +33,7 @@ public class GenericBuilding {
     public String name;
     public int maxLevel;
     public HashMap<Integer, Level> levels;
+    
 
     public GenericBuilding() {
         levels = new HashMap<Integer, Level>();

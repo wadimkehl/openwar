@@ -239,6 +239,11 @@ public class WorldMap {
                 a.createData(this);
             }
         }
+        
+        for(WorldDecoration d : Main.DB.worldDecorations)
+        {
+            d.createData(this);
+        }
 
         return true;
 

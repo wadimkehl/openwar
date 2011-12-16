@@ -12,6 +12,7 @@ import com.jme3.asset.AssetManager;
 import com.jme3.asset.TextureKey;
 import com.jme3.audio.AudioNode;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Spatial;
 import com.jme3.texture.Image.Format;
 import com.jme3.texture.Texture2D;
 import java.io.File;
@@ -23,6 +24,7 @@ import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import openwar.Main;
+import openwar.world.WorldDecoration;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -36,6 +38,27 @@ public class XMLDataLoader {
     public XMLDataLoader(Main appl) {
         game = appl;
         assets = appl.getAssetManager();
+    }
+
+    private boolean loadDecorations(Element root) {
+        Spatial entity;
+        String refname = null;
+        try {
+            NodeList nodes = root.getElementsByTagName("decoration");
+
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Element l = (Element) nodes.item(i);
+                refname = l.getAttribute("refname");
+                entity = assets.loadModel("decorations" + File.separator + l.getAttribute("file"));
+                Main.DB.decorations.put(refname, entity);
+                logger.log(Level.WARNING, "*Decoration loaded: {0} *", refname);
+            }
+
+            return true;
+        } catch (Exception E) {
+            logger.log(Level.SEVERE, "Decoration CANNOT be loaded: {0}", refname);
+            return false;
+        }
     }
 
     private boolean loadSounds(Element root) {
@@ -242,7 +265,7 @@ public class XMLDataLoader {
                         l.getAttribute("name"), l.getAttribute("refname"),
                         Integer.parseInt(l.getAttribute("cost")),
                         Integer.parseInt(l.getAttribute("turns")),
-                        (Texture2D)assets.loadTexture(s + l.getAttribute("card")),
+                        (Texture2D) assets.loadTexture(s + l.getAttribute("card")),
                         null);
                 if (!"".equals(l.getAttribute("model"))) {
                     entity.levels.get(i).model = assets.loadModel(s + l.getAttribute("model"));
@@ -310,6 +333,7 @@ public class XMLDataLoader {
             Element climates = (Element) root.getElementsByTagName("climates").item(0);
             Element regions = (Element) root.getElementsByTagName("regions").item(0);
             Element factions = (Element) root.getElementsByTagName("factions").item(0);
+            Element decorations = (Element) root.getElementsByTagName("decorations").item(0);
 
 
             Main.DB.tilesTexturesCount = Integer.parseInt(textures.getAttribute("tiletextures"));
@@ -494,6 +518,27 @@ public class XMLDataLoader {
 
             }
 
+            c = decorations.getElementsByTagName("decoration");
+            for (int i = 0; i < c.getLength(); i++) {
+                Element r = (Element) c.item(i);
+
+                WorldDecoration dec = new WorldDecoration();
+
+                s = new Scanner(r.getAttribute("pos"));
+                s.useLocale(Locale.ENGLISH);
+                dec.pos = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
+                s = new Scanner(r.getAttribute("rot"));
+                s.useLocale(Locale.ENGLISH);
+                dec.rot = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
+                s = new Scanner(r.getAttribute("scale"));
+                s.useLocale(Locale.ENGLISH);
+                dec.scale = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
+
+                Main.DB.worldDecorations.add(dec);
+
+
+            }
+
             logger.log(Level.WARNING, "*Map loaded*");
             return true;
         } catch (Exception E) {
@@ -516,6 +561,8 @@ public class XMLDataLoader {
             result = result & loadData("sounds");
             logger.log(Level.WARNING, "Loading music");
             result = result & loadData("music");
+            logger.log(Level.WARNING, "Loading decorations");
+            result = result & loadData("decorations");
             logger.log(Level.WARNING, "Loading map");
             result = result & loadData("map");
             logger.log(Level.WARNING, "Loading scripts");

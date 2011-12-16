@@ -108,6 +108,10 @@ public class WorldMapAppState extends AbstractAppState {
         Spatial spat = (Spatial) r.getGeometry();
         Army a = map.getArmy(spat);
         if (a != null && a != map.selectedArmy) {
+            
+            if(!a.owner.equals(Main.DB.playerFaction))
+                return;
+            
             map.selectArmy(a);
             game.playSound("world_select_army");
 
@@ -116,6 +120,10 @@ public class WorldMapAppState extends AbstractAppState {
 
         Settlement s = map.getSettlement(spat);
         if (s != null && s != map.selectedSettlement) {
+            
+            if(!s.owner.equals(Main.DB.playerFaction))
+                return;
+            
             map.selectSettlement(s);
             game.playSound("world_select_settlement");
 

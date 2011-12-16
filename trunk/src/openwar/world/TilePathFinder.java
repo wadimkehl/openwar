@@ -31,6 +31,7 @@ public class TilePathFinder {
         }
     }
     WorldMap map;
+    private int max_distance = 150;
 
     public TilePathFinder(WorldMap m) {
         this.map = m;
@@ -52,7 +53,7 @@ public class TilePathFinder {
 
         double h = Math.sqrt((end.x - start.x) * (end.x - start.x) + (end.z - start.z) * (end.z - start.z));
 
-        if (h > 150) {
+        if (h > max_distance) {
             return null;
         }
 
