@@ -29,7 +29,6 @@ import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeSystem;
 import de.lessvoid.nifty.Nifty;
-import de.lessvoid.nifty.elements.Element;
 import java.io.File;
 import java.util.HashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -41,10 +40,15 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import openwar.DB.GameDatabase;
 
+import de.lessvoid.nifty.elements.Element;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
+
 public class Main extends Application {
 
     static public int version = 4;
-    public String locatorRoot = "data" + File.separator;
+    public String locatorRoot;
     public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(4);
     public Nifty nifty;
     public BulletAppState bulletState = new BulletAppState();
@@ -63,55 +67,78 @@ public class Main extends Application {
     private static final Logger logger = Logger.getLogger(Main.class.getName());
     public HashMap<String, String> hashedPopUpId;
 
-    @Override
-    public void start() {
-        // set some default settings in-case
-        // settings dialog is not shown
-        boolean loadSettings = false;
-        if (settings == null) {
-            setSettings(new AppSettings(true));
-            loadSettings = true;
-        }
-        // show settings dialog
-        if (true) {
-            if (!JmeSystem.showSettingsDialog(settings, loadSettings)) {
-                return;
+    public boolean readXMLConfig() {
+        try {
+            File config = new File("config.xml");
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document dom = db.parse(config.getCanonicalPath());
+            org.w3c.dom.Element root = dom.getDocumentElement();
+            org.w3c.dom.Element display = (org.w3c.dom.Element) root.getElementsByTagName("display").item(0);
+            org.w3c.dom.Element module = (org.w3c.dom.Element) root.getElementsByTagName("module").item(0);
+            org.w3c.dom.Element dev = (org.w3c.dom.Element) root.getElementsByTagName("dev").item(0);
+
+
+            settings = new AppSettings(true);
+            settings.setWidth(Integer.parseInt(display.getAttribute("x")));
+            settings.setHeight(Integer.parseInt(display.getAttribute("y")));
+            settings.setFullscreen(!Boolean.parseBoolean(display.getAttribute("windowed")));
+            settings.setVSync(Boolean.parseBoolean(display.getAttribute("vsync")));
+
+            if (settings.isFullscreen()) {
+                settings.setBitsPerPixel(32);
+                settings.setFrequency(0);
+            } else {
+                settings.setBitsPerPixel(24);
             }
+
+
+            locatorRoot = module.getAttribute("dir") + File.separator;
+            
+            devMode = Boolean.parseBoolean(dev.getAttribute("devMode"));
+            debugUI = Boolean.parseBoolean(dev.getAttribute("debugUI"));
+            
+            if (devMode) 
+                        Logger.getLogger("").setLevel(Level.WARNING);
+
+
+
+
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
         }
-        //re-setting settings they can have been merged from the registry.
-        setSettings(settings);
-        super.start();
+        
+        return true;
     }
 
     public static void main(String[] args) {
 
-
-
         Main app = new Main();
         Logger.getLogger("").setLevel(Level.SEVERE);
 
-        app.setSettings(new AppSettings(true));
+
+        if (!app.readXMLConfig())
+        {
+            System.err.println("Cannot find config.xml. Aborting...");
+            return;
+        }
+        
         app.settings.setTitle("openwar    r" + version);
         app.settings.setFrameRate(30);
 
 
-        for (String s : args) {
-            if ("--dev".equals(s)) {
-                Logger.getLogger("").setLevel(Level.WARNING);
-                devMode = true;
-            }
-            if ("--debug-ui".equals(s)) {
-                debugUI = true;
-            }
-        }
-
         app.start();
-
 
     }
 
     public Main() {
         super();
+    }
+
+    @Override
+    public void start() {
+        super.start();
     }
 
     @Override
@@ -243,7 +270,7 @@ public class Main extends Application {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private class AppActionListener implements ActionListener {
 
         @Override
