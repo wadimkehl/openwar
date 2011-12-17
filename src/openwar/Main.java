@@ -43,7 +43,7 @@ import openwar.DB.GameDatabase;
 
 public class Main extends Application {
 
-    static public int version = 3;
+    static public int version = 4;
     public String locatorRoot = "data" + File.separator;
     public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(4);
     public Nifty nifty;
@@ -227,13 +227,13 @@ public class Main extends Application {
         return null;
     }
 
-    public void doScript(String line) {
+    public Object doScript(String line) {
         try {
-            scriptEngine.eval(line);
+            return scriptEngine.eval(line);
         } catch (ScriptException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        return null;
     }
 
     private class AppActionListener implements ActionListener {

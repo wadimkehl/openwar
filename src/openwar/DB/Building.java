@@ -14,4 +14,14 @@ public class Building {
     public int level;
     public int currentConstructionTurn;
     
+    public Building()
+    {}
+    
+    public Building(String ref, int l, int turn)
+    {
+        refName = ref;
+        level = l;
+        currentConstructionTurn = turn;
+    }
+    
 }

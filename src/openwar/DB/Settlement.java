@@ -111,9 +111,44 @@ public class Settlement extends WorldEntity {
     }
 
     public void calculatePools() {
-        
+
         constructionPool.clear();
         recruitmentPool.clear();
+
+        for (String s : Main.DB.genBuildings.keySet()) {
+
+            boolean processed = false;
+            for (Building b : buildings) {
+                if (b.refName.equals(s)) {
+                    if (b.level < Main.DB.genBuildings.get(s).maxLevel) {
+                        String eval = owner + "','" + region + "','" + s + "'," + b.level + 1;
+                        boolean next_level = ((Boolean) map.game.doScript("canBeBuilt('" + eval + ")"));
+                        if (next_level) {
+                            constructionPool.add(new Building(s, b.level + 1, 0));
+                        }
+                    }
+                    processed = true;
+                    break;
+                }
+            }
+
+            if (!processed) {
+                for (Building b : constructionList) {
+                    if (b.refName.equals(s)) {
+                        processed = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!processed) {
+                String eval = owner + "','" + region + "','" + s + "',0";
+                boolean next_level = ((Boolean) map.game.doScript("canBeBuilt('" + eval + ")"));
+                if (next_level) {
+                    constructionPool.add(new Building(s, 0, 0));
+                }
+            }
+        }
     }
 
     @Override
