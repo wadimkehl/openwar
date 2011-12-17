@@ -93,8 +93,10 @@ public class WorldMapAppState extends AbstractAppState {
         Vector3f pt = r.getContactPoint();
         int x = (int) pt.x;
         int z = (int) pt.z;
-
-        if (r.getGeometry() instanceof TerrainPatch || r.getGeometry().getName().equals("reachableArea")) {
+        
+        if(r.getGeometry() == null) return;
+        String name = r.getGeometry().getName();
+        if (r.getGeometry() instanceof TerrainPatch ||  ( name != null && name.equals("reachableArea"))) {
 
             if (Main.devMode) {
                 System.err.println(map.worldTiles[x][z]);

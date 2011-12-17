@@ -10,6 +10,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import openwar.Main;
 
 /**
  *
@@ -24,6 +25,7 @@ public class WorldDecoration {
     public Node node;
     public WorldMap map;
     public String refName;
+    public boolean collision;
 
     public WorldDecoration() {
         
@@ -34,6 +36,8 @@ public class WorldDecoration {
 
         this.map = m;
 
+        model = Main.DB.decorations.get(refName).clone();
+        model.setName(refName);
         model.setMaterial(new Material(map.game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md"));
         model.setShadowMode(ShadowMode.CastAndReceive);
         node.setLocalTranslation(pos);

@@ -227,7 +227,7 @@ public class Main extends Application {
         return null;
     }
 
-    public Object doScript(String line) {
+    public Object doReturnScript(String line) {
         try {
             return scriptEngine.eval(line);
         } catch (ScriptException ex) {
@@ -236,6 +236,14 @@ public class Main extends Application {
         return null;
     }
 
+    public void doScript(String line) {
+        try {
+            scriptEngine.eval(line);
+        } catch (ScriptException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     private class AppActionListener implements ActionListener {
 
         @Override
