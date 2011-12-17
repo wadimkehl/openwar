@@ -31,6 +31,7 @@ public class Settlement extends WorldEntity {
     public String name;
     public String region;
     public int level, population;
+    public double base_growth;
     public ArrayList<Building> buildings;
     public Spatial billBoard;
     public ArrayList<Building> constructionList;

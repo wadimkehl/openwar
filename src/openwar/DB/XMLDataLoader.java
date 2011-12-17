@@ -443,6 +443,7 @@ public class XMLDataLoader {
                     se.posZ = Integer.parseInt(sett.getAttribute("posz"));
                     se.level = Integer.parseInt(sett.getAttribute("level"));
                     se.population = Integer.parseInt(sett.getAttribute("population"));
+                    se.base_growth = Double.parseDouble(sett.getAttribute("base_growth"));
                     se.region = reg.refName;
                     reg.settlement = se;
                     Main.DB.settlements.add(se);
