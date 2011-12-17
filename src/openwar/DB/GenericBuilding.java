@@ -23,7 +23,7 @@ public class GenericBuilding {
         public int cost;
         public int turns;
         public Texture2D card;
-        public Texture2D detail;
+        public Texture2D info;
         public Spatial model;
 
         public Level() {

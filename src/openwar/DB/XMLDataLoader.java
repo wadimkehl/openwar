@@ -152,8 +152,8 @@ public class XMLDataLoader {
                 return loadMap(dom.getDocumentElement());
             }
 
-            // if we load the sounds or music, check in meta folder for props.xml
-            if ("sounds".equals(folder) || "music".equals(folder)) {
+            // if we load the sounds, decorations or music, check in meta folder for props.xml
+            if ("sounds".equals(folder) || "decorations".equals(folder) || "music".equals(folder)) {
                 // search props.xml
                 File props = null;
                 for (File l : f.listFiles()) {
@@ -173,6 +173,8 @@ public class XMLDataLoader {
 
                 if ("sounds".equals(folder)) {
                     return loadSounds(dom.getDocumentElement());
+                } else if ("decorations".equals(folder)) {
+                    return loadDecorations(dom.getDocumentElement());
                 } else {
                     return loadMusic(dom.getDocumentElement());
                 }
@@ -524,6 +526,9 @@ public class XMLDataLoader {
 
                 WorldDecoration dec = new WorldDecoration();
 
+                //dec.collision = Boolean.parseBoolean(r.getAttribute("collidable"));
+                
+                dec.refName = r.getAttribute("refname"); 
                 s = new Scanner(r.getAttribute("pos"));
                 s.useLocale(Locale.ENGLISH);
                 dec.pos = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());

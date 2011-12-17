@@ -122,7 +122,7 @@ public class Settlement extends WorldEntity {
                 if (b.refName.equals(s)) {
                     if (b.level < Main.DB.genBuildings.get(s).maxLevel) {
                         String eval = owner + "','" + region + "','" + s + "'," + b.level + 1;
-                        boolean next_level = ((Boolean) map.game.doScript("canBeBuilt('" + eval + ")"));
+                        boolean next_level = ((Boolean) map.game.doReturnScript("canBeBuilt('" + eval + ")"));
                         if (next_level) {
                             constructionPool.add(new Building(s, b.level + 1, 0));
                         }
@@ -143,7 +143,7 @@ public class Settlement extends WorldEntity {
 
             if (!processed) {
                 String eval = owner + "','" + region + "','" + s + "',0";
-                boolean next_level = ((Boolean) map.game.doScript("canBeBuilt('" + eval + ")"));
+                boolean next_level = ((Boolean) map.game.doReturnScript("canBeBuilt('" + eval + ")"));
                 if (next_level) {
                     constructionPool.add(new Building(s, 0, 0));
                 }
