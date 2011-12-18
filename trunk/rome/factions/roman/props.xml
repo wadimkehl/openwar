@@ -2,11 +2,8 @@
 
 <root>
 
-    <faction name="Romans" refname="roman" color="116 48 87"/>
+    <faction name="Romans" refname="roman" color="116 48 87" religion="roman_pantheon"/>
     <images banner="banner.png" flag="flag.png" icon="icon.png" />
-    
-    <settlements style="roman" />
-
     
     <names>
         <male name="Marcus"/>

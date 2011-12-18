@@ -2,11 +2,9 @@
 
 <root>
 
-    <faction name="Greek" refname="greek" color="255 50 50"/>
+    <faction name="Greek" refname="greek" color="255 50 50" religion="greek_pantheon" />
      <images banner="banner.png" flag="flag.png" icon="icon.png" />
-    
-    <settlements style="greek" />
-    
+        
     <names>
         <male name="Alexander"/>
         <male name="Hercules"/>
