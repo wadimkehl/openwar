@@ -6,7 +6,7 @@
 
  <level level="0" name="Recruiting tent" refname="low_barracks" cost="500" turns="1" >
     
-     <description card="image.jpg" info="info.jpg" text="info.txt" />
+     <description card="image.jpg" detail="detail.jpg" info="info.txt"  />
      <requires>
          <faction refname="roman" />
          <faction refname="greek" />
@@ -20,7 +20,7 @@
     
     <level level="1" name="Smaller barracks" refname="medium_barracks" cost="2500" turns="2"  >
         
-        <description card="image.jpg" info="info.jpg" text="info.txt" />
+        <description card="image.jpg" detail="detail.jpg" info="info.txt"  />
         <requires>
             <faction refname="roman" />
             <faction refname="greek" />
@@ -34,7 +34,7 @@
 
     <level level="2" name="Large barracks" refname="high_barracks" cost="5000" turns="3" >
         
-        <description card="image.jpg" info="info.jpg" text="info.txt" />
+        <description card="image.jpg" detail="detail.jpg" info="info.txt"  />
         <requires>
             <faction refname="roman" />
             <faction refname="greek" />

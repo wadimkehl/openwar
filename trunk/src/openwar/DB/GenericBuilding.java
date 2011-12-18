@@ -22,8 +22,8 @@ public class GenericBuilding {
         public String refName;
         public int cost;
         public int turns;
-        public Texture2D card;
-        public Texture2D info;
+        
+        public Description desc;
         public Spatial model;
 
         public Level() {
@@ -39,14 +39,14 @@ public class GenericBuilding {
         levels = new HashMap<Integer, Level>();
     }
 
-    public void addLevel(int l, String n, String r, int c, int t, Texture2D i, Spatial m) {
+    public void addLevel(int l, String n, String r, int c, int t, Description d, Spatial m) {
         Level lev = new Level();
         lev.level = l;
         lev.name = n;
         lev.refName = r;
         lev.cost = c;
         lev.turns = t;
-        lev.card = i;
+        lev.desc = d;
         lev.model = m;
         levels.put(l, lev);
     }

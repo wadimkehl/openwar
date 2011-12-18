@@ -2,7 +2,11 @@
 
 <root>
 
-    <unit name="Bowmen" refname="bowmen" maxcount="100" maxmovepoints="20" card="unitcard.jpg" info="info.jpg" />
+    <unit name="Bowmen" refname="bowmen" maxcount="100" maxmovepoints="20"  />
+    
+    <description card="unitcard.jpg" detail="info.jpg" info="info.txt"  />
+
+    
     <stats att_melee="1" att_assault="1" att_range="5" armor="1" shield="0" melee="true" ranged="true" />
     <model refname="ranged_unit" skeleton="ranged_unit" texture="bowmen.jpg" />
 

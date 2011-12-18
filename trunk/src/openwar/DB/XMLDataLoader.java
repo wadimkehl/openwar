@@ -234,13 +234,20 @@ public class XMLDataLoader {
         GenericUnit entity = new GenericUnit();
         try {
             Element unit = (Element) root.getElementsByTagName("unit").item(0);
+            Element d = (Element) root.getElementsByTagName("description").item(0);
             Element stats = (Element) root.getElementsByTagName("stats").item(0);
+
+
             entity.name = unit.getAttribute("name");
             entity.refName = unit.getAttribute("refname");
             entity.maxCount = Integer.parseInt(unit.getAttribute("maxcount"));
             entity.maxMovePoints = Integer.parseInt(unit.getAttribute("maxmovepoints"));
-            String image = "units" + File.separator + entity.refName + File.separator + unit.getAttribute("card");
-            entity.card = (Texture2D) assets.loadTexture(image);
+
+            Description desc = new Description();
+            String image = "units" + File.separator + entity.refName + File.separator + d.getAttribute("card");
+            desc.card = (Texture2D) assets.loadTexture(image);
+            entity.desc = desc;
+            
             Main.DB.genUnits.put(entity.refName, entity);
             logger.log(Level.WARNING, "*Unit loaded: {0} *", entity.refName);
         } catch (Exception E) {
@@ -269,12 +276,14 @@ public class XMLDataLoader {
 
 
                 String s = "buildings" + File.separator + entity.refName + File.separator;
+
+                Description desc = new Description();
+                desc.card = (Texture2D) assets.loadTexture(s + d.getAttribute("card"));
+
                 entity.addLevel(Integer.parseInt(l.getAttribute("level")),
                         l.getAttribute("name"), l.getAttribute("refname"),
                         Integer.parseInt(l.getAttribute("cost")),
-                        Integer.parseInt(l.getAttribute("turns")),
-                        (Texture2D) assets.loadTexture(s + d.getAttribute("card")),
-                        null);
+                        Integer.parseInt(l.getAttribute("turns")), desc, null);
                 if (!"".equals(l.getAttribute("model"))) {
                     entity.levels.get(i).model = assets.loadModel(s + l.getAttribute("model"));
                 }
