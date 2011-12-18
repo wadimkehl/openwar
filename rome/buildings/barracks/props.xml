@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+
+ <building name="Barracks" refname="barracks" maxlevel="2" />
+
+ 
+ <levels>
+     <level level="0" name="Recruiting tent" refname="low_barracks" cost="500" turns="1" card="image.jpg" info="info.jpg"/>
+     <level level="1" name="Smaller barracks" refname="medium_barracks" cost="2500" turns="2" card="image.jpg" info="info.jpg"/>
+     <level level="2" name="Large barracks" refname="high_barracks" cost="5000" turns="3" card="image.jpg" info="info.jpg"/>
+ </levels>
+
+</root>

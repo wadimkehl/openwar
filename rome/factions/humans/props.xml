@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+
+    <faction name="Humans" refname="humans" color="100 100 250"/>
+    <images banner="banner.png" flag="flag.png" icon="icon.png" />
+    
+    <names>
+        <male name="Marcus"/>
+        <male name="Brutus"/>
+        <female name="Daphne"/>
+
+    </names>
+
+
+</root>
