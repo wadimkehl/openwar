@@ -127,7 +127,7 @@ public class WorldMapUI implements ScreenController {
         }
 
         for (int i = 0; i < list.size(); i++) {
-            game.worldMapState.uiController.setUnitImage(i, Main.DB.genUnits.get(list.get(i).refName).card);
+            game.worldMapState.uiController.setUnitImage(i, Main.DB.genUnits.get(list.get(i).refName).desc.card);
         }
     }
 
@@ -142,7 +142,7 @@ public class WorldMapUI implements ScreenController {
         for (int i = 0; i < list.size(); i++) {
             GenericBuilding b = Main.DB.genBuildings.get(list.get(i).refName);
             Level l = b.levels.get(list.get(i).level);
-            game.worldMapState.uiController.setBuildingImage(i, l.card);
+            game.worldMapState.uiController.setBuildingImage(i, l.desc.card);
         }
     }
 
