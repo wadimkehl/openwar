@@ -51,7 +51,7 @@ public class Army extends WorldEntity {
         model.setLocalTranslation(0f, 0.5f, 0f);
         node.attachChild(model);
 
-        banner = (Spatial) new Geometry("", new Quad(1f, 2f));
+        banner = (Spatial) new Geometry("", new Quad(1.5f, 3f));
         float random_offset = (((float) Math.random()) - 0.5f) * 0.01f;
         banner.setLocalTranslation(-0.5f, 2f, random_offset);
         Material mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");

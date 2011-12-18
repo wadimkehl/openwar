@@ -63,7 +63,7 @@ public class Settlement extends WorldEntity {
         model.setLocalTranslation(0f, 0.25f, 0f);
         node.attachChild(model);
 
-        banner = (Spatial) new Geometry("", new Quad(1f, 2f));
+        banner = (Spatial) new Geometry("", new Quad(1.5f, 3f));
         banner.setLocalTranslation(-0.5f, 1f, -0.5f);
         mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
