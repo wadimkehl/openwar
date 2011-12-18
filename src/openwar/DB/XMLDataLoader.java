@@ -255,19 +255,25 @@ public class XMLDataLoader {
         GenericBuilding entity = new GenericBuilding();
         try {
             Element building = (Element) root.getElementsByTagName("building").item(0);
-            Element levels = (Element) root.getElementsByTagName("levels").item(0);
+            NodeList levels = root.getElementsByTagName("level");
+
             entity.name = building.getAttribute("name");
             entity.refName = building.getAttribute("refname");
             entity.maxLevel = Integer.parseInt(building.getAttribute("maxlevel"));
 
             for (int i = 0; i < entity.maxLevel; i++) {
-                Element l = (Element) levels.getElementsByTagName("level").item(i);
+                Element l = (Element) levels.item(i);
+                Element d = (Element) l.getElementsByTagName("description").item(0);
+                Element req = (Element) l.getElementsByTagName("requires").item(0);
+                Element prov = (Element) l.getElementsByTagName("provides").item(0);
+
+
                 String s = "buildings" + File.separator + entity.refName + File.separator;
                 entity.addLevel(Integer.parseInt(l.getAttribute("level")),
                         l.getAttribute("name"), l.getAttribute("refname"),
                         Integer.parseInt(l.getAttribute("cost")),
                         Integer.parseInt(l.getAttribute("turns")),
-                        (Texture2D) assets.loadTexture(s + l.getAttribute("card")),
+                        (Texture2D) assets.loadTexture(s + d.getAttribute("card")),
                         null);
                 if (!"".equals(l.getAttribute("model"))) {
                     entity.levels.get(i).model = assets.loadModel(s + l.getAttribute("model"));
