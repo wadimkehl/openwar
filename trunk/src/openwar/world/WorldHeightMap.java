@@ -43,7 +43,7 @@ public class WorldHeightMap extends ImageBasedHeightMap {
     public float calculateHeight(float r, float g, float b) {
 
         float value = (r + g + b) * factor0 + r*factor1;
-        return value <= cutoff ? 0f : Math.max(0f,value);
+        return value <= cutoff ? -0.2f : Math.max(0f,value);
        
     }
 }

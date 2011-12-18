@@ -192,6 +192,7 @@ public class WorldMap {
         ByteBuffer clis = Main.DB.climatesTex.getImage().getData(0);
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
+                //TODO: base maps must NOT be RGBA, but RGB
                 int base = (j * width + i) * 3;
                 int r, g, b, r1, g1, b1, r2, g2, b2;
                 r = types.get(base + 0) & 0xff;
@@ -212,7 +213,11 @@ public class WorldMap {
                 if (region != null && climate != null && tile != null) {
                     worldTiles[i][height - 1 - j] = new WorldTile(i, height - 1 - j, type, tile.cost, region.refName, climate.refName);
                 } else {
-                    logger.log(Level.SEVERE, "Error at ({0},{1}) ", new Object[]{i, height - 1 - j});
+                    String cause;
+                    if (region==null) cause = "region";
+                    else if (climate==null) cause = "climate";
+                    else cause = "tile";
+                    logger.log(Level.SEVERE, "Error: " +cause+ " at ({0},{1}) ", new Object[]{i, height - 1 - j});
                     return false;
                 }
             }

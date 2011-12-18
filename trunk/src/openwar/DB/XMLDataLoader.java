@@ -528,8 +528,8 @@ public class XMLDataLoader {
                 WorldDecoration dec = new WorldDecoration();
 
                 //dec.collision = Boolean.parseBoolean(r.getAttribute("collidable"));
-                
-                dec.refName = r.getAttribute("refname"); 
+
+                dec.refName = r.getAttribute("refname");
                 s = new Scanner(r.getAttribute("pos"));
                 s.useLocale(Locale.ENGLISH);
                 dec.pos = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
@@ -554,6 +554,12 @@ public class XMLDataLoader {
     }
 
     public boolean loadAll() {
+
+        File f = new File(game.locatorRoot);
+        if (!f.isDirectory()) {
+            logger.log(Level.SEVERE, "Cannot find module directory ''{0}''...", game.locatorRoot);
+            return false;
+        }
 
         try {
             boolean result = true;
