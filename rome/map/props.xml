@@ -60,7 +60,7 @@
     
     <factions>
         
-        <faction refname="humans" gold="1000" capital="roma">
+        <faction refname="roman" gold="1000" capital="roma">
             <army posx="63" posz="32" >
                 <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
@@ -72,7 +72,7 @@
             
         </faction>
         
-        <faction refname="aliens" gold="1000" capital="sweden">
+        <faction refname="greek" gold="1000" capital="sweden">
                    </faction>
         
     </factions>
@@ -81,8 +81,8 @@
         
         <region name="Ocean" refname="" owner="" color="0 0 0" />
         
-        <region name="Roma" refname="roma" color="255 0 0" owner="humans" >
-            <settlement name="Rome" posx="62" posz="35" level="0" population="1000" base_growth="2.0">          
+        <region name="Roma" refname="roma" color="255 0 0" owner="roman" >
+            <settlement name="Rome" posx="62" posz="35" level="0" population="1000" base_growth="2.0" style="roman">          
                 <building refname="irrigation" level="0" />
                 <building refname="barracks" level="0" />
 

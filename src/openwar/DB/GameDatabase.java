@@ -38,9 +38,9 @@ public class GameDatabase {
     public HashMap<String, Climate> hashedClimates;
     public ArrayList<Faction> factions;
     public HashMap<String, Faction> hashedFactions;
-    public String playerFaction = "humans";
+    public String playerFaction = "roman";
     public int currentRound = 0;
-    public String currentTurn = "humans";
+    public String currentTurn = "roman";
     public Vector3f heightmapParams, sun_color, sun_direction, water_color;
     public boolean hasWater;
     public float waterHeight;
