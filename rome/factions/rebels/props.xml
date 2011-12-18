@@ -2,7 +2,7 @@
 
 <root>
 
-    <faction name="Rebels" refname="rebels" color="100 100 100"/>
+    <faction name="Rebels" refname="rebels" color="100 100 100" religion="greek_pantheon"/>
     <images banner="banner.png" flag="flag.png" icon="icon.png" />
     
     <settlements style="roman" />
