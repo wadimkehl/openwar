@@ -2,7 +2,7 @@
 
 <root>
 
-    <faction name="Romans" refname="roman" color="100 100 250"/>
+    <faction name="Romans" refname="roman" color="116 48 87"/>
     <images banner="banner.png" flag="flag.png" icon="icon.png" />
     
     <settlements style="roman" />
