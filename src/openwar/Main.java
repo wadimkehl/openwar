@@ -94,12 +94,13 @@ public class Main extends Application {
 
 
             locatorRoot = module.getAttribute("dir") + File.separator;
-            
+
             devMode = Boolean.parseBoolean(dev.getAttribute("devMode"));
             debugUI = Boolean.parseBoolean(dev.getAttribute("debugUI"));
-            
-            if (devMode) 
-                        Logger.getLogger("").setLevel(Level.WARNING);
+
+            if (devMode) {
+                Logger.getLogger("").setLevel(Level.WARNING);
+            }
 
 
 
@@ -108,7 +109,7 @@ public class Main extends Application {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
-        
+
         return true;
     }
 
@@ -118,12 +119,11 @@ public class Main extends Application {
         Logger.getLogger("").setLevel(Level.SEVERE);
 
 
-        if (!app.readXMLConfig())
-        {
+        if (!app.readXMLConfig()) {
             System.err.println("Cannot find config.xml. Aborting...");
             return;
         }
-        
+
         app.settings.setTitle("openwar    r" + version);
         app.settings.setFrameRate(30);
 

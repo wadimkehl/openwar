@@ -51,7 +51,7 @@ public class WorldMapAppState extends AbstractAppState {
 
             Vector3f loc = game.getCamera().getLocation().clone();
             loc.x = ensureMinMax((int) loc.x, 0, map.width);
-            loc.z = ensureMinMax((int) loc.z, (int) (map.height * 0.3f), (int) (map.height * 1.3f));
+            loc.z = ensureMinMax((int) loc.z, 15, map.height +20);
             game.getCamera().setLocation(loc);
 
 
