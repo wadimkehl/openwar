@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+
+    <faction name="Greek" refname="greek" color="255 50 50"/>
+     <images banner="banner.png" flag="flag.png" icon="icon.png" />
+    
+    <settlements style="greek" />
+    
+    <names>
+        <male name="Alexander"/>
+        <male name="Hercules"/>
+        <female name="Daphne"/>
+
+    </names>
+
+</root>

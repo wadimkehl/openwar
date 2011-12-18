@@ -2,15 +2,19 @@
 
 <root>
 
-    <faction name="Humans" refname="humans" color="100 100 250"/>
+    <faction name="Romans" refname="roman" color="100 100 250"/>
     <images banner="banner.png" flag="flag.png" icon="icon.png" />
+    
+    <settlements style="roman" />
+
     
     <names>
         <male name="Marcus"/>
         <male name="Brutus"/>
-        <female name="Daphne"/>
+        <female name="Claudia"/>
 
     </names>
+    
 
 
 </root>

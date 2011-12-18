@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+
+    <faction name="Rebels" refname="rebels" color="100 100 100"/>
+    <images banner="banner.png" flag="flag.png" icon="icon.png" />
+    
+    <settlements style="roman" />
+
+    
+    <names>
+        <male name="Mocko"/>
+        <male name="Docko"/>
+        <female name="Lula"/>
+
+    </names>
+    
+
+
+</root>
