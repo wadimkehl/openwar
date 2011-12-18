@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nifty xmlns="http://nifty-gui.sourceforge.net/nifty.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nifty-gui.sourceforge.net/nifty.xsd http://nifty-gui.sourceforge.net/nifty.xsd">
+
+    <screen id="start" controller="openwar.world.WorldMapUI">
+
+       
+
+        <layer id="back_layer" childLayout="vertical">
+            <panel height="75%"/>
+            <panel childLayout="horizontal">           
+                <image filename="ui/worldmap/menue.tga" imageMode="subImage:0,0,1000,150" width="*" height="*"/>
+            </panel>
+        </layer>
+        
+        
+        <layer id="minimap_layer"   childLayout="vertical" >
+            
+            <panel height="75%" width="*"/>
+            <panel height="25%" width="*" childLayout="horizontal">
+                
+                <!-- left part of bottom ui -->
+                <panel height="*" width="25%" childLayout="horizontal">
+                    <panel height="*" width="10%"/> 
+                    <panel height="*" width="80%"  childLayout="vertical">
+                        <panel height="17%" width="*"/> 
+                        
+                        <!-- panel for mini map -->
+                        <panel height="75%" width="*" childLayout="horizontal">
+                            <image id="minimap" height="*" width="*">
+                                <interact onClick="onMinimapClick()" />                
+                            </image>
+                        </panel>
+                        <panel height="*" width="*"/> 
+                    </panel>
+                    <panel height="*" width="10%"/> 
+                </panel>
+                
+                
+                <!-- center part of bottom ui -->
+                <panel height="*" width="50%"/> 
+                <panel height="*" width="25%"/>
+                
+                    
+            </panel>
+        </layer>
+           
+        
+        <layer id="front_layer"   childLayout="vertical" >
+            
+            <panel height="75%" width="*"/>
+            <panel height="25%" width="*" childLayout="horizontal">
+                
+                <!-- left part of bottom ui -->
+                <panel height="*" width="25%" />
+                  
+                <!-- center part of bottom ui -->
+                <panel height="*" width="50%"/> 
+                
+                
+                <!-- right part of bottom ui -->
+                <panel height="*" width="25%" childLayout="vertical">
+                    <panel height="10%" width="*"/> 
+                    <panel height="47%" width="*"/> 
+                    <panel height="*" width="*" childLayout="horizontal" > 
+                        <panel height="80%" width="20%"/> 
+                        
+                        <!-- three buttons -->
+                        <panel height="80%" width="*" childLayout="horizontal">
+                            <image id="build" filename="ui/worldmap/menue.tga" imageMode="subImage:1,152,34,50" width="28%" height="*">         
+                                <interact onClick="onClick(build)" />                
+                            </image>
+                            <panel height="*" width="2%"/> 
+                            <image id="recruit" filename="ui/worldmap/menue.tga" imageMode="subImage:35,152,34,50" width="28%" height="*">         
+                                <interact onClick="onClick(recruit)" />                
+                            </image>
+                            <panel height="*" width="2%"/> 
+                            <image id="turn" filename="ui/worldmap/menue.tga" imageMode="subImage:70,152,34,50" width="28%" height="*">         
+                                <interact onClick="onClick(turn)" />                
+                            </image>
+                        </panel>
+
+                    </panel>                   
+                </panel>         
+            </panel>
+                       
+        </layer>
+        
+        
+        <layer id="scrolls_layer" childLayout="vertical" visible="false">
+            <panel height="75%" childLayout="horizontal">
+                <panel height="*" width="50%" childLayout="horizontal">
+                    
+                    <image id="left" filename="ui/worldmap/menue.tga" imageMode="subImage:70,152,34,50" width="*" height="*" />         
+
+                </panel>
+                <panel height="*" width="*" childLayout="horizontal">
+                    <image id="right" filename="ui/worldmap/menue.tga" imageMode="subImage:70,152,34,50" width="*" height="*" />         
+
+                </panel>
+            </panel>           
+        </layer>
+    </screen>
+</nifty>

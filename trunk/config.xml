@@ -5,10 +5,10 @@
 
 
     <display x="640" y="480" windowed="true" vsync="true" />
-    <module dir="data" />
+    <module dir="rome" />
     
     
-    <dev devMode="false" debugUI="false" />
+    <dev devMode="true"  debugUI="false" />
 
 
 </config>

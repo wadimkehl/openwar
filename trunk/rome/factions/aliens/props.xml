@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+
+    <faction name="Aliens" refname="aliens" color="255 50 50"/>
+     <images banner="banner.png" flag="flag.png" icon="icon.png" />
+    
+    <names>
+        <male name="M'kthar"/>
+        <male name="Kol"/>
+        <female name="Drr'Itsch"/>
+
+    </names>
+
+</root>
