@@ -2,7 +2,9 @@
 
 <root>
 
- <settlement style="greek">
+    <culture name="Roman Culture" refname="roman_culture" />
+    
+ <settlement>
      
      <model level="0" file="" />
      
