@@ -44,6 +44,7 @@ import openwar.DB.Faction;
 import openwar.DB.GenericTile;
 import openwar.DB.Region;
 import openwar.DB.Settlement;
+import openwar.DB.Settlement.Construction;
 import openwar.DB.Unit;
 
 import openwar.Main;
@@ -495,6 +496,7 @@ public class WorldMap {
 
         deselectAll();
         selectedSettlement = s;
+        
         game.worldMapState.uiController.switchToBuildingsLayer(s.buildings);
         game.showUIElement("settlement_layer", true);
 

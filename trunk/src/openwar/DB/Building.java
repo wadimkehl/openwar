@@ -12,16 +12,14 @@ public class Building {
     
     public String refName;
     public int level;
-    public int currentConstructionTurn;
     
     public Building()
     {}
     
-    public Building(String ref, int l, int turn)
+    public Building(String ref, int l)
     {
         refName = ref;
         level = l;
-        currentConstructionTurn = turn;
     }
     
 }
