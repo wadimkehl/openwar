@@ -3,7 +3,7 @@
 
 
 // this function is called once at the beginning of the game
-def onGameBegin()
+def onBeginGame()
 {
     println "Game begins"
     
@@ -26,18 +26,18 @@ def onUnitRecruited(String faction, String region, unit)
 
 
 // called when a faction ends its turn
-// faction is refname, round is current round number 
-def onEndTurn(String faction, int round)
+// faction is refname
+def onEndTurn(String faction)
 {
-    println faction + " ended round " + round
+    println faction + " ended turn "
 }
 
 
 // called when a faction begins its turn
-// faction is refname, round is current round number 
-def onBeginTurn(String faction,int round)
+// faction is refname 
+def onBeginTurn(String faction)
 {
-    println faction + " began round " + round
+    println faction + " began turn"
     
     if(game.worldMapState.map.selectedArmy != null)
     {
@@ -50,28 +50,26 @@ def onBeginTurn(String faction,int round)
 }
 
 // called when a new round begins (i.e. all factions had their turn)
-def onBeginRound()
+// round is current round number 
+def onBeginRound(round)
 {        
     
-    playSound("turn_begin")
+    playSound("round_begin")
+    println "Round began"
 
-    game.DB.currentRound++
+   
+    
+}
 
-    for(f in game.DB.factions)
-    {
-        for(a in f.armies)
-        {
-            a.resetMovePoints()
-        }
-    }
+// called when a round ends (i.e. all factions had their turn)
+// round is current round number 
+def onEndRound(round)
+{        
     
-    for(s in game.DB.settlements)
-    {
-        s.resetMovePoints()
-        
-    }
-    
-    onBeginTurn("lol",    game.DB.currentRound)
+    playSound("round_end")
+    println "Round ended"
+
+   
     
 }
 
@@ -82,9 +80,7 @@ def onWorldMapUIClicked(String element, int button)
 {
     if(element == "turn")
     {
-        onEndTurn("player",game.DB.currentRound)  
-        onBeginRound()
-        
+        game.worldMapState.logic.endTurn()
         return;
     }
     

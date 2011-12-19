@@ -15,6 +15,7 @@ public class Building {
 
     public class RecruitmentStats {
 
+        public GenericRecruitmentStats grs;
         public String refName;
         public int currUnits, turnsTillNextUnit;
 
@@ -37,11 +38,12 @@ public class Building {
 
     }
 
-    public void createRecruitmentStats(GenericRecruitmentStats grs) {
+    public void createRecruitmentStats(GenericRecruitmentStats grstats) {
         RecruitmentStats rs = new RecruitmentStats();
-        rs.refName = grs.refName;
-        rs.currUnits = grs.maxUnits;
-        rs.turnsTillNextUnit = grs.turnsTillNextUnit;
+        rs.refName = grstats.refName;
+        rs.currUnits = grstats.maxUnits;
+        rs.turnsTillNextUnit = grstats.turnsTillNextUnit;
+        rs.grs = grstats;
         recStats.put(refName, rs);
     }
 }

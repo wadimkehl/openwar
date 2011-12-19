@@ -17,6 +17,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.TerrainPatch;
 import java.io.File;
 import java.util.ArrayList;
+import openwar.DB.Faction;
 import openwar.DB.Settlement;
 import openwar.DB.Unit;
 import openwar.Main;
@@ -33,6 +34,7 @@ public class WorldMapAppState extends AbstractAppState {
     public WorldMap map;
     public Main game;
     public WorldMapUI uiController;
+    public WorldMapGameLogic logic;
     private AnalogListener analogListener = new AnalogListener() {
 
         @Override
@@ -51,7 +53,7 @@ public class WorldMapAppState extends AbstractAppState {
 
             Vector3f loc = game.getCamera().getLocation().clone();
             loc.x = ensureMinMax((int) loc.x, 0, map.width);
-            loc.z = ensureMinMax((int) loc.z, 15, map.height +20);
+            loc.z = ensureMinMax((int) loc.z, 15, map.height + 20);
             game.getCamera().setLocation(loc);
 
 
@@ -93,10 +95,12 @@ public class WorldMapAppState extends AbstractAppState {
         Vector3f pt = r.getContactPoint();
         int x = (int) pt.x;
         int z = (int) pt.z;
-        
-        if(r.getGeometry() == null) return;
+
+        if (r.getGeometry() == null) {
+            return;
+        }
         String name = r.getGeometry().getName();
-        if (r.getGeometry() instanceof TerrainPatch ||  ( name != null && name.equals("reachableArea"))) {
+        if (r.getGeometry() instanceof TerrainPatch || (name != null && name.equals("reachableArea"))) {
 
             if (Main.devMode) {
                 System.err.println(map.worldTiles[x][z]);
@@ -110,10 +114,11 @@ public class WorldMapAppState extends AbstractAppState {
         Spatial spat = (Spatial) r.getGeometry();
         Army a = map.getArmy(spat);
         if (a != null && a != map.selectedArmy) {
-            
-            if(!a.owner.equals(Main.DB.playerFaction) && !Main.devMode)
+
+            if (!a.owner.equals(Main.DB.playerFaction) && !Main.devMode) {
                 return;
-            
+            }
+
             map.selectArmy(a);
             game.playSound("world_select_army");
 
@@ -122,10 +127,11 @@ public class WorldMapAppState extends AbstractAppState {
 
         Settlement s = map.getSettlement(spat);
         if (s != null && s != map.selectedSettlement) {
-            
-            if(!s.owner.equals(Main.DB.playerFaction) && !Main.devMode)
+
+            if (!s.owner.equals(Main.DB.playerFaction) && !Main.devMode) {
                 return;
-            
+            }
+
             map.selectSettlement(s);
             game.playSound("world_select_settlement");
 
@@ -224,8 +230,10 @@ public class WorldMapAppState extends AbstractAppState {
         game.nifty.fromXml("ui" + File.separator + "worldmap"
                 + File.separator + "ui.xml", "start", uiController);
         uiController.game = game;
-       
 
+        logic = new WorldMapGameLogic(game);
+        
+        
         game.getInputManager().addListener(actionListener, "mouse_left");
         game.getInputManager().addListener(actionListener, "mouse_right");
         game.getInputManager().addListener(actionListener, "show_grid");
@@ -250,6 +258,8 @@ public class WorldMapAppState extends AbstractAppState {
         moveCameraTo(Main.DB.hashedSettlements.get(Main.DB.hashedFactions.get(Main.DB.playerFaction).capital));
 
         initialized = true;
+        
+        logic.beginGame();
 
         if (Main.devMode) {
             return;
@@ -257,7 +267,6 @@ public class WorldMapAppState extends AbstractAppState {
 
         game.doScript("playMusic('ambient1')");
     }
-
 
     @Override
     public void update(float tpf) {
@@ -325,4 +334,6 @@ public class WorldMapAppState extends AbstractAppState {
             return 0;
         }
     }
+
+   
 }

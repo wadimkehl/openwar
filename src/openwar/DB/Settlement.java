@@ -310,7 +310,7 @@ public class Settlement extends WorldEntity {
 
     }
 
-    public void newTurn() {
+    public void newRound() {
 
         stats.computeIncome();
         stats.computeOrder();
@@ -319,20 +319,21 @@ public class Settlement extends WorldEntity {
 
         // Update recruitment stats
         for (Building b : buildings.values()) {
+            if(b.recStats.isEmpty()) continue;
+            
             for (String s : b.recStats.keySet()) {
                 RecruitmentStats rs = b.recStats.get(s);
-                GenericBuilding gb = Main.DB.genBuildings.get(b.refName);
-                GenericRecruitmentStats grs = gb.levels.get(b.level).genRecStats.get(s);
-
+                
+                
                 // Skip if maximum recruitable units
-                if (rs.currUnits == grs.maxUnits) {
+                if (rs.currUnits == rs.grs.maxUnits) {
                     continue;
                 }
 
                 // Check if new recruit available
                 if (rs.turnsTillNextUnit-- <= 0) {
                     rs.currUnits++;
-                    rs.turnsTillNextUnit = grs.turnsTillNextUnit;
+                    rs.turnsTillNextUnit = rs.grs.turnsTillNextUnit;
 
                 }
             }
