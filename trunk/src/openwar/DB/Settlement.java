@@ -18,6 +18,8 @@ import com.jme3.scene.control.BillboardControl;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Quad;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import openwar.Main;
 import openwar.world.WorldEntity;
 import openwar.world.WorldMap;
@@ -28,10 +30,66 @@ import openwar.world.WorldMap;
  */
 public class Settlement extends WorldEntity {
 
+    public class Statistics {
+
+        int population, total_income, total_growth;
+        public double base_growth, total_order;
+        public double tax_rate;
+        public HashMap<String, Double> growth_modifier;
+        public HashMap<String, Double> income_modifier;
+        public HashMap<String, Integer> income_adder;
+        public HashMap<String, Double> order_modifier;
+
+        public int computeIncome() {
+            double factor = tax_rate;
+
+            for (Double d : income_modifier.values()) {
+                factor += d;
+            }
+
+            total_income = (int) (population * factor);
+
+            for (Integer i : income_adder.values()) {
+                total_income += i;
+            }
+
+            return total_income;
+        }
+
+        public int computeGrowth() {
+            double factor = base_growth;
+
+            for (Double d : growth_modifier.values()) {
+                factor += d;
+            }
+
+            total_growth = (int) (population * factor);
+            return total_growth;
+        }
+
+        public double computeOrder() {
+            total_order = 1;
+
+            for (Double d : order_modifier.values()) {
+                total_order += d;
+            }
+
+            return total_order;
+        }
+
+        public Statistics() {
+            growth_modifier = new HashMap<String, Double>();
+            income_modifier = new HashMap<String, Double>();
+            income_adder = new HashMap<String, Integer>();
+            order_modifier = new HashMap<String, Double>();
+
+        }
+    };
+    public Statistics stats;
     public String name;
     public String region;
-    public int level, population;
-    public double base_growth;
+    public String culture;
+    public int level;
     public ArrayList<Building> buildings;
     public Spatial billBoard;
     public ArrayList<Building> constructionList;
@@ -46,6 +104,7 @@ public class Settlement extends WorldEntity {
         recruitmentList = new ArrayList<Unit>();
         constructionPool = new ArrayList<Building>();
         recruitmentPool = new ArrayList<Unit>();
+        stats = new Statistics();
 
     }
 
