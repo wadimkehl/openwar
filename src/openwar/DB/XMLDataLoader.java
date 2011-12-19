@@ -512,7 +512,7 @@ public class XMLDataLoader {
                         Building b = new Building();
                         b.refName = building.getAttribute("refname");
                         b.level = Integer.parseInt(building.getAttribute("level"));
-                        se.buildings.add(b);
+                        se.buildings.put(b.refName,b);
                     }
 
                 }

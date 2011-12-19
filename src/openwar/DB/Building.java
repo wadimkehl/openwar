@@ -17,15 +17,16 @@ public class Building {
 
         public String refName;
         public int currUnits, turnsTillNextUnit;
-        
-        public RecruitmentStats(){}
+
+        public RecruitmentStats() {
+        }
     }
     public HashMap<String, RecruitmentStats> recStats;
     public String refName;
     public int level;
 
     public Building() {
-                recStats = new HashMap<String, RecruitmentStats>();
+        recStats = new HashMap<String, RecruitmentStats>();
 
     }
 
@@ -35,13 +36,12 @@ public class Building {
         recStats = new HashMap<String, RecruitmentStats>();
 
     }
-    
-    public void createRecruitmentStats(GenericRecruitmentStats grs)
-    {
+
+    public void createRecruitmentStats(GenericRecruitmentStats grs) {
         RecruitmentStats rs = new RecruitmentStats();
         rs.refName = grs.refName;
         rs.currUnits = grs.maxUnits;
-        rs.turnsTillNextUnit = grs.turnsPerUnit;
+        rs.turnsTillNextUnit = grs.turnsTillNextUnit;
         recStats.put(refName, rs);
     }
 }

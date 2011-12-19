@@ -101,7 +101,7 @@ public class Settlement extends WorldEntity {
     public class Recruitment {
 
         public String refName;
-        public int currentTurn, nrTurns;
+        public int currentTurn, turnsToRecruit;
 
         public Recruitment() {
         }
@@ -111,18 +111,18 @@ public class Settlement extends WorldEntity {
     public String region;
     public String culture;
     public int level;
-    public ArrayList<Building> buildings;
+    public HashMap<String, Building> buildings;
     public Spatial billBoard;
-    public HashMap<String, Construction> constructions;
-    public HashMap<String, ArrayList<Recruitment>> recruitments;
+    public ArrayList<Construction> constructions;
+    public ArrayList<Recruitment> recruitments;
     public HashMap<String, Construction> constructionPool;
     public HashMap<String, Integer> recruitmentPool;
 
     public Settlement() {
         super();
-        buildings = new ArrayList<Building>();
-        constructions = new HashMap<String, Construction>();
-        recruitments = new HashMap<String, ArrayList<Recruitment>>();
+        buildings = new HashMap<String, Building>();
+        constructions = new ArrayList<Construction>();
+        recruitments = new ArrayList<Recruitment>();
         constructionPool = new HashMap<String, Construction>();
         recruitmentPool = new HashMap<String, Integer>();
         stats = new Statistics();
@@ -134,6 +134,19 @@ public class Settlement extends WorldEntity {
         map = m;
 
         owner = Main.DB.hashedRegions.get(region).owner;
+        
+        
+        for (Building b : buildings.values()) {
+                GenericBuilding gb = Main.DB.genBuildings.get(b.refName);
+
+                for (GenericRecruitmentStats grs : gb.levels.get(b.level).genRecStats.values()) {
+                    b.createRecruitmentStats(grs);
+                }
+            }
+
+        calculateConstructionPool();
+        calculateRecruitmentPool();
+        
 
         //Spatial m = Main.DB.genBuildings.get("city").levels.get(level).model.clone();
         model = (Spatial) new Geometry("city", new Box(Vector3f.ZERO, 1.2f, 0.25f, 1.2f));
@@ -200,16 +213,23 @@ public class Settlement extends WorldEntity {
         // Run trough all generic buildings
         for (String s : Main.DB.genBuildings.keySet()) {
 
+            boolean processed = false;
+
             // Check if building is in construction list
-            if (constructions.containsKey(s)) {
+            for (Construction c : constructions) {
+                if (c.refName.equals(s)) {
+                    processed = true;
+                    break;
+                }
+            }
+
+            if (processed) {
                 continue;
             }
 
 
-            boolean processed = false;
-
             // Check if building exists and next level can be built
-            for (Building b : buildings) {
+            for (Building b : buildings.values()) {
                 if (b.refName.equals(s)) {
                     if (b.level < Main.DB.genBuildings.get(s).maxLevel) {
                         boolean next_level = true;
@@ -234,29 +254,32 @@ public class Settlement extends WorldEntity {
             }
 
 
-            // Check if first level of building can be constructed
-            if (!processed) {
-                boolean possible = true;
-
-                for (String n : Main.DB.genBuildings.get(s).requires.keySet()) {
-                    String v = Main.DB.genBuildings.get(s).requires.get(n);
-                    possible &= requirementMet(n, v);
-                }
-
-                for (String n : Main.DB.genBuildings.get(s).levels.get(0).requires.keySet()) {
-                    String v = Main.DB.genBuildings.get(s).levels.get(0).requires.get(n);
-                    possible &= requirementMet(n, v);
-                }
-
-                if (possible) {
-                    Construction cons = new Construction();
-                    cons.refName = s;
-                    cons.level = 0;
-                    cons.currentTurn = 0;
-                    cons.nrTurns = Main.DB.genBuildings.get(s).levels.get(0).turns;
-                    constructionPool.put(s, cons);
-                }
+            if (processed) {
+                continue;
             }
+
+
+            // Check if first level of building can be constructed
+            boolean possible = true;
+            for (String n : Main.DB.genBuildings.get(s).requires.keySet()) {
+                String v = Main.DB.genBuildings.get(s).requires.get(n);
+                possible &= requirementMet(n, v);
+            }
+
+            for (String n : Main.DB.genBuildings.get(s).levels.get(0).requires.keySet()) {
+                String v = Main.DB.genBuildings.get(s).levels.get(0).requires.get(n);
+                possible &= requirementMet(n, v);
+            }
+
+            if (possible) {
+                Construction cons = new Construction();
+                cons.refName = s;
+                cons.level = 0;
+                cons.currentTurn = 0;
+                cons.nrTurns = Main.DB.genBuildings.get(s).levels.get(0).turns;
+                constructionPool.put(s, cons);
+            }
+
         }
 
     }
@@ -264,15 +287,83 @@ public class Settlement extends WorldEntity {
     public void calculateRecruitmentPool() {
 
         recruitmentPool.clear();
-        
-        
-        for(Building b : buildings)
-        {
-            for (RecruitmentStats recStats : b.recStats.values())
-            {
+
+
+        for (Building b : buildings.values()) {
+            for (RecruitmentStats recStats : b.recStats.values()) {
                 recruitmentPool.put(recStats.refName, recStats.currUnits);
             }
         }
+
+
+    }
+    
+
+    public void newTurn() {
+
+        stats.computeIncome();
+        stats.computeOrder();
+        stats.computeGrowth();
+        stats.population += stats.population * stats.total_growth;
+
+        // Update recruitment stats
+        for (Building b : buildings.values()) {
+            for (String s : b.recStats.keySet()) {
+                RecruitmentStats rs = b.recStats.get(s);
+                GenericBuilding gb = Main.DB.genBuildings.get(b.refName);
+                GenericRecruitmentStats grs = gb.levels.get(b.level).genRecStats.get(s);
+
+                // Skip if maximum recruitable units
+                if (rs.currUnits == grs.maxUnits) {
+                    continue;
+                }
+
+                // Check if new recruit available
+                if (rs.turnsTillNextUnit-- <= 0) {
+                    rs.currUnits++;
+                    rs.turnsTillNextUnit = grs.turnsTillNextUnit;
+
+                }
+            }
+        }
+
+
+        // Update current construction
+        if (!constructions.isEmpty()) {
+            Construction c = constructions.get(0);
+            c.currentTurn++;
+            if (c.currentTurn == c.nrTurns) {
+                constructions.remove(0);
+                Building b = new Building(c.refName, c.level);
+
+                GenericBuilding gb = Main.DB.genBuildings.get(c.refName);
+                for (GenericRecruitmentStats grs : gb.levels.get(c.level).genRecStats.values()) {
+                    b.createRecruitmentStats(grs);
+                }
+
+                if (b.level > 0) {
+                    buildings.remove(b.refName);
+                }
+
+                buildings.put(b.refName, b);
+            }
+        }
+
+        // Update current recruitment
+        if (!recruitments.isEmpty()) {
+            Recruitment r = recruitments.get(0);
+            r.currentTurn++;
+            if (r.currentTurn == r.turnsToRecruit) {
+                recruitments.remove(0);
+                Unit u = new Unit(r.refName);
+                units.add(u);
+            }
+
+
+        }
+        calculateConstructionPool();
+        calculateRecruitmentPool();
+
 
 
     }
