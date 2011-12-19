@@ -20,6 +20,7 @@ import com.jme3.scene.shape.Quad;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import openwar.Main;
 import openwar.world.WorldEntity;
 import openwar.world.WorldMap;
@@ -84,7 +85,25 @@ public class Settlement extends WorldEntity {
             order_modifier = new HashMap<String, Double>();
 
         }
-    };
+    }
+
+    public class Construction {
+
+        public String refName;
+        public int currentTurn, nrTurns, level;
+
+        public Construction() {
+        }
+    }
+
+    public class Recruitment {
+
+        public String refName;
+        public int currentTurn, nrTurns;
+
+        public Recruitment() {
+        }
+    }
     public Statistics stats;
     public String name;
     public String region;
@@ -92,18 +111,18 @@ public class Settlement extends WorldEntity {
     public int level;
     public ArrayList<Building> buildings;
     public Spatial billBoard;
-    public ArrayList<Building> constructionList;
-    public ArrayList<Unit> recruitmentList;
-    public ArrayList<Building> constructionPool;
-    public ArrayList<Unit> recruitmentPool;
+    public HashMap<String, Construction> constructions;
+    public HashMap<String, ArrayList<Recruitment>> recruitments;
+    public HashMap<String, Construction> constructionPool;
+    public HashMap<String, ArrayList<Recruitment>> recruitmentPool;
 
     public Settlement() {
         super();
         buildings = new ArrayList<Building>();
-        constructionList = new ArrayList<Building>();
-        recruitmentList = new ArrayList<Unit>();
-        constructionPool = new ArrayList<Building>();
-        recruitmentPool = new ArrayList<Unit>();
+        constructions = new HashMap<String, Construction>();
+        recruitments = new HashMap<String, ArrayList<Recruitment>>();
+        constructionPool = new HashMap<String, Construction>();
+        recruitmentPool = new HashMap<String, ArrayList<Recruitment>>();
         stats = new Statistics();
 
     }
@@ -170,21 +189,41 @@ public class Settlement extends WorldEntity {
 
     }
 
-    public void calculatePools() {
+    public boolean requirementMet(String name, String value) {
+        return true;
+    }
 
+    public void calculateConstructionPool() {
         constructionPool.clear();
-        recruitmentPool.clear();
-
+        // Run trough all generic buildings
         for (String s : Main.DB.genBuildings.keySet()) {
 
+            // Check if building is in construction list
+            if (constructions.containsKey(s)) {
+                continue;
+            }
+
+
             boolean processed = false;
+
+            // Check if building exists and next level can be built
             for (Building b : buildings) {
                 if (b.refName.equals(s)) {
                     if (b.level < Main.DB.genBuildings.get(s).maxLevel) {
-                        String eval = owner + "','" + region + "','" + s + "'," + b.level + 1;
-                        boolean next_level = ((Boolean) map.game.doReturnScript("canBeBuilt('" + eval + ")"));
+                        boolean next_level = true;
+                        int l = b.level + 1;
+                        for (String n : Main.DB.genBuildings.get(s).levels.get(l).requires.keySet()) {
+                            String v = Main.DB.genBuildings.get(s).levels.get(l).requires.get(n);
+                            next_level &= requirementMet(n, v);
+                        }
+
                         if (next_level) {
-                            constructionPool.add(new Building(s, b.level + 1, 0));
+                            Construction cons = new Construction();
+                            cons.refName = s;
+                            cons.level = l;
+                            cons.currentTurn = 0;
+                            cons.nrTurns = Main.DB.genBuildings.get(s).levels.get(l).turns;
+                            constructionPool.put(s, cons);
                         }
                     }
                     processed = true;
@@ -192,23 +231,39 @@ public class Settlement extends WorldEntity {
                 }
             }
 
-            if (!processed) {
-                for (Building b : constructionList) {
-                    if (b.refName.equals(s)) {
-                        processed = true;
-                        break;
-                    }
-                }
-            }
 
+            // Check if first level of building can be constructed
             if (!processed) {
-                String eval = owner + "','" + region + "','" + s + "',0";
-                boolean next_level = ((Boolean) map.game.doReturnScript("canBeBuilt('" + eval + ")"));
-                if (next_level) {
-                    constructionPool.add(new Building(s, 0, 0));
+                boolean possible = true;
+
+                for (String n : Main.DB.genBuildings.get(s).requires.keySet()) {
+                    String v = Main.DB.genBuildings.get(s).requires.get(n);
+                    possible &= requirementMet(n, v);
+                }
+
+                for (String n : Main.DB.genBuildings.get(s).levels.get(0).requires.keySet()) {
+                    String v = Main.DB.genBuildings.get(s).levels.get(0).requires.get(n);
+                    possible &= requirementMet(n, v);
+                }
+
+                if (possible) {
+                    Construction cons = new Construction();
+                    cons.refName = s;
+                    cons.level = 0;
+                    cons.currentTurn = 0;
+                    cons.nrTurns = Main.DB.genBuildings.get(s).levels.get(0).turns;
+                    constructionPool.put(s, cons);
                 }
             }
         }
+
+    }
+
+    public void calculateRecruitmentPool() {
+
+        recruitmentPool.clear();
+
+
     }
 
     @Override
