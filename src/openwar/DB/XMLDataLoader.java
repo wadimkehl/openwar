@@ -247,7 +247,7 @@ public class XMLDataLoader {
             String image = "units" + File.separator + entity.refName + File.separator + d.getAttribute("card");
             desc.card = (Texture2D) assets.loadTexture(image);
             entity.desc = desc;
-            
+
             Main.DB.genUnits.put(entity.refName, entity);
             logger.log(Level.WARNING, "*Unit loaded: {0} *", entity.refName);
         } catch (Exception E) {
@@ -262,6 +262,14 @@ public class XMLDataLoader {
         GenericBuilding entity = new GenericBuilding();
         try {
             Element building = (Element) root.getElementsByTagName("building").item(0);
+            NodeList requires = root.getElementsByTagName("requires");
+
+            for (int i = 0; i < requires.getLength(); i++) {
+                Element l = (Element) requires.item(i);
+                entity.requires.put(l.getAttribute("name"), l.getAttribute("value"));
+
+            }
+
             NodeList levels = root.getElementsByTagName("level");
 
             entity.name = building.getAttribute("name");
@@ -271,8 +279,9 @@ public class XMLDataLoader {
             for (int i = 0; i < entity.maxLevel; i++) {
                 Element l = (Element) levels.item(i);
                 Element d = (Element) l.getElementsByTagName("description").item(0);
-                Element req = (Element) l.getElementsByTagName("requires").item(0);
-                Element prov = (Element) l.getElementsByTagName("provides").item(0);
+                NodeList req = l.getElementsByTagName("requires");
+                NodeList prov = l.getElementsByTagName("provides");
+
 
 
                 String s = "buildings" + File.separator + entity.refName + File.separator;
@@ -283,10 +292,22 @@ public class XMLDataLoader {
                 entity.addLevel(Integer.parseInt(l.getAttribute("level")),
                         l.getAttribute("name"), l.getAttribute("refname"),
                         Integer.parseInt(l.getAttribute("cost")),
-                        Integer.parseInt(l.getAttribute("turns")), desc, null);
-                if (!"".equals(l.getAttribute("model"))) {
-                    entity.levels.get(i).model = assets.loadModel(s + l.getAttribute("model"));
+                        Integer.parseInt(l.getAttribute("turns")), desc);
+
+                for (int j = 0; j < req.getLength(); j++) {
+                    Element el = (Element) req.item(j);
+                    entity.levels.get(i).requires.put(el.getAttribute("name"), el.getAttribute("value"));
+
                 }
+
+                for (int j = 0; j < prov.getLength(); j++) {
+                    Element el = (Element) prov.item(j);
+                    entity.levels.get(i).provides.put(el.getAttribute("name"), el.getAttribute("value"));
+
+                }
+
+
+                
                 Main.DB.genBuildings.put(entity.refName, entity);
 
             }
@@ -457,8 +478,8 @@ public class XMLDataLoader {
                     se.posX = Integer.parseInt(sett.getAttribute("posx"));
                     se.posZ = Integer.parseInt(sett.getAttribute("posz"));
                     se.level = Integer.parseInt(sett.getAttribute("level"));
-                    se.population = Integer.parseInt(sett.getAttribute("population"));
-                    se.base_growth = Double.parseDouble(sett.getAttribute("base_growth"));
+                    se.stats.population = Integer.parseInt(sett.getAttribute("population"));
+                    se.stats.base_growth = Double.parseDouble(sett.getAttribute("base_growth"));
                     se.region = reg.refName;
                     reg.settlement = se;
                     Main.DB.settlements.add(se);

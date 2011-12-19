@@ -3,31 +3,24 @@
 <root>
 
  <building name="Barracks" refname="barracks" maxlevel="2" />
-
+    <requires name="faction" value="roman" />
+    <requires name="faction" value="greek" />
+    
  <level level="0" name="Recruiting tent" refname="low_barracks" cost="500" turns="1" >
     
      <description card="image.jpg" detail="detail.jpg" info="info.txt"  />
-     <requires>
-         <faction refname="roman" />
-         <faction refname="greek" />
-        
-         </requires>
-     <provides>
-         </provides>
-     
- 
+     <requires name="population" value="500" />
+
+      <provides name="unit" value="militia 1 1" />
+         
  </level>
     
     <level level="1" name="Smaller barracks" refname="medium_barracks" cost="2500" turns="2"  >
         
         <description card="image.jpg" detail="detail.jpg" info="info.txt"  />
-        <requires>
-            <faction refname="roman" />
-            <faction refname="greek" />
-            
-        </requires>
-        <provides>
-        </provides>
+        <provides name="unit" value="militia 2 1" />
+        <requires name="population" value="1000" />
+
         
         
     </level>
@@ -35,13 +28,9 @@
     <level level="2" name="Large barracks" refname="high_barracks" cost="5000" turns="3" >
         
         <description card="image.jpg" detail="detail.jpg" info="info.txt"  />
-        <requires>
-            <faction refname="roman" />
-            <faction refname="greek" />
-            
-        </requires>
-        <provides>
-        </provides>
+        <provides name="unit" value="militia 3 1" />
+        <requires name="population" value="1500" />
+
         
         
     </level>

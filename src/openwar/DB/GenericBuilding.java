@@ -8,6 +8,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.texture.Texture;
 import com.jme3.texture.Texture2D;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -22,24 +23,29 @@ public class GenericBuilding {
         public String refName;
         public int cost;
         public int turns;
-        
+        public HashMap<String, String> requires;
+        public HashMap<String, String> provides;
         public Description desc;
-        public Spatial model;
 
         public Level() {
+            requires = new HashMap<String, String>();
+            provides = new HashMap<String, String>();
+
         }
     };
     public String refName;
     public String name;
     public int maxLevel;
     public HashMap<Integer, Level> levels;
-    
+    public HashMap<String, String> requires;
 
     public GenericBuilding() {
         levels = new HashMap<Integer, Level>();
+        requires = new HashMap<String, String>();
+
     }
 
-    public void addLevel(int l, String n, String r, int c, int t, Description d, Spatial m) {
+    public void addLevel(int l, String n, String r, int c, int t, Description d) {
         Level lev = new Level();
         lev.level = l;
         lev.name = n;
@@ -47,7 +53,6 @@ public class GenericBuilding {
         lev.cost = c;
         lev.turns = t;
         lev.desc = d;
-        lev.model = m;
         levels.put(l, lev);
     }
 }
