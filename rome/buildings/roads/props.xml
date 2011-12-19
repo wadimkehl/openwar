@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+
+ <building name="Roads" refname="roads" maxlevel="2" />
+   
+    <level level="0" name="Dirt roads" refname="dirt_roads" cost="500" turns="1"  >
+        
+        <description card="image.jpg" detail="detail.jpg" info="info.txt" />
+        
+        <provides name="roads" value="1" />
+        <provides name="income" value="1.0" />
+                 
+    </level>
+
+    <level level="1" name="Paved roads" refname="paved_roads" cost="2500" turns="4" >
+        
+        <description card="image.jpg" detail="detail.jpg" info="info.txt"  />
+        <provides name="roads" value="2" />
+        <provides name="income" value="1.5" />
+
+
+        
+        
+    </level>
+    <level level="2" name="Cobbled raods" refname="cobbled_roads" cost="5000" turns="6"  >
+        
+        <description card="image.jpg" detail="detail.jpg" info="info.txt"  />
+        <provides name="roads" value="3" />
+        <provides name="income" value="2.0" />
+
+        
+        
+    </level>
+
+
+</root>
