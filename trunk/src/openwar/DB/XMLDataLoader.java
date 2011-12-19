@@ -17,6 +17,7 @@ import com.jme3.texture.Image.Format;
 import com.jme3.texture.Texture2D;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -262,7 +263,7 @@ public class XMLDataLoader {
         GenericBuilding entity = new GenericBuilding();
         try {
             Element building = (Element) root.getElementsByTagName("building").item(0);
-            NodeList requires = root.getElementsByTagName("requires");
+            NodeList requires = building.getElementsByTagName("requires");
 
             for (int i = 0; i < requires.getLength(); i++) {
                 Element l = (Element) requires.item(i);
@@ -302,15 +303,22 @@ public class XMLDataLoader {
 
                 for (int j = 0; j < prov.getLength(); j++) {
                     Element el = (Element) prov.item(j);
-                    entity.levels.get(i).provides.put(el.getAttribute("name"), el.getAttribute("value"));
+
+                    if (entity.levels.get(i).provides.get(el.getAttribute("name")) == null) {
+                        ArrayList<String> list = new ArrayList<String>();
+                        entity.levels.get(i).provides.put(el.getAttribute("name"), list);
+                    }
+
+                    entity.levels.get(i).provides.get(el.getAttribute("name")).add(el.getAttribute("value"));
 
                 }
 
 
-                
-                Main.DB.genBuildings.put(entity.refName, entity);
 
             }
+
+            entity.createRecruitmentStats();
+            Main.DB.genBuildings.put(entity.refName, entity);
             logger.log(Level.WARNING, "*Building loaded: {0} *", entity.refName);
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Building CANNOT be loaded: {0}", entity.refName);

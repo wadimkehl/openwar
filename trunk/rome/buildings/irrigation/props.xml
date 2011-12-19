@@ -2,9 +2,9 @@
 
 <root>
 
- <building name="Irrigation" refname="irrigation" maxlevel="2" />
-    
-    <requires name="faction" value="roman greek" />
+    <building name="Irrigation" refname="irrigation" maxlevel="2" > 
+        <requires name="faction" value="roman greek" />
+    </building>
       
     
     <level level="0" name="Low irrigation" refname="low_irrigation" cost="500" turns="1"  >

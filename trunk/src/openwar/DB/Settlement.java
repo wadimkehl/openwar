@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import openwar.DB.Building.RecruitmentStats;
+import openwar.DB.GenericBuilding.GenericRecruitmentStats;
 import openwar.Main;
 import openwar.world.WorldEntity;
 import openwar.world.WorldMap;
@@ -114,7 +116,7 @@ public class Settlement extends WorldEntity {
     public HashMap<String, Construction> constructions;
     public HashMap<String, ArrayList<Recruitment>> recruitments;
     public HashMap<String, Construction> constructionPool;
-    public HashMap<String, ArrayList<Recruitment>> recruitmentPool;
+    public HashMap<String, Integer> recruitmentPool;
 
     public Settlement() {
         super();
@@ -122,7 +124,7 @@ public class Settlement extends WorldEntity {
         constructions = new HashMap<String, Construction>();
         recruitments = new HashMap<String, ArrayList<Recruitment>>();
         constructionPool = new HashMap<String, Construction>();
-        recruitmentPool = new HashMap<String, ArrayList<Recruitment>>();
+        recruitmentPool = new HashMap<String, Integer>();
         stats = new Statistics();
 
     }
@@ -262,6 +264,15 @@ public class Settlement extends WorldEntity {
     public void calculateRecruitmentPool() {
 
         recruitmentPool.clear();
+        
+        
+        for(Building b : buildings)
+        {
+            for (RecruitmentStats recStats : b.recStats.values())
+            {
+                recruitmentPool.put(recStats.refName, recStats.currUnits);
+            }
+        }
 
 
     }
