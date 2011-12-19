@@ -244,18 +244,7 @@ public class WorldMap {
                 continue;
             }
 
-            r.settlement.createData(this);
-
-            for (Building b : r.settlement.buildings) {
-                GenericBuilding gb = Main.DB.genBuildings.get(b.refName);
-
-                for (GenericRecruitmentStats grs : gb.levels.get(b.level).genRecStats.values()) {
-                    b.createRecruitmentStats(grs);
-                }
-            }
-
-            r.settlement.calculateConstructionPool();
-            r.settlement.calculateRecruitmentPool();
+            r.settlement.createData(this);         
 
         }
 

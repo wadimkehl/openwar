@@ -19,6 +19,7 @@ import de.lessvoid.nifty.render.NiftyImage;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Properties;
 import openwar.DB.Building;
 import openwar.DB.GenericBuilding;
@@ -131,7 +132,7 @@ public class WorldMapUI implements ScreenController {
         }
     }
 
-    public void switchToBuildingsLayer(ArrayList<Building> list) {
+    public void switchToBuildingsLayer(HashMap<String,Building> list) {
         game.showUIElement("front_building_layer", true);
         game.showUIElement("front_unit_layer", false);
 
@@ -139,10 +140,12 @@ public class WorldMapUI implements ScreenController {
             game.worldMapState.uiController.setUnitImage(i, null);
         }
 
-        for (int i = 0; i < list.size(); i++) {
-            GenericBuilding b = Main.DB.genBuildings.get(list.get(i).refName);
-            Level l = b.levels.get(list.get(i).level);
+        int i=0;
+        for (Building b : list.values()) {
+            GenericBuilding gb = Main.DB.genBuildings.get(b.refName);
+            Level l = gb.levels.get(b.level);
             game.worldMapState.uiController.setBuildingImage(i, l.desc.card);
+            i++;
         }
     }
 

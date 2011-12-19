@@ -111,7 +111,7 @@ public class WorldMapAppState extends AbstractAppState {
         Army a = map.getArmy(spat);
         if (a != null && a != map.selectedArmy) {
             
-            if(!a.owner.equals(Main.DB.playerFaction))
+            if(!a.owner.equals(Main.DB.playerFaction) && !Main.devMode)
                 return;
             
             map.selectArmy(a);
@@ -123,7 +123,7 @@ public class WorldMapAppState extends AbstractAppState {
         Settlement s = map.getSettlement(spat);
         if (s != null && s != map.selectedSettlement) {
             
-            if(!s.owner.equals(Main.DB.playerFaction))
+            if(!s.owner.equals(Main.DB.playerFaction) && !Main.devMode)
                 return;
             
             map.selectSettlement(s);
