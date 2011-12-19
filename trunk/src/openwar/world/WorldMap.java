@@ -504,6 +504,7 @@ public class WorldMap {
         deselectAll();
         selectedSettlement = s;
 
+        game.worldMapState.uiController.selectSettlement(s);
         game.worldMapState.uiController.switchToBuildingsLayer(s.buildings);
         game.showUIElement("settlement_layer", true);
 

@@ -24,6 +24,8 @@ import java.util.Properties;
 import openwar.DB.Building;
 import openwar.DB.GenericBuilding;
 import openwar.DB.GenericBuilding.Level;
+import openwar.DB.Settlement;
+import openwar.DB.Settlement.Construction;
 import openwar.DB.Unit;
 import openwar.Main;
 
@@ -38,8 +40,11 @@ public class WorldMapUI implements ScreenController {
     public Main game;
     public Element unitImage[] = new Element[20];
     public Element buildingImage[] = new Element[12];
+    public Element constructionImage[] = new Element[12];
+    public Element constructionListImage[] = new Element[6];
     public ArrayList<Unit> selectedUnits = new ArrayList<Unit>();
     public WorldEntity selectedFrom = null;
+    public Settlement selectedSettlement;
     public int lastIndex;
     de.lessvoid.nifty.effects.impl.Hint h = new de.lessvoid.nifty.effects.impl.Hint();
     Properties p = new Properties();
@@ -64,7 +69,12 @@ public class WorldMapUI implements ScreenController {
         for (int i = 0; i < 12; i++) {
             buildingImage[i] = nifty.getCurrentScreen().findElementByName("building" + i);
         }
-
+        for (int i = 0; i < 12; i++) {
+            constructionImage[i] = nifty.getCurrentScreen().findElementByName("construction" + i);
+        }
+        for (int i = 0; i < 6; i++) {
+            constructionListImage[i] = nifty.getCurrentScreen().findElementByName("constructionList" + i);
+        }
 
     }
 
@@ -87,8 +97,14 @@ public class WorldMapUI implements ScreenController {
         for (int i = 0; i < 12; i++) {
             setBuildingImage(i, null);
         }
-
+        for (int i = 0; i < 12; i++) {
+            setConstructionImage(i, null);
+        }
+        for (int i = 0; i < 6; i++) {
+            setConstructionListImage(i, null);
+        }
         game.showUIElement("settlement_layer", false);
+        selectedSettlement = null;
 
     }
 
@@ -132,7 +148,7 @@ public class WorldMapUI implements ScreenController {
         }
     }
 
-    public void switchToBuildingsLayer(HashMap<String,Building> list) {
+    public void switchToBuildingsLayer(HashMap<String, Building> list) {
         game.showUIElement("front_building_layer", true);
         game.showUIElement("front_unit_layer", false);
 
@@ -140,13 +156,89 @@ public class WorldMapUI implements ScreenController {
             game.worldMapState.uiController.setUnitImage(i, null);
         }
 
-        int i=0;
+        int i = 0;
         for (Building b : list.values()) {
             GenericBuilding gb = Main.DB.genBuildings.get(b.refName);
             Level l = gb.levels.get(b.level);
             game.worldMapState.uiController.setBuildingImage(i, l.desc.card);
             i++;
         }
+    }
+
+    public void selectSettlement(Settlement s) {
+        selectedSettlement = s;
+        
+        for (int i = 0; i < 12; i++) {
+            setConstructionImage(i, null);
+        }
+        for (int i = 0; i < 6; i++) {
+            setConstructionListImage(i, null);
+        }
+        
+        int i = 0;
+        for (Construction c : s.constructionPool.values()) {
+            GenericBuilding gb = Main.DB.genBuildings.get(c.refName);
+            Level l = gb.levels.get(c.level);
+            setConstructionImage(i, l.desc.card);
+            i++;
+        }
+        i=0;
+        for (Construction c : s.constructions) {
+            GenericBuilding gb = Main.DB.genBuildings.get(c.refName);
+            Level l = gb.levels.get(c.level);
+            setConstructionListImage(i, l.desc.card);
+            i++;
+        }
+    }
+
+    public void onBuildingClick(String ind, String b) {
+
+        int index = Integer.parseInt(ind);
+        int button = Integer.parseInt(b);
+        if (button < 1) {
+            return;
+        }
+    }
+
+    public void onConstructionClick(String ind, String b) {
+
+        int index = Integer.parseInt(ind);
+        int button = Integer.parseInt(b);
+        
+        int i = 0;
+        for (Construction c : selectedSettlement.constructionPool.values()) {
+            
+            if(i == index)
+            {
+                if(button==0) selectedSettlement.startConstruction(c);
+                break;
+            }
+            
+            i++;
+        }
+        
+        selectSettlement(selectedSettlement);
+
+    }
+
+    public void onConstructionListClick(String ind, String b) {
+
+        int index = Integer.parseInt(ind);
+        int button = Integer.parseInt(b);
+        
+        int i = 0;
+        for (Construction c : selectedSettlement.constructions) {
+            
+            if(i == index)
+            {
+                if(button==0) selectedSettlement.abortConstruction(c);
+                break;
+            }
+            
+            i++;
+        }
+        
+        selectSettlement(selectedSettlement);
     }
 
     public void onUnitClick(String ind, String b) {
@@ -243,6 +335,26 @@ public class WorldMapUI implements ScreenController {
             buildingImage[number].getRenderer(ImageRenderer.class).setImage(null);
         } else {
             buildingImage[number].getRenderer(ImageRenderer.class).setImage(
+                    new NiftyImage(nifty.getRenderEngine(), new RenderImageJme(t)));
+        }
+
+    }
+
+    public void setConstructionImage(int number, Texture2D t) {
+        if (t == null) {
+            constructionImage[number].getRenderer(ImageRenderer.class).setImage(null);
+        } else {
+            constructionImage[number].getRenderer(ImageRenderer.class).setImage(
+                    new NiftyImage(nifty.getRenderEngine(), new RenderImageJme(t)));
+        }
+
+    }
+
+    public void setConstructionListImage(int number, Texture2D t) {
+        if (t == null) {
+            constructionListImage[number].getRenderer(ImageRenderer.class).setImage(null);
+        } else {
+            constructionListImage[number].getRenderer(ImageRenderer.class).setImage(
                     new NiftyImage(nifty.getRenderEngine(), new RenderImageJme(t)));
         }
 

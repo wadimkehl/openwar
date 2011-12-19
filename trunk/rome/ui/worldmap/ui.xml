@@ -326,19 +326,113 @@
             <panel height="75%" childLayout="horizontal">
                 <panel height="*" width="50%" />
                     
+                <panel height="*" width="*" childLayout="overlay">
+                    <image filename="ui/worldmap/temp.tga"  width="*" height="*" />       
 
-                <panel height="*" width="*" childLayout="horizontal">
+                    <panel height="*" width="*" childLayout="vertical">
+                        
+                        <panel height="20%" width="*" />
+                        
+                        <panel height="15%" width="*" childLayout="horizontal">
+                            
+                            <image id="construction0" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                <interact onPrimaryClick="onConstructionClick(0,0)" onSecondaryClick="onConstructionClick(0,1)" />                                     
+                            </image>
+                            <panel height="*" width="0.35%"/>
+                            <image id="construction1" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                <interact onPrimaryClick="onConstructionClick(1,0)" onSecondaryClick="onConstructionClick(1,1)" />                                     
+                            </image>
+                            <panel height="*" width="0.35%"/>
+                            <image id="construction2" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                <interact onPrimaryClick="onConstructionClick(2,0)" onSecondaryClick="onConstructionClick(2,1)" />                                     
+                            </image>
+                            <panel height="*" width="0.35%"/>
+                            <image id="construction3" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                <interact onPrimaryClick="onConstructionClick(3,0)" onSecondaryClick="onConstructionClick(3,1)" />                                     
+                            </image>
+                            <panel height="*" width="0.35%"/>
+                            <image id="construction4" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                <interact onPrimaryClick="onConstructionClick(4,0)" onSecondaryClick="onConstructionClick(4,1)" />                                     
+                            </image>
+                            <panel height="*" width="0.35%"/>
+                            <image id="construction5" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                <interact onPrimaryClick="onConstructionClick(5,0)" onSecondaryClick="onConstructionClick(5,1)" />                                     
+                            </image>
+                            
+                        </panel>
+                        
+                        <panel height="0.35%" width="*" />
+
+                        <panel height="15%" width="*" childLayout="horizontal" >
+                            
+                            <image id="construction6" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                <interact onPrimaryClick="onConstructionClick(6,0)" onSecondaryClick="onConstructionClick(6,1)" />                                     
+                            </image>
+                            <panel height="*" width="0.35%"/>
+                            <image id="construction7" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                <interact onPrimaryClick="onConstructionClick(7,0)" onSecondaryClick="onConstructionClick(7,1)" />                                     
+                            </image>
+                            <panel height="*" width="0.35%"/>
+                            <image id="construction8" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                <interact onPrimaryClick="onConstructionClick(8,0)" onSecondaryClick="onConstructionClick(8,1)" />                                     
+                            </image>
+                            <panel height="*" width="0.35%"/>
+                            <image id="construction9" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                <interact onPrimaryClick="onConstructionClick(9,0)" onSecondaryClick="onConstructionClick(9,1)" />                                     
+                            </image>
+                            <panel height="*" width="0.35%"/>
+                            <image id="construction10" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                <interact onPrimaryClick="onConstructionClick(10,0)" onSecondaryClick="onConstructionClick(10,1)" />                                     
+                            </image>
+                            <panel height="*" width="0.35%"/>
+                            <image id="construction11" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                <interact onPrimaryClick="onConstructionClick(11,0)" onSecondaryClick="onConstructionClick(11,1)" />                                     
+                            </image>
+                            
+                        </panel>
+
+                        <panel height="10%" width="*" />
+                        
+                        <panel height="15%" width="*" childLayout="horizontal">
+                            
+                            <image id="constructionList0" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                <interact onPrimaryClick="onConstructionListClick(0,0)" onSecondaryClick="onConstructionListClick(0,1)" />                                     
+                            </image>
+                            <panel height="*" width="0.35%"/>
+                            <image id="constructionList1" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                <interact onPrimaryClick="onConstructionListClick(1,0)" onSecondaryClick="onConstructionListClick(1,1)" />                                     
+                            </image>
+                            <panel height="*" width="0.35%"/>
+                            <image id="constructionList2" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                <interact onPrimaryClick="onConstructionListClick(2,0)" onSecondaryClick="onConstructionListClick(2,1)" />                                     
+                            </image>
+                            <panel height="*" width="0.35%"/>
+                            <image id="constructionList3" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                <interact onPrimaryClick="onConstructionListClick(3,0)" onSecondaryClick="onConstructionListClick(3,1)" />                                     
+                            </image>
+                            <panel height="*" width="0.35%"/>
+                            <image id="constructionList4" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                <interact onPrimaryClick="onConstructionListClick(4,0)" onSecondaryClick="onConstructionListClick(4,1)" />                                     
+                            </image>
+                            <panel height="*" width="0.35%"/>
+                            <image id="constructionList5" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                <interact onPrimaryClick="onConstructionListClick(5,0)" onSecondaryClick="onConstructionListClick(5,1)" />                                     
+                            </image>
+                            
+                        </panel>
                     <!-- <image filename="ui/worldmap/menue.tga" imageMode="subImage:106,152,182,190," width="*" height="*" />  -->       
-                    <image filename="ui/worldmap/temp.tga" imageMode="resize:55,105,23,55,10,163,10,80,23,105,55,55" width="*" height="*" />       
+                    <!-- <image filename="ui/worldmap/temp.tga" imageMode="resize:55,105,23,55,10,163,10,80,23,105,55,55" width="*" height="*" /> -->
 
+                    </panel>
                 </panel>
+
             </panel>           
         </layer>
         
-         <layer id="minimap_layer"   childLayout="vertical"  >  
+        <layer id="minimap_layer"   childLayout="vertical"  >  
             <panel height="75%" width="*"  />
             <panel height="25%" width="*" childLayout="horizontal"> 
-                     <interact onMouseOver="onMinimapLayerHover()" />
+                <interact onMouseOver="onMinimapLayerHover()" />
 
                 <!-- left part of bottom ui -->
                 <panel height="*" width="25%" childLayout="horizontal">

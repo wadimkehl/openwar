@@ -134,19 +134,19 @@ public class Settlement extends WorldEntity {
         map = m;
 
         owner = Main.DB.hashedRegions.get(region).owner;
-        
-        
-        for (Building b : buildings.values()) {
-                GenericBuilding gb = Main.DB.genBuildings.get(b.refName);
 
-                for (GenericRecruitmentStats grs : gb.levels.get(b.level).genRecStats.values()) {
-                    b.createRecruitmentStats(grs);
-                }
+
+        for (Building b : buildings.values()) {
+            GenericBuilding gb = Main.DB.genBuildings.get(b.refName);
+
+            for (GenericRecruitmentStats grs : gb.levels.get(b.level).genRecStats.values()) {
+                b.createRecruitmentStats(grs);
             }
+        }
 
         calculateConstructionPool();
         calculateRecruitmentPool();
-        
+
 
         //Spatial m = Main.DB.genBuildings.get("city").levels.get(level).model.clone();
         model = (Spatial) new Geometry("city", new Box(Vector3f.ZERO, 1.2f, 0.25f, 1.2f));
@@ -297,7 +297,18 @@ public class Settlement extends WorldEntity {
 
 
     }
-    
+
+    public void startConstruction(Construction c) {
+        constructions.add(c);
+        constructionPool.remove(c.refName);
+        
+    }
+
+    public void abortConstruction(Construction c) {
+        constructions.remove(c);
+        constructionPool.put(c.refName, c);
+
+    }
 
     public void newTurn() {
 
