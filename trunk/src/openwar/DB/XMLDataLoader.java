@@ -277,7 +277,7 @@ public class XMLDataLoader {
             entity.refName = building.getAttribute("refname");
             entity.maxLevel = Integer.parseInt(building.getAttribute("maxlevel"));
 
-            for (int i = 0; i < entity.maxLevel; i++) {
+            for (int i = 0; i <= entity.maxLevel; i++) {
                 Element l = (Element) levels.item(i);
                 Element d = (Element) l.getElementsByTagName("description").item(0);
                 NodeList req = l.getElementsByTagName("requires");
@@ -564,6 +564,10 @@ public class XMLDataLoader {
 
 
             }
+            
+            // Make sure that the player faction is the first in the list
+            Main.DB.factions.remove(Main.DB.hashedFactions.get(Main.DB.playerFaction));
+            Main.DB.factions.add(0, Main.DB.hashedFactions.get(Main.DB.playerFaction));
 
             c = decorations.getElementsByTagName("decoration");
             for (int i = 0; i < c.getLength(); i++) {
