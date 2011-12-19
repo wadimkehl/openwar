@@ -39,8 +39,12 @@ import java.util.Stack;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import openwar.DB.Building;
+import openwar.DB.Building.RecruitmentStats;
 import openwar.DB.Climate;
 import openwar.DB.Faction;
+import openwar.DB.GenericBuilding;
+import openwar.DB.GenericBuilding.GenericRecruitmentStats;
 import openwar.DB.GenericTile;
 import openwar.DB.Region;
 import openwar.DB.Settlement;
@@ -215,10 +219,14 @@ public class WorldMap {
                     worldTiles[i][height - 1 - j] = new WorldTile(i, height - 1 - j, type, tile.cost, region.refName, climate.refName);
                 } else {
                     String cause;
-                    if (region==null) cause = "region";
-                    else if (climate==null) cause = "climate";
-                    else cause = "tile";
-                    logger.log(Level.SEVERE, "Error: " +cause+ " at ({0},{1}) ", new Object[]{i, height - 1 - j});
+                    if (region == null) {
+                        cause = "region";
+                    } else if (climate == null) {
+                        cause = "climate";
+                    } else {
+                        cause = "tile";
+                    }
+                    logger.log(Level.SEVERE, "Error: " + cause + " at ({0},{1}) ", new Object[]{i, height - 1 - j});
                     return false;
                 }
             }
@@ -238,6 +246,17 @@ public class WorldMap {
 
             r.settlement.createData(this);
 
+            for (Building b : r.settlement.buildings) {
+                GenericBuilding gb = Main.DB.genBuildings.get(b.refName);
+
+                for (GenericRecruitmentStats grs : gb.levels.get(b.level).genRecStats.values()) {
+                    b.createRecruitmentStats(grs);
+                }
+            }
+
+            r.settlement.calculateConstructionPool();
+            r.settlement.calculateRecruitmentPool();
+
         }
 
         for (Faction f : Main.DB.factions) {
@@ -245,9 +264,8 @@ public class WorldMap {
                 a.createData(this);
             }
         }
-        
-        for(WorldDecoration d : Main.DB.worldDecorations)
-        {
+
+        for (WorldDecoration d : Main.DB.worldDecorations) {
             d.createData(this);
         }
 
@@ -496,7 +514,7 @@ public class WorldMap {
 
         deselectAll();
         selectedSettlement = s;
-        
+
         game.worldMapState.uiController.switchToBuildingsLayer(s.buildings);
         game.showUIElement("settlement_layer", true);
 

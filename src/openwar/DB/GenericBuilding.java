@@ -4,17 +4,23 @@
  */
 package openwar.DB;
 
-import com.jme3.scene.Spatial;
-import com.jme3.texture.Texture;
-import com.jme3.texture.Texture2D;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
  * @author kehl
  */
 public class GenericBuilding {
+
+    public class GenericRecruitmentStats {
+
+        public String refName;
+        public int maxUnits, turnsPerUnit, nrTurns;
+
+        public GenericRecruitmentStats() {
+        }
+    }
 
     public class Level {
 
@@ -24,12 +30,14 @@ public class GenericBuilding {
         public int cost;
         public int turns;
         public HashMap<String, String> requires;
-        public HashMap<String, String> provides;
+        public HashMap<String, ArrayList<String>> provides;
+        public HashMap<String, GenericRecruitmentStats> genRecStats;
         public Description desc;
 
         public Level() {
             requires = new HashMap<String, String>();
-            provides = new HashMap<String, String>();
+            provides = new HashMap<String, ArrayList<String>>();
+            genRecStats = new HashMap<String, GenericRecruitmentStats>();
 
         }
     };
@@ -54,5 +62,28 @@ public class GenericBuilding {
         lev.turns = t;
         lev.desc = d;
         levels.put(l, lev);
+    }
+
+    public void createRecruitmentStats() {
+        for (Level l : levels.values()) {
+
+            for (String s : l.provides.keySet()) {
+                if (s.equals("unit")) {
+                    ArrayList<String> list = l.provides.get(s);
+                    for (String unit : list) {
+                        String[] tokens = unit.split(" ");
+                        GenericRecruitmentStats rec = new GenericRecruitmentStats();
+                        rec.refName = tokens[0];
+                        rec.maxUnits = Integer.parseInt(tokens[1]);
+                        rec.turnsPerUnit = Integer.parseInt(tokens[2]);
+                        rec.nrTurns = Integer.parseInt(tokens[3]);
+
+                        l.genRecStats.put(rec.refName, rec);
+                    }
+                }
+
+            }
+
+        }
     }
 }
