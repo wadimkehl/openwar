@@ -168,14 +168,7 @@ public class Main extends Application {
         guiViewPort.addProcessor(niftyDisplay);
 
 
-        if (devMode) {
-            this.stateManager.attach(debugState);
-        }
-
-        if (debugUI) {
-            nifty.setDebugOptionPanelColors(true);
-        }
-
+       
 
         this.stateManager.attach(audioState);
         this.stateManager.attach(bulletState);
@@ -183,6 +176,15 @@ public class Main extends Application {
         this.stateManager.attach(screenshotState);
 
 
+         if (devMode) {
+            this.stateManager.attach(debugState);
+        }
+
+        if (debugUI) {
+            nifty.setDebugOptionPanelColors(true);
+        }
+
+        
         camera = new FlyByCamera(cam);
         camera.registerWithInput(inputManager);
         camera.setMoveSpeed(35);

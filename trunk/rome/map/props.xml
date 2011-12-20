@@ -4,10 +4,13 @@
 
     <textures tiletextures="12">      
     
-        <base name="regions" texture="regions.png" flipY="true"/>
         <base name="heights" texture="heights.png" flipY="true" />
-        <base name="climates" texture="climates.png" flipY="true" />
-        <base name="types" texture="types.png" flipY="true" />    
+        
+        <base name="types" texture="types.png" flipY="true" flip_byte_order="true" />   
+        <base name="regions" texture="regions.png" flipY="true" flip_byte_order="true" />
+        <base name="climates" texture="climates.png" flipY="true" flip_byte_order="false" />
+
+
         
         <tile id="0" texture="0.tga" scale="8.0"/>
         <tile id="1" texture="1.tga" scale="8.0"/>
@@ -73,7 +76,7 @@
         </faction>
         
         <faction refname="greek" gold="1000" capital="syracuse">
-                   </faction>
+        </faction>
         
     </factions>
     
@@ -103,11 +106,11 @@
             <dock posx="0" posz="0" azimuth="180" />
         </region>
 
-        </regions>
+    </regions>
     
     
     <decorations>
-            </decorations>
+    </decorations>
 
     
 

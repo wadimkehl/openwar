@@ -99,16 +99,17 @@ public class XMLDataLoader {
                 file = l.getAttribute("file");
                 mode = l.getAttribute("mode");
 
-                entity = new AudioNode(assets, "music" + File.separator + file, true,true);
+                entity = new AudioNode(assets, "music" + File.separator + file, true, true);
                 Main.DB.musicNodes.put(refname, entity);
 
-                
-                if("menu".equals(mode))
-                game.audioState.menu.add(refname);
-                else if("loading".equals(mode))
-                game.audioState.loading.add(refname);
-                else if("idle".equals(mode))
-                game.audioState.worldMapIdle.add(refname);
+
+                if ("menu".equals(mode)) {
+                    game.audioState.menu.add(refname);
+                } else if ("loading".equals(mode)) {
+                    game.audioState.loading.add(refname);
+                } else if ("idle".equals(mode)) {
+                    game.audioState.worldMapIdle.add(refname);
+                }
                 logger.log(Level.WARNING, "*Music loaded: {0} *", refname);
 
             }
@@ -411,10 +412,15 @@ public class XMLDataLoader {
                 String path = "map" + File.separator + l.getAttribute("texture");
                 if ("regions".equals(l.getAttribute("name"))) {
                     Main.DB.regionsTex = assets.loadTexture(new TextureKey(path, Boolean.parseBoolean(l.getAttribute("flipY"))));
+                    Main.DB.flipOrderRegions = Boolean.parseBoolean(l.getAttribute("flip_byte_order"));
                 } else if ("types".equals(l.getAttribute("name"))) {
                     Main.DB.typesTex = assets.loadTexture(new TextureKey(path, Boolean.parseBoolean(l.getAttribute("flipY"))));
+                    Main.DB.flipOrderTypes = Boolean.parseBoolean(l.getAttribute("flip_byte_order"));
+
                 } else if ("climates".equals(l.getAttribute("name"))) {
                     Main.DB.climatesTex = assets.loadTexture(new TextureKey(path, Boolean.parseBoolean(l.getAttribute("flipY"))));
+                    Main.DB.flipOrderClimates = Boolean.parseBoolean(l.getAttribute("flip_byte_order"));
+
                 } else if ("heights".equals(l.getAttribute("name"))) {
                     Main.DB.heightmapTex = assets.loadTexture(new TextureKey(path, Boolean.parseBoolean(l.getAttribute("flipY"))));
 

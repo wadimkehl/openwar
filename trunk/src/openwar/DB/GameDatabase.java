@@ -23,6 +23,7 @@ public class GameDatabase {
     public HashMap<String, GenericBuilding> genBuildings;
     public HashMap<Integer, GenericTile> genTiles;
     public Texture heightmapTex, regionsTex, climatesTex, typesTex;
+    public boolean flipOrderClimates,flipOrderTypes,flipOrderRegions;
     public HashMap<String, Spatial> decorations;
     public ArrayList<WorldDecoration> worldDecorations;
     public HashMap<String, AudioNode> musicNodes;
@@ -40,7 +41,7 @@ public class GameDatabase {
     public HashMap<String, Faction> hashedFactions;
     public String playerFaction = "roman";
     public int currentRound = 0;
-    public String currentTurn = "roman";
+    public String currentTurn;
     public Vector3f heightmapParams, sun_color, sun_direction, water_color;
     public boolean hasWater;
     public float waterHeight;

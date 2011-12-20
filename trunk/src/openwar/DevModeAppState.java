@@ -62,12 +62,18 @@ public class DevModeAppState extends AbstractAppState {
 
                     if ("types".equals(currTexture)) {
                         game.worldMapState.map.setWorldTile(x, z, currType);
+                        updateTexture(currTexture);
                     } else if ("regions".equals(currTexture)) {
                         game.worldMapState.map.worldTiles[x][z].region = currRegion;
+                        updateTexture(currTexture);
+                        matTerrainDev.setTexture("ColorMap", Main.DB.regionsTex);
+
                     } else if ("climates".equals(currTexture)) {
                         game.worldMapState.map.worldTiles[x][z].climate = currClimate;
+                        updateTexture(currTexture);
+                        matTerrainDev.setTexture("ColorMap", Main.DB.climatesTex);
+
                     }
-                    updateTexture(currTexture);
 
                 }
 
@@ -207,6 +213,9 @@ public class DevModeAppState extends AbstractAppState {
         currClimate = Main.DB.climates.get(0).refName;
 
         initialized = true;
+        
+        updateTexture("climates");
+        updateTexture("regions");
 
         // Create dev terrain material to display ground types, regions, climates etc.
         matTerrainDev = new Material(game.getAssetManager(), "materials/Unshaded.j3md");
@@ -231,6 +240,10 @@ public class DevModeAppState extends AbstractAppState {
     }
 
     public void dumpImage() {
+
+        if (!drawing) {
+            return;
+        }
 
         BufferedImage im = new BufferedImage(game.worldMapState.map.width,
                 game.worldMapState.map.height, BufferedImage.TYPE_INT_RGB);
@@ -268,7 +281,7 @@ public class DevModeAppState extends AbstractAppState {
             }
         }
         try {
-            ImageIO.write(im, "png", new File(currTexture + "_dump.png"));
+            ImageIO.write(im, "png", new File(currTexture + ".png"));
             logger.log(Level.WARNING, "{0} image dumped", currTexture);
 
         } catch (Exception ex) {
@@ -306,10 +319,8 @@ public class DevModeAppState extends AbstractAppState {
             }
 
             Main.DB.regionsTex = new Texture2D(new Image(Image.Format.RGB8, w, h, buf0));
-            matTerrainDev.setTexture("ColorMap", Main.DB.regionsTex);
 
-        }
-        else if ("climates".equals(mode)) {
+        } else if ("climates".equals(mode)) {
             int w = game.worldMapState.map.width;
             int h = game.worldMapState.map.height;
             int size = w * h * 3;
@@ -329,7 +340,6 @@ public class DevModeAppState extends AbstractAppState {
             }
 
             Main.DB.climatesTex = new Texture2D(new Image(Image.Format.RGB8, w, h, buf0));
-            matTerrainDev.setTexture("ColorMap", Main.DB.climatesTex);
 
         }
     }
