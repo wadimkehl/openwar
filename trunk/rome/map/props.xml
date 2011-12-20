@@ -8,7 +8,7 @@
         
         <base name="types" texture="types.png" flipY="true" flip_byte_order="true" />   
         <base name="regions" texture="regions.png" flipY="true" flip_byte_order="true" />
-        <base name="climates" texture="climates.png" flipY="true" flip_byte_order="false" />
+        <base name="climates" texture="climates.png" flipY="true" flip_byte_order="true" />
 
 
         
@@ -55,8 +55,7 @@
     
     <climates>
         <climate name="Arid" refname="arid" color="255 0 0"/>    
-        <climate name="Humid" refname="humid" color="0 255 0" />
-        <climate name="Tundra" refname="tundra" color="0 0 255"/>
+        <climate name="Mediterranean" refname="mediterranean" color="0 0 255"/>
         <climate name="Maritim" refname="maritim" color="0 0 0"/>    
     </climates>
     
@@ -95,8 +94,42 @@
             <dock posx="0" posz="0" azimuth="180" />
         </region>
         
+        <region name="Arretium" refname="arretium" color="255 255 0" owner="roman" >
+            <settlement name="Arretium" posx="24" posz="8" level="0" population="1000" base_growth="2.0" culture="roman_culture">          
+            </settlement>
+            <dock posx="0" posz="0" azimuth="180" />
+        </region>
+        
+        <region name="Tarentum" refname="tarentum" color="0 255 255" owner="roman" >
+            <settlement name="Tarentum" posx="52" posz="27" level="0" population="1000" base_growth="2.0" culture="roman_culture">          
+            </settlement>
+            <dock posx="0" posz="0" azimuth="180" />
+        </region>
+        
         <region name="Syracuse" refname="syracuse" color="0 255 0" owner="greek" >
             <settlement name="Syracuse" posx="43" posz="50" level="0" population="1000" base_growth="2.0" culture="greek_culture">          
+                <building refname="irrigation" level="0" />
+                <building refname="barracks" level="0" />
+                
+                <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
+                <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>
+            </settlement>
+            <dock posx="0" posz="0" azimuth="180" />
+        </region>
+        
+        <region name="Segesta" refname="segesta" color="100 255 100" owner="greek" >
+            <settlement name="Segesta" posx="35" posz="46" level="0" population="1000" base_growth="2.0" culture="greek_culture">          
+                <building refname="irrigation" level="0" />
+                <building refname="barracks" level="0" />
+                
+                <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
+                <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>
+            </settlement>
+            <dock posx="0" posz="0" azimuth="180" />
+        </region>
+        
+        <region name="Carthage" refname="carthage" color="100 100 100" owner="rebels" >
+            <settlement name="Carthage" posx="19" posz="55" level="0" population="1000" base_growth="2.0" culture="greek_culture">          
                 <building refname="irrigation" level="0" />
                 <building refname="barracks" level="0" />
                 
