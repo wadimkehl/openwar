@@ -9,12 +9,16 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.collision.CollisionResult;
 import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.AnalogListener;
 import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
 import com.jme3.terrain.geomipmap.TerrainPatch;
+import com.jme3.texture.Image;
+import com.jme3.texture.Texture2D;
 import com.sun.imageio.plugins.png.PNGImageWriter;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -30,16 +34,21 @@ public class DevModeAppState extends AbstractAppState {
     Main game;
     String currTexture = "types";
     int currType;
+    String currRegion, currClimate;
     boolean drawing;
     boolean flyMode;
     Material matTerrainDev;
     private static final Logger logger = Logger.getLogger(DevModeAppState.class.getName());
-    public ActionListener actionListener = new ActionListener() {
+    private AnalogListener analogListener = new AnalogListener() {
 
         @Override
-        public void onAction(String name, boolean pressed, float tpf) {
+        public void onAnalog(String name, float value, float tpf) {
 
-            if (name.equals("mouse_left") && !pressed) {
+            if (!drawing) {
+                return;
+            }
+
+            if (name.equals("mouse_left")) {
                 CollisionResult r = game.getMousePick(game.worldMapState.sceneNode);
                 if (r == null) {
                     return;
@@ -51,18 +60,31 @@ public class DevModeAppState extends AbstractAppState {
 
                 if (r.getGeometry() instanceof TerrainPatch) {
 
-                    if (!drawing) {
-                        return;
+                    if ("types".equals(currTexture)) {
+                        game.worldMapState.map.setWorldTile(x, z, currType);
+                    } else if ("regions".equals(currTexture)) {
+                        game.worldMapState.map.worldTiles[x][z].region = currRegion;
+                    } else if ("climates".equals(currTexture)) {
+                        game.worldMapState.map.worldTiles[x][z].climate = currClimate;
                     }
-                    game.worldMapState.map.setWorldTile(x, z, currType);
-                    game.worldMapState.map.createKeyTextures();
-                    return;
+                    updateTexture(currTexture);
 
                 }
 
 
 
-            } else if (name.equals("texture_types") && !pressed) {
+            }
+        }
+    };
+    public ActionListener actionListener = new ActionListener() {
+
+        @Override
+        public void onAction(String name, boolean pressed, float tpf) {
+
+
+
+
+            if (name.equals("texture_types") && !pressed) {
 
                 displayTerrainTexture("types");
 
@@ -95,12 +117,15 @@ public class DevModeAppState extends AbstractAppState {
                         currType = Main.DB.regions.size() - 1;
                     }
                     currSelection = Main.DB.regions.get(currType).name;
+                    currRegion = Main.DB.regions.get(currType).refName;
                 } else if ("climates".equals(currTexture)) {
                     if (currType < 0) {
                         currType = Main.DB.climates.size() - 1;
 
                     }
                     currSelection = Main.DB.climates.get(currType).name;
+                    currClimate = Main.DB.climates.get(currType).refName;
+
                 }
                 if (!drawing) {
                     return;
@@ -121,11 +146,14 @@ public class DevModeAppState extends AbstractAppState {
                         currType = 0;
                     }
                     currSelection = Main.DB.regions.get(currType).name;
+                    currRegion = Main.DB.regions.get(currType).refName;
+
                 } else if ("climates".equals(currTexture)) {
                     if (currType >= Main.DB.climates.size()) {
                         currType = 0;
                     }
                     currSelection = Main.DB.climates.get(currType).name;
+                    currClimate = Main.DB.climates.get(currType).refName;
                 }
                 if (!drawing) {
                     return;
@@ -158,6 +186,8 @@ public class DevModeAppState extends AbstractAppState {
     public void initialize(AppStateManager stateManager, Main main) {
         game = main;
 
+        game.getInputManager().addListener(analogListener, "mouse_left");
+
 
 
         game.getInputManager().addListener(actionListener, "texture_types");
@@ -172,6 +202,9 @@ public class DevModeAppState extends AbstractAppState {
         game.getInputManager().addListener(actionListener, "dump");
         game.getInputManager().addListener(actionListener, "show_grid");
 
+
+        currRegion = Main.DB.regions.get(0).refName;
+        currClimate = Main.DB.climates.get(0).refName;
 
         initialized = true;
 
@@ -241,10 +274,63 @@ public class DevModeAppState extends AbstractAppState {
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Error while saving screenshot", ex);
         }
-        
+
     }
 
     @Override
     public void update(float tpf) {
+    }
+
+    public void updateTexture(String mode) {
+
+        if ("types".equals(mode)) {
+            game.worldMapState.map.createKeyTextures();
+
+        } else if ("regions".equals(mode)) {
+            int w = game.worldMapState.map.width;
+            int h = game.worldMapState.map.height;
+            int size = w * h * 3;
+            ByteBuffer buf0 = ByteBuffer.allocateDirect(size);
+
+            for (int z = h - 1; z >= 0; z--) {
+
+                for (int x = 0; x < w; x++) {
+
+                    Vector3f col = Main.DB.hashedRegions.get(game.worldMapState.map.worldTiles[x][z].region).color;
+
+                    buf0.put((byte) ((0xff & (int) col.x)));
+                    buf0.put((byte) ((0xff & (int) col.y)));
+                    buf0.put((byte) ((0xff & (int) col.z)));
+
+                }
+            }
+
+            Main.DB.regionsTex = new Texture2D(new Image(Image.Format.RGB8, w, h, buf0));
+            matTerrainDev.setTexture("ColorMap", Main.DB.regionsTex);
+
+        }
+        else if ("climates".equals(mode)) {
+            int w = game.worldMapState.map.width;
+            int h = game.worldMapState.map.height;
+            int size = w * h * 3;
+            ByteBuffer buf0 = ByteBuffer.allocateDirect(size);
+
+            for (int z = h - 1; z >= 0; z--) {
+
+                for (int x = 0; x < w; x++) {
+
+                    Vector3f col = Main.DB.hashedClimates.get(game.worldMapState.map.worldTiles[x][z].climate).color;
+
+                    buf0.put((byte) ((0xff & (int) col.x)));
+                    buf0.put((byte) ((0xff & (int) col.y)));
+                    buf0.put((byte) ((0xff & (int) col.z)));
+
+                }
+            }
+
+            Main.DB.climatesTex = new Texture2D(new Image(Image.Format.RGB8, w, h, buf0));
+            matTerrainDev.setTexture("ColorMap", Main.DB.climatesTex);
+
+        }
     }
 }
