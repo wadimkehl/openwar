@@ -210,23 +210,54 @@ public class WorldMap {
                 g2 = clis.get(base + 1) & 0xff;
                 b2 = clis.get(base + 2) & 0xff;
 
-                // TODO: Find out why three textures are bgr after dumping them
-                int type = RGBtoGroundType(b, g, r);
-                Climate climate = getClimateByRGB(b2, g2, r2);
-                Region region = getRegionByRGB(new Vector3f(b1, g1, r1));
+                int type;
+                Region region;
+                Climate climate;
+
+                // TODO: Find out why the three textures are sometimes bgr 
+                if (Main.DB.flipOrderTypes) {
+                    type = RGBtoGroundType(b, g, r);
+                } else {
+                    type = RGBtoGroundType(r, g, b);
+                }
+
+                if (Main.DB.flipOrderRegions) {
+                    region = getRegionByRGB(new Vector3f(b1, g1, r1));
+                } else {
+                    region = getRegionByRGB(new Vector3f(r1, g1, b1));
+                }
+                if (Main.DB.flipOrderClimates) {
+                    climate = getClimateByRGB(b2, g2, r2);
+                } else {
+                    climate = getClimateByRGB(r2, g2, b2);
+                }
+
+
                 GenericTile tile = Main.DB.genTiles.get(type);
                 if (region != null && climate != null && tile != null) {
                     worldTiles[i][height - 1 - j] = new WorldTile(i, height - 1 - j, type, tile.cost, region.refName, climate.refName);
                 } else {
                     String cause;
+                    int rr, gg, bb;
                     if (region == null) {
+                        rr = r1;
+                        gg = g1;
+                        bb = b1;
                         cause = "region";
                     } else if (climate == null) {
                         cause = "climate";
+                        rr = r2;
+                        gg = g2;
+                        bb = b2;
+
                     } else {
-                        cause = "tile";
+                        cause = "type";
+                        rr = r;
+                        gg = g;
+                        bb = b;
+
                     }
-                    logger.log(Level.SEVERE, "Error: " + cause + " at ({0},{1}) ", new Object[]{i, height - 1 - j});
+                    logger.log(Level.SEVERE, "Error: " + cause + " at ({0},{1}): {2} {3} {4} ", new Object[]{i, height - 1 - j,rr,gg,bb});
                     return false;
                 }
             }
@@ -244,7 +275,7 @@ public class WorldMap {
                 continue;
             }
 
-            r.settlement.createData(this);         
+            r.settlement.createData(this);
 
         }
 
