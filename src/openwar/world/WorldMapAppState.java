@@ -83,7 +83,8 @@ public class WorldMapAppState extends AbstractAppState {
                 }
 
             } else if (name.equals("show_grid") && !pressed) {
-                map.showGrid(showGrid = !showGrid);
+                showGrid = !showGrid;
+                map.showGrid(showGrid);
             } else if (name.equals("shift")) {
                 shiftPressed = pressed;
             } else if (name.equals("ctrl")) {

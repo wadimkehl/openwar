@@ -229,7 +229,7 @@ public class Main extends Application {
         getInputManager().addMapping("draw_mode", new KeyTrigger(KeyInput.KEY_TAB));
         getInputManager().addMapping("previousType", new KeyTrigger(KeyInput.KEY_B));
         getInputManager().addMapping("nextType", new KeyTrigger(KeyInput.KEY_N));
-        getInputManager().addMapping("cursor", new KeyTrigger(KeyInput.KEY_X));
+        getInputManager().addMapping("cursor", new KeyTrigger(KeyInput.KEY_C));
         getInputManager().addMapping("dump", new KeyTrigger(KeyInput.KEY_RETURN));
 
 
