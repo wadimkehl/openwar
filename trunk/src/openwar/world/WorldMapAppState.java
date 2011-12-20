@@ -17,6 +17,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.TerrainPatch;
 import java.io.File;
 import java.util.ArrayList;
+import openwar.AudioAppState.MusicMode;
 import openwar.DB.Faction;
 import openwar.DB.Settlement;
 import openwar.DB.Unit;
@@ -260,12 +261,12 @@ public class WorldMapAppState extends AbstractAppState {
         initialized = true;
         
         logic.beginGame();
+        game.audioState.setMusicMode(MusicMode.WorldMapIdle);
 
         if (Main.devMode) {
             return;
         }
 
-        game.doScript("playMusic('ambient1')");
     }
 
     @Override

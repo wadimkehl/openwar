@@ -11,6 +11,7 @@ import openwar.world.WorldMapAppState;
 import com.jme3.asset.plugins.*;
 import com.jme3.app.state.ScreenshotAppState;
 import com.jme3.audio.AudioNode;
+import com.jme3.audio.AudioRenderer;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
@@ -55,6 +56,7 @@ public class Main extends Application {
     public ScreenshotAppState screenshotState = new ScreenshotAppState();
     public WorldMapAppState worldMapState = new WorldMapAppState();
     public DevModeAppState debugState = new DevModeAppState();
+    public AudioAppState audioState = new AudioAppState(this);
     static public GameDatabase DB = new GameDatabase();
     public XMLDataLoader DataLoader;
     static public ScriptEngine scriptEngine;
@@ -66,7 +68,7 @@ public class Main extends Application {
     public boolean forceQuit;
     private static final Logger logger = Logger.getLogger(Main.class.getName());
     public HashMap<String, String> hashedPopUpId;
-
+    
     public boolean readXMLConfig() {
         try {
             File config = new File("config.xml");
@@ -159,7 +161,6 @@ public class Main extends Application {
             forceQuit = true;
             return;
         }
-        setMusicVolume(0.2f);
 
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
                 assetManager, inputManager, audioRenderer, guiViewPort);
@@ -176,6 +177,7 @@ public class Main extends Application {
         }
 
 
+        this.stateManager.attach(audioState);
         this.stateManager.attach(bulletState);
         this.stateManager.attach(worldMapState);
         this.stateManager.attach(screenshotState);
@@ -329,18 +331,7 @@ public class Main extends Application {
 
     }
 
-    public void setMusicVolume(float v) {
-        for (AudioNode n : DB.musicNodes.values()) {
-            n.setVolume(v);
-        }
-    }
-
-    public void setSoundVolume(float v) {
-        for (AudioNode n : DB.soundNodes.values()) {
-            n.setVolume(v);
-        }
-    }
-
+    
     public void changeUIScreen(String name) {
 
         if (nifty.getScreen(name) == null) {
