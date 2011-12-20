@@ -89,6 +89,7 @@ public class XMLDataLoader {
         AudioNode entity = new AudioNode();
         String refname = null;
         String file = null;
+        String mode = null;
         try {
             NodeList nodes = root.getElementsByTagName("music");
 
@@ -96,8 +97,18 @@ public class XMLDataLoader {
                 Element l = (Element) nodes.item(i);
                 refname = l.getAttribute("refname");
                 file = l.getAttribute("file");
-                entity = new AudioNode(assets, "music" + File.separator + file, true);
+                mode = l.getAttribute("mode");
+
+                entity = new AudioNode(assets, "music" + File.separator + file, true,true);
                 Main.DB.musicNodes.put(refname, entity);
+
+                
+                if("menu".equals(mode))
+                game.audioState.menu.add(refname);
+                else if("loading".equals(mode))
+                game.audioState.loading.add(refname);
+                else if("idle".equals(mode))
+                game.audioState.worldMapIdle.add(refname);
                 logger.log(Level.WARNING, "*Music loaded: {0} *", refname);
 
             }
@@ -512,7 +523,7 @@ public class XMLDataLoader {
                         Building b = new Building();
                         b.refName = building.getAttribute("refname");
                         b.level = Integer.parseInt(building.getAttribute("level"));
-                        se.buildings.put(b.refName,b);
+                        se.buildings.put(b.refName, b);
                     }
 
                 }
@@ -564,7 +575,7 @@ public class XMLDataLoader {
 
 
             }
-            
+
             // Make sure that the player faction is the first in the list
             Main.DB.factions.remove(Main.DB.hashedFactions.get(Main.DB.playerFaction));
             Main.DB.factions.add(0, Main.DB.hashedFactions.get(Main.DB.playerFaction));
