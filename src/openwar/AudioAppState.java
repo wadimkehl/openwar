@@ -4,7 +4,9 @@
  */
 package openwar;
 
+import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
+import com.jme3.app.state.AppStateManager;
 import com.jme3.audio.AudioNode;
 import com.jme3.audio.AudioNode.Status;
 import java.util.ArrayList;
@@ -36,6 +38,11 @@ public class AudioAppState extends AbstractAppState {
         loading = new ArrayList<String>();
 
         worldMapIdle = new ArrayList<String>();
+    }
+    
+    @Override
+    public void initialize(AppStateManager stateManager, Application app) {
+    initialized=true;
     }
 
     public void setMusicVolume(float v) {
