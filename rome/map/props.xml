@@ -47,8 +47,8 @@
         <tile type="15" name="ocean"            color="0 0 64"      walkable="false" sailable="true" cost="5" textureid="0"/> 
         <tile type="16" name="impassable"       color="0 0 0"       walkable="false" sailable="false" cost="1000" textureid="11"/> 
        
-        <heightmap factor0="0.0065" factor1="0.0" cutoff="0.1"/>
-        <water height="0.12" color="5 128 200" />
+        <heightmap factor0="0.004" factor1="0.0" cutoff="0.1"/>
+        <water height="0.05" color="5 128 200" />
         <sun color="255 230 230" direction="-0.3 -1.5  -1" />
         
     </terrain>
