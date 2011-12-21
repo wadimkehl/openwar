@@ -127,7 +127,7 @@ public class Main extends Application {
         }
 
         app.settings.setTitle("openwar    r" + version);
-        //app.settings.setFrameRate(30);
+        app.settings.setFrameRate(30);
 
 
         app.start();

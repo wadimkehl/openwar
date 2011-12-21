@@ -133,7 +133,7 @@ public class WorldMapAppState extends AbstractAppState {
         }
 
         Settlement s = map.getSettlement(spat);
-        if (s != null && s != map.selectedSettlement) {
+        if (s != null) {
 
             if (!s.owner.equals(Main.DB.playerFaction) && !Main.devMode) {
                 return;

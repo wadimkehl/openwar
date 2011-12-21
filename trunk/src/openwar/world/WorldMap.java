@@ -257,7 +257,7 @@ public class WorldMap {
                         bb = b;
 
                     }
-                    logger.log(Level.SEVERE, "Error: " + cause + " at ({0},{1}): {2} {3} {4} ", new Object[]{i, height - 1 - j,rr,gg,bb});
+                    logger.log(Level.SEVERE, "Error: " + cause + " at ({0},{1}): {2} {3} {4} ", new Object[]{i, height - 1 - j, rr, gg, bb});
                     return false;
                 }
             }
@@ -438,7 +438,10 @@ public class WorldMap {
     }
 
     public int getTileCosts(int x, int z) {
-        return worldTiles[ensureInTerrainX(x)][ensureInTerrainZ(z)].cost;
+        int a = ensureInTerrainX(x);
+        int b = ensureInTerrainZ(z);
+
+        return worldTiles[a][b].cost - worldTiles[a][b].modifier;
     }
 
     // Returns army object
