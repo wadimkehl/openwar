@@ -359,6 +359,10 @@ public class Settlement extends WorldEntity {
                 }
 
                 buildings.put(b.refName, b);
+                Region r = Main.DB.hashedRegions.get(region);
+                String eval = r.owner + "','" + r.refName + "','"+b.refName+"'," + b.level;
+                map.game.doScript("onBuildingBuilt('" + eval + ")");
+                
             }
         }
 
@@ -370,6 +374,9 @@ public class Settlement extends WorldEntity {
                 recruitments.remove(0);
                 Unit u = new Unit(r.refName);
                 units.add(u);
+                Region reg = Main.DB.hashedRegions.get(region);
+                String eval = reg.owner + "','" + reg.refName + "','"+u.refName;
+                map.game.doScript("onUnitRecruited('" + eval + "')");
             }
 
 

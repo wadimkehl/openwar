@@ -7,6 +7,7 @@ package openwar.world;
 import com.jme3.math.Vector2f;
 import com.jme3.niftygui.RenderImageJme;
 import com.jme3.texture.Image;
+import com.jme3.texture.Texture.MagFilter;
 import com.jme3.texture.Texture2D;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.effects.Effect;
@@ -91,19 +92,20 @@ public class WorldMapUI implements ScreenController {
 
 
     }
-    
-    public void refreshSettlementLayer()
-    {
-          for (int i = 0; i < 12; i++) {
+
+    public void refreshSettlementLayer() {
+        for (int i = 0; i < 12; i++) {
             setConstructionImage(i, null);
         }
         for (int i = 0; i < 6; i++) {
             setConstructionListImage(i, null);
         }
-        
+
         Settlement s = selectedSettlement;
-        
-        if(s == null) return;
+
+        if (s == null) {
+            return;
+        }
 
         int i = 0;
         for (Construction c : s.constructionPool.values()) {
@@ -135,11 +137,13 @@ public class WorldMapUI implements ScreenController {
                     buf.put((byte) (0));
 
                 } else {
-                    buf.put((byte) ((0xff & 200)));
+                    buf.put((byte) ((0xff & 128)));
                 }
 
             }
-            setConstructionListBarImage(0, new Texture2D(new Image(Image.Format.RGBA8, 1, h, buf)));
+            Texture2D t = new Texture2D(new Image(Image.Format.RGBA8, 1, h, buf));
+            t.setMagFilter(MagFilter.Nearest);
+            setConstructionListBarImage(0, t);
 
         } else {
             setConstructionListBarImage(0, null);
@@ -229,7 +233,7 @@ public class WorldMapUI implements ScreenController {
     public void selectSettlement(Settlement s) {
         selectedSettlement = s;
         refreshSettlementLayer();
-      
+
 
     }
 

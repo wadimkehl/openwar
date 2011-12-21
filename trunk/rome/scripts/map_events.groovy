@@ -18,10 +18,10 @@ def onBuildingBuilt(String faction,String region,String building,int level)
 }
 
 // called when a unit was recruited
-// faction and region are refnames, unit is a pointer to the unit
-def onUnitRecruited(String faction, String region, unit)
+// faction and region are refnames, unit is a refname
+def onUnitRecruited(String faction, String region, String unit)
 {
-    println faction + " recruited " + unit.refName + " in " + region
+    println faction + " recruited " + unit + " in " + region
 }
 
 
