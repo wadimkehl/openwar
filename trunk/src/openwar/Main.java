@@ -68,7 +68,7 @@ public class Main extends Application {
     public boolean forceQuit;
     private static final Logger logger = Logger.getLogger(Main.class.getName());
     public HashMap<String, String> hashedPopUpId;
-    
+
     public boolean readXMLConfig() {
         try {
             File config = new File("config.xml");
@@ -127,7 +127,7 @@ public class Main extends Application {
         }
 
         app.settings.setTitle("openwar    r" + version);
-        app.settings.setFrameRate(30);
+        //app.settings.setFrameRate(30);
 
 
         app.start();
@@ -168,7 +168,7 @@ public class Main extends Application {
         guiViewPort.addProcessor(niftyDisplay);
 
 
-       
+
 
         this.stateManager.attach(audioState);
         this.stateManager.attach(bulletState);
@@ -176,7 +176,7 @@ public class Main extends Application {
         this.stateManager.attach(screenshotState);
 
 
-         if (devMode) {
+        if (devMode) {
             this.stateManager.attach(debugState);
         }
 
@@ -184,25 +184,21 @@ public class Main extends Application {
             nifty.setDebugOptionPanelColors(true);
         }
 
-        
+
+        hashedPopUpId = new HashMap<String, String>();
+
+
+
+
+
         camera = new FlyByCamera(cam);
         camera.registerWithInput(inputManager);
         camera.setMoveSpeed(35);
 
-        if (!devMode) {
-            inputManager.clearMappings();
-            getInputManager().addMapping("map_strafeup", new KeyTrigger(KeyInput.KEY_W));
-            getInputManager().addMapping("map_strafedown", new KeyTrigger(KeyInput.KEY_S));
-            getInputManager().addMapping("map_strafeleft", new KeyTrigger(KeyInput.KEY_A));
-            getInputManager().addMapping("map_straferight", new KeyTrigger(KeyInput.KEY_D));
-
-        }
+        inputManager.clearMappings();
 
 
-        hashedPopUpId = new HashMap<String, String>();
-
-        //doScript("onGameBegin()");
-
+        getInputManager().addMapping("show_grid", new KeyTrigger(KeyInput.KEY_G));
         getInputManager().addMapping("quit_game", new KeyTrigger(KeyInput.KEY_ESCAPE));
         getInputManager().addListener(actionListener, "quit_game");
 
@@ -215,29 +211,35 @@ public class Main extends Application {
         getInputManager().addMapping("shift", new KeyTrigger(KeyInput.KEY_RSHIFT));
         getInputManager().addMapping("ctrl", new KeyTrigger(KeyInput.KEY_LCONTROL));
         getInputManager().addMapping("ctrl", new KeyTrigger(KeyInput.KEY_RCONTROL));
-
-
-
-        getInputManager().addMapping("map_strafeup", new KeyTrigger(KeyInput.KEY_U));
-        getInputManager().addMapping("map_strafedown", new KeyTrigger(KeyInput.KEY_J));
-        getInputManager().addMapping("map_strafeleft", new KeyTrigger(KeyInput.KEY_H));
-        getInputManager().addMapping("map_straferight", new KeyTrigger(KeyInput.KEY_K));
-
-        getInputManager().addMapping("texture_types", new KeyTrigger(KeyInput.KEY_1));
-        getInputManager().addMapping("texture_regions", new KeyTrigger(KeyInput.KEY_2));
-        getInputManager().addMapping("texture_climates", new KeyTrigger(KeyInput.KEY_3));
-        getInputManager().addMapping("draw_mode", new KeyTrigger(KeyInput.KEY_TAB));
-        getInputManager().addMapping("previousType", new KeyTrigger(KeyInput.KEY_B));
-        getInputManager().addMapping("nextType", new KeyTrigger(KeyInput.KEY_N));
-        getInputManager().addMapping("cursor", new KeyTrigger(KeyInput.KEY_C));
-        getInputManager().addMapping("dump", new KeyTrigger(KeyInput.KEY_RETURN));
-
-
-        getInputManager().addMapping("show_grid", new KeyTrigger(KeyInput.KEY_G));
-
-
         getInputManager().setCursorVisible(true);
         camera.setEnabled(false);
+
+
+        if (!devMode) {
+            getInputManager().addMapping("map_strafeup", new KeyTrigger(KeyInput.KEY_W));
+            getInputManager().addMapping("map_strafedown", new KeyTrigger(KeyInput.KEY_S));
+            getInputManager().addMapping("map_strafeleft", new KeyTrigger(KeyInput.KEY_A));
+            getInputManager().addMapping("map_straferight", new KeyTrigger(KeyInput.KEY_D));
+
+        } else {
+
+
+
+            getInputManager().addMapping("map_strafeup", new KeyTrigger(KeyInput.KEY_U));
+            getInputManager().addMapping("map_strafedown", new KeyTrigger(KeyInput.KEY_J));
+            getInputManager().addMapping("map_strafeleft", new KeyTrigger(KeyInput.KEY_H));
+            getInputManager().addMapping("map_straferight", new KeyTrigger(KeyInput.KEY_K));
+
+            getInputManager().addMapping("texture_types", new KeyTrigger(KeyInput.KEY_1));
+            getInputManager().addMapping("texture_regions", new KeyTrigger(KeyInput.KEY_2));
+            getInputManager().addMapping("texture_climates", new KeyTrigger(KeyInput.KEY_3));
+            getInputManager().addMapping("draw_mode", new KeyTrigger(KeyInput.KEY_TAB));
+            getInputManager().addMapping("previousType", new KeyTrigger(KeyInput.KEY_B));
+            getInputManager().addMapping("nextType", new KeyTrigger(KeyInput.KEY_N));
+            getInputManager().addMapping("cursor", new KeyTrigger(KeyInput.KEY_C));
+            getInputManager().addMapping("dump", new KeyTrigger(KeyInput.KEY_RETURN));
+
+        }
 
 
 
@@ -318,9 +320,8 @@ public class Main extends Application {
             logger.log(Level.SEVERE, "Cannot find sound: {0}", name);
             return;
         }
-        if (n.getStatus() != AudioNode.Status.Playing) {
-            n.play();
-        }
+        n.stop();
+        n.play();
     }
 
     public void playMusic(String name) {
@@ -333,7 +334,6 @@ public class Main extends Application {
 
     }
 
-    
     public void changeUIScreen(String name) {
 
         if (nifty.getScreen(name) == null) {

@@ -156,8 +156,9 @@ public class Settlement extends WorldEntity {
         model.setLocalTranslation(0f, 0.25f, 0f);
         node.attachChild(model);
 
-        banner = (Spatial) new Geometry("", new Quad(1.5f, 3f));
-        banner.setLocalTranslation(-0.5f, 1f, -0.5f);
+
+        banner = (Spatial) new Geometry("", new Quad(0.75f, 1.5f));
+        banner.setLocalTranslation(-0.25f, 1.5f, 0f);
         mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         mat.setTexture("ColorMap", Main.DB.genFactions.get(owner).banner);
