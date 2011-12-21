@@ -41,20 +41,25 @@ public class WorldMapAppState extends AbstractAppState {
         @Override
         public void onAnalog(String name, float value, float tpf) {
 
+            Vector3f loc = game.getCamera().getLocation();
+
+            
             if (name.equals("map_strafeup")) {
-                game.getCamera().setLocation(game.getCamera().getLocation().addLocal(0, 0, tpf * -35f));
+                loc.addLocal(0, 0, tpf * -35f);
             } else if (name.equals("map_strafedown")) {
-                game.getCamera().setLocation(game.getCamera().getLocation().addLocal(0, 0, tpf * 35f));
+                loc.addLocal(0, 0, tpf * 35f);
             } else if (name.equals("map_strafeleft")) {
-                game.getCamera().setLocation(game.getCamera().getLocation().addLocal(tpf * -35f, 0, 0));
+                loc.addLocal(tpf * -35f,0,0);
             } else if (name.equals("map_straferight")) {
-                game.getCamera().setLocation(game.getCamera().getLocation().addLocal(tpf * 35f, 0, 0));
+                loc.addLocal(tpf * 35f,0,0);
             }
 
+            if (loc.x < 0f) loc.x = 0f;
+            if (loc.x > map.width) loc.x = map.width;
+            if (loc.z < 10f) loc.z = 10f;
+            if (loc.z > map.width+15f) loc.z = map.width+15f;
 
-            Vector3f loc = game.getCamera().getLocation().clone();
-            loc.x = ensureMinMax((int) loc.x, 0, map.width);
-            loc.z = ensureMinMax((int) loc.z, 15, map.height + 20);
+
             game.getCamera().setLocation(loc);
 
 
