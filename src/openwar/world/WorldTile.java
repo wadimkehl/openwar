@@ -14,7 +14,7 @@ import openwar.Main;
 public class WorldTile extends Tile {
 
     public int groundType;
-    public int cost;
+    public int cost, modifier;
     public String region = "";
     public String climate = "";
 

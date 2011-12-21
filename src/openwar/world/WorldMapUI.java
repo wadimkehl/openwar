@@ -6,6 +6,7 @@ package openwar.world;
 
 import com.jme3.math.Vector2f;
 import com.jme3.niftygui.RenderImageJme;
+import com.jme3.texture.Image;
 import com.jme3.texture.Texture2D;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.effects.Effect;
@@ -18,6 +19,7 @@ import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.render.NiftyImage;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
@@ -42,6 +44,7 @@ public class WorldMapUI implements ScreenController {
     public Element buildingImage[] = new Element[12];
     public Element constructionImage[] = new Element[12];
     public Element constructionListImage[] = new Element[6];
+    public Element constructionListBarImage;
     public ArrayList<Unit> selectedUnits = new ArrayList<Unit>();
     public WorldEntity selectedFrom = null;
     public Settlement selectedSettlement;
@@ -75,6 +78,7 @@ public class WorldMapUI implements ScreenController {
         for (int i = 0; i < 6; i++) {
             constructionListImage[i] = nifty.getCurrentScreen().findElementByName("constructionList" + i);
         }
+        constructionListBarImage = nifty.getCurrentScreen().findElementByName("constructionList0Bar");
 
     }
 
@@ -84,6 +88,63 @@ public class WorldMapUI implements ScreenController {
 
     public void onClick(String s, String b) {
         game.doScript("onWorldMapUIClicked('" + s + "'," + b + ")");
+
+
+    }
+    
+    public void refreshSettlementLayer()
+    {
+          for (int i = 0; i < 12; i++) {
+            setConstructionImage(i, null);
+        }
+        for (int i = 0; i < 6; i++) {
+            setConstructionListImage(i, null);
+        }
+        
+        Settlement s = selectedSettlement;
+        
+        if(s == null) return;
+
+        int i = 0;
+        for (Construction c : s.constructionPool.values()) {
+            GenericBuilding gb = Main.DB.genBuildings.get(c.refName);
+            Level l = gb.levels.get(c.level);
+            setConstructionImage(i, l.desc.card);
+            i++;
+        }
+        i = 0;
+        for (Construction c : s.constructions) {
+            GenericBuilding gb = Main.DB.genBuildings.get(c.refName);
+            Level l = gb.levels.get(c.level);
+            setConstructionListImage(i, l.desc.card);
+            i++;
+        }
+
+        if (!s.constructions.isEmpty()) {
+
+            int h = s.constructions.get(0).nrTurns;
+            int l = s.constructions.get(0).currentTurn;
+            ByteBuffer buf = ByteBuffer.allocateDirect(h * 4);
+
+            for (int p = 0; p < h; p++) {
+
+                buf.put((byte) (0));
+                buf.put((byte) ((0xff & 255)));
+                buf.put((byte) (0));
+                if (p > l) {
+                    buf.put((byte) (0));
+
+                } else {
+                    buf.put((byte) ((0xff & 200)));
+                }
+
+            }
+            setConstructionListBarImage(0, new Texture2D(new Image(Image.Format.RGBA8, 1, h, buf)));
+
+        } else {
+            setConstructionListBarImage(0, null);
+        }
+
 
 
     }
@@ -167,28 +228,9 @@ public class WorldMapUI implements ScreenController {
 
     public void selectSettlement(Settlement s) {
         selectedSettlement = s;
-        
-        for (int i = 0; i < 12; i++) {
-            setConstructionImage(i, null);
-        }
-        for (int i = 0; i < 6; i++) {
-            setConstructionListImage(i, null);
-        }
-        
-        int i = 0;
-        for (Construction c : s.constructionPool.values()) {
-            GenericBuilding gb = Main.DB.genBuildings.get(c.refName);
-            Level l = gb.levels.get(c.level);
-            setConstructionImage(i, l.desc.card);
-            i++;
-        }
-        i=0;
-        for (Construction c : s.constructions) {
-            GenericBuilding gb = Main.DB.genBuildings.get(c.refName);
-            Level l = gb.levels.get(c.level);
-            setConstructionListImage(i, l.desc.card);
-            i++;
-        }
+        refreshSettlementLayer();
+      
+
     }
 
     public void onBuildingClick(String ind, String b) {
@@ -204,19 +246,20 @@ public class WorldMapUI implements ScreenController {
 
         int index = Integer.parseInt(ind);
         int button = Integer.parseInt(b);
-        
+
         int i = 0;
         for (Construction c : selectedSettlement.constructionPool.values()) {
-            
-            if(i == index)
-            {
-                if(button==0) selectedSettlement.startConstruction(c);
+
+            if (i == index) {
+                if (button == 0) {
+                    selectedSettlement.startConstruction(c);
+                }
                 break;
             }
-            
+
             i++;
         }
-        
+
         selectSettlement(selectedSettlement);
 
     }
@@ -225,19 +268,20 @@ public class WorldMapUI implements ScreenController {
 
         int index = Integer.parseInt(ind);
         int button = Integer.parseInt(b);
-        
+
         int i = 0;
         for (Construction c : selectedSettlement.constructions) {
-            
-            if(i == index)
-            {
-                if(button==0) selectedSettlement.abortConstruction(c);
+
+            if (i == index) {
+                if (button == 0) {
+                    selectedSettlement.abortConstruction(c);
+                }
                 break;
             }
-            
+
             i++;
         }
-        
+
         selectSettlement(selectedSettlement);
     }
 
@@ -355,6 +399,16 @@ public class WorldMapUI implements ScreenController {
             constructionListImage[number].getRenderer(ImageRenderer.class).setImage(null);
         } else {
             constructionListImage[number].getRenderer(ImageRenderer.class).setImage(
+                    new NiftyImage(nifty.getRenderEngine(), new RenderImageJme(t)));
+        }
+
+    }
+
+    public void setConstructionListBarImage(int number, Texture2D t) {
+        if (t == null) {
+            constructionListBarImage.getRenderer(ImageRenderer.class).setImage(null);
+        } else {
+            constructionListBarImage.getRenderer(ImageRenderer.class).setImage(
                     new NiftyImage(nifty.getRenderEngine(), new RenderImageJme(t)));
         }
 

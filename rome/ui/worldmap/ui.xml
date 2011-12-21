@@ -395,9 +395,13 @@
                         
                         <panel height="15%" width="*" childLayout="horizontal">
                             
-                            <image id="constructionList0" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                            <panel width="16.5%" height="*" childLayout="overlay">
+                            <image id="constructionList0"  filename="ui/worldmap/temp.tga"  >
                                 <interact onPrimaryClick="onConstructionListClick(0,0)" onSecondaryClick="onConstructionListClick(0,1)" />                                     
                             </image>
+                            <image id="constructionList0Bar" />                              
+                            </panel>
+                            
                             <panel height="*" width="0.35%"/>
                             <image id="constructionList1" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
                                 <interact onPrimaryClick="onConstructionListClick(1,0)" onSecondaryClick="onConstructionListClick(1,1)" />                                     

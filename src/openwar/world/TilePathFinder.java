@@ -108,7 +108,7 @@ public class TilePathFinder {
                         continue;
                     }
 
-                    double new_distance = best.distance + map.worldTiles[newx][newz].cost;
+                    double new_distance = best.distance + map.getTileCosts(newx, newz);
 
                     // check if in open list
                     boolean alreadyOpen = false;
