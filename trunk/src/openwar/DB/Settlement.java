@@ -101,7 +101,7 @@ public class Settlement extends WorldEntity {
     public class Recruitment {
 
         public String refName;
-        public int currentTurn, turnsToRecruit;
+        public int currentTurn;
 
         public Recruitment() {
         }
@@ -292,6 +292,9 @@ public class Settlement extends WorldEntity {
 
         for (Building b : buildings.values()) {
             for (RecruitmentStats recStats : b.recStats.values()) {
+                int recruiting = 0;
+
+                //TODO: subtract the units that are already recruited
                 recruitmentPool.put(recStats.refName, recStats.currUnits);
             }
         }
@@ -302,12 +305,41 @@ public class Settlement extends WorldEntity {
     public void startConstruction(Construction c) {
         constructions.add(c);
         constructionPool.remove(c.refName);
-        
+
+    }
+
+    public void startRecruitment(String r) {
+        int n = recruitmentPool.get(r);
+        Recruitment rec = new Recruitment();
+        rec.refName = r;
+        rec.currentTurn = 0;
+        int i = recruitmentPool.get(r);
+        recruitmentPool.put(r, i--);
+
+        if (i <= 0) {
+            recruitmentPool.remove(r);
+        }
+        recruitments.add(rec);
     }
 
     public void abortConstruction(Construction c) {
         constructions.remove(c);
         constructionPool.put(c.refName, c);
+
+    }
+
+    public void abortRecruitment(Recruitment r) {
+        recruitments.remove(r);
+
+        if (recruitmentPool.containsKey(r.refName)) {
+            int l = recruitmentPool.get(r.refName);
+            recruitmentPool.put(r.refName, l++);
+        } else {
+            recruitmentPool.put(r.refName, 1);
+        }
+
+
+
 
     }
 
@@ -320,12 +352,14 @@ public class Settlement extends WorldEntity {
 
         // Update recruitment stats
         for (Building b : buildings.values()) {
-            if(b.recStats.isEmpty()) continue;
-            
+            if (b.recStats.isEmpty()) {
+                continue;
+            }
+
             for (String s : b.recStats.keySet()) {
                 RecruitmentStats rs = b.recStats.get(s);
-                
-                
+
+
                 // Skip if maximum recruitable units
                 if (rs.currUnits == rs.grs.maxUnits) {
                     continue;
@@ -360,9 +394,9 @@ public class Settlement extends WorldEntity {
 
                 buildings.put(b.refName, b);
                 Region r = Main.DB.hashedRegions.get(region);
-                String eval = r.owner + "','" + r.refName + "','"+b.refName+"'," + b.level;
+                String eval = r.owner + "','" + r.refName + "','" + b.refName + "'," + b.level;
                 map.game.doScript("onBuildingBuilt('" + eval + ")");
-                
+
             }
         }
 
@@ -370,12 +404,12 @@ public class Settlement extends WorldEntity {
         if (!recruitments.isEmpty()) {
             Recruitment r = recruitments.get(0);
             r.currentTurn++;
-            if (r.currentTurn == r.turnsToRecruit) {
+            if (r.currentTurn == Main.DB.genUnits.get(r.refName).turnsToRecruit) {
                 recruitments.remove(0);
                 Unit u = new Unit(r.refName);
                 units.add(u);
                 Region reg = Main.DB.hashedRegions.get(region);
-                String eval = reg.owner + "','" + reg.refName + "','"+u.refName;
+                String eval = reg.owner + "','" + reg.refName + "','" + u.refName;
                 map.game.doScript("onUnitRecruited('" + eval + "')");
             }
 

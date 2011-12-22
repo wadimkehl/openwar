@@ -38,14 +38,7 @@ def onEndTurn(String faction)
 def onBeginTurn(String faction)
 {
     println faction + " began turn"
-    
-    if(game.worldMapState.map.selectedArmy != null)
-    {
-        game.worldMapState.map.selectArmy(game.worldMapState.map.selectedArmy);
-    }
-    else if (game.worldMapState.map.selectedSettlement != null) {
-        game.worldMapState.uiController.drawReachableArea()
-    }
+
     
 }
 
@@ -53,9 +46,7 @@ def onBeginTurn(String faction)
 // round is current round number 
 def onBeginRound(round)
 {        
-    
-    playSound("round_begin")
-    println "Round began"
+        println "Round began"
 
    
     
@@ -66,9 +57,7 @@ def onBeginRound(round)
 def onEndRound(round)
 {        
     
-    playSound("round_end")
     println "Round ended"
-
    
     
 }

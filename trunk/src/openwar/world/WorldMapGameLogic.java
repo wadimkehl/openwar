@@ -61,12 +61,18 @@ public class WorldMapGameLogic {
 
 
         if (Main.DB.currentTurn.equals(Main.DB.playerFaction)) {
-            
-            if(game.worldMapState.map.selectedSettlement != null)
-            game.worldMapState.uiController.refreshSettlementLayer();
+
+
+            if (game.worldMapState.map.selectedArmy != null) {
+                game.worldMapState.map.selectArmy(game.worldMapState.map.selectedArmy);
+            } else if (game.worldMapState.map.selectedSettlement != null) {
+                game.worldMapState.uiController.refreshSettlementLayer();
+
+                game.worldMapState.uiController.drawReachableArea();
+            }
         }
-        
-        
+
+
         game.doScript("onBeginTurn('" + Main.DB.currentTurn + "')");
 
 
@@ -79,11 +85,11 @@ public class WorldMapGameLogic {
     public void endTurn() {
 
         Faction f = Main.DB.hashedFactions.get(Main.DB.currentTurn);
-        
+
         if (Main.DB.currentTurn.equals(Main.DB.playerFaction)) {
             game.worldMapState.uiController.deselectAll();
         }
-        
+
 
         game.doScript("onEndTurn('" + Main.DB.currentTurn + "')");
         int next = Main.DB.factions.indexOf(f) + 1;

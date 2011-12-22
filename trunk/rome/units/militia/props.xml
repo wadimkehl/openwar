@@ -2,7 +2,7 @@
 
 <root>
 
-    <unit name="Militia" refname="militia" maxcount="100" maxmovepoints="20" />
+    <unit name="Militia" refname="militia" maxcount="100" maxmovepoints="20" turnstorecruit="1"  />
     <description card="unitcard.jpg" detail="info.jpg" info="info.txt"  />
 
     

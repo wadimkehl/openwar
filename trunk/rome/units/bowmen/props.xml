@@ -2,7 +2,7 @@
 
 <root>
 
-    <unit name="Bowmen" refname="bowmen" maxcount="100" maxmovepoints="20"  />
+    <unit name="Bowmen" refname="bowmen" maxcount="100" maxmovepoints="20" turnstorecruit="1" />
     
     <description card="unitcard.jpg" detail="info.jpg" info="info.txt"  />
 

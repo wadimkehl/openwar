@@ -255,6 +255,7 @@ public class XMLDataLoader {
             entity.refName = unit.getAttribute("refname");
             entity.maxCount = Integer.parseInt(unit.getAttribute("maxcount"));
             entity.maxMovePoints = Integer.parseInt(unit.getAttribute("maxmovepoints"));
+            entity.turnsToRecruit = Integer.parseInt(unit.getAttribute("turnstorecruit"));
 
             Description desc = new Description();
             String image = "units" + File.separator + entity.refName + File.separator + d.getAttribute("card");

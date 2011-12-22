@@ -16,7 +16,7 @@ public class GenericBuilding {
     public class GenericRecruitmentStats {
 
         public String refName;
-        public int maxUnits, turnsTillNextUnit, turnsToRecruit;
+        public int maxUnits, turnsTillNextUnit;
 
         public GenericRecruitmentStats() {
         }
@@ -76,8 +76,6 @@ public class GenericBuilding {
                         rec.refName = tokens[0];
                         rec.maxUnits = Integer.parseInt(tokens[1]);
                         rec.turnsTillNextUnit = Integer.parseInt(tokens[2]);
-                        rec.turnsToRecruit = Integer.parseInt(tokens[3]);
-
                         l.genRecStats.put(rec.refName, rec);
                     }
                 }
