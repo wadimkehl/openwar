@@ -4,7 +4,6 @@
  */
 package openwar.DB;
 
-import com.jme3.texture.Texture2D;
 import java.util.Map;
 
 /**
@@ -17,6 +16,7 @@ import java.util.Map;
         public String name;
         public int maxCount;
         public int maxMovePoints;
+        public int turnsToRecruit;
 
         public Map<String,Integer> stats;
         public Description desc;
