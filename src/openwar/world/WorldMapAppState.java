@@ -47,23 +47,15 @@ public class WorldMapAppState extends AbstractAppState {
 
             Vector3f loc = game.getCamera().getLocation();
             Vector3f dir = game.getCamera().getDirection();
-            boolean movement=false,scroll=false;
 
             if (name.equals("map_strafeup")) {
                 loc.addLocal(0, 0, tpf * -35f);
-                movement=true;
             } else if (name.equals("map_strafedown")) {
                 loc.addLocal(0, 0, tpf * 35f);
-                                movement=true;
-
             } else if (name.equals("map_strafeleft")) {
                 loc.addLocal(tpf * -35f, 0, 0);
-                                movement=true;
-
             } else if (name.equals("map_straferight")) {
                 loc.addLocal(tpf * 35f, 0, 0);
-                                movement=true;
-
             } else if (name.equals("map_scrollup")) {
                 cameraAngle += tpf * value;
             } else if (name.equals("map_scrolldown")) {
@@ -85,18 +77,16 @@ public class WorldMapAppState extends AbstractAppState {
             } else if (loc.z > z1) {
                 loc.z = z1;
             }
-
-
             if (cameraAngle <= 2.15f) {
                 cameraAngle = 2.15f;
             } else if (cameraAngle >= 2.75f) {
                 cameraAngle = 2.75f;
             }
             
+            
+            
             loc.y = 20f*FastMath.pow(2, 3f*(3f* FastMath.QUARTER_PI-cameraAngle));
             game.getCamera().setLocation(loc);
-
-
             Quaternion rot = new Quaternion();
             rot.lookAt(dir, game.getCamera().getUp());
             Quaternion q = new Quaternion().fromAngleAxis(cameraAngle, Vector3f.UNIT_X);
