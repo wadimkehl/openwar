@@ -40,6 +40,14 @@ import openwar.Main;
  */
 public class WorldMapUI implements ScreenController {
 
+    
+        public enum LastLayerSelection
+    {
+        Units,
+        Buildings
+    };
+    
+        
     Nifty nifty;
     Screen screen;
     public Main game;
@@ -65,6 +73,9 @@ public class WorldMapUI implements ScreenController {
     Properties p = new Properties();
     EffectProperties prop = new EffectProperties(p);
     boolean hintShown;
+    public LastLayerSelection lastSettlementLayerSelection = LastLayerSelection.Units;
+    
+
 
     public WorldMapUI() {
     }
@@ -258,7 +269,7 @@ public class WorldMapUI implements ScreenController {
         game.showUIElement("front_unit_layer", true);
 
 
-        for (int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < 12; i++) {
             game.worldMapState.uiController.setBuildingImage(i, null);
         }
 
@@ -267,13 +278,18 @@ public class WorldMapUI implements ScreenController {
         }
     }
 
-    public void switchToBuildingsLayer(HashMap<String, Building> list) {
+    public void switchToBuildingsLayer() {
+        
         game.showUIElement("front_building_layer", true);
         game.showUIElement("front_unit_layer", false);
 
-        for (int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < 20; i++) {
             game.worldMapState.uiController.setUnitImage(i, null);
         }
+        
+        if(selectedSettlement == null) return;
+        
+        HashMap<String, Building> list = selectedSettlement.buildings;
 
         int i = 0;
         for (Building b : list.values()) {
@@ -288,9 +304,10 @@ public class WorldMapUI implements ScreenController {
         constructionPanel0.setVisible(true);
         constructionPanel1.setVisible(true);
         constructionListPanel.setVisible(true);
-        recruitmentPanel0.hide();
-        recruitmentPanel1.hide();
-        recruitmentListPanel.hide();
+        recruitmentPanel0.setVisible(false);
+        recruitmentPanel1.setVisible(false);
+        recruitmentListPanel.setVisible(false);
+
 
 
     }
@@ -307,8 +324,16 @@ public class WorldMapUI implements ScreenController {
     }
 
     public void selectSettlement(Settlement s) {
+                
         selectedSettlement = s;
-        switchToConstructions();
+        game.showUIElement("settlement_layer", true);
+
+        
+        if(lastSettlementLayerSelection == LastLayerSelection.Units)
+            switchToUnitsLayer(s.units);
+        else
+            switchToBuildingsLayer();
+        
         refreshSettlementLayer();
 
 

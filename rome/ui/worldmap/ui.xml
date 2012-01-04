@@ -322,218 +322,218 @@
         
         
         
-        <layer id="settlement_layer" childLayout="vertical" visible="false">
+        <layer id="settlement_layer" childLayout="vertical" visible="false" >
             <panel height="75%" childLayout="horizontal">
                 <panel height="*" width="50%" />
                     
-                <panel height="*" width="*" childLayout="overlay">
+                <panel height="*" width="*" childLayout="overlay" visibleToMouse="true">
                     <image filename="ui/worldmap/temp.tga"  width="*" height="*" />       
 
                     <panel height="*" width="*" childLayout="vertical">
                         
-                        <panel height="30%" width="*" />
                         
-                        <panel height="15%" width="*" childLayout="horizontal">
+                        <panel  childLayout="horizontal">
                             
+
                             <panel  width="10%"/>
 
-                            <panel childLayout="overlay" width="90%" height="85%">
+                            <panel childLayout="vertical" width="75%" >
                             
+                                <panel  height="5%"/>
+
                                 <panel id="construction_panel0" childLayout="horizontal" >
                             
-                                    <image id="construction0" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                    <image id="construction0" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onConstructionClick(0,0)" onSecondaryClick="onConstructionClick(0,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="construction1" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                    <image id="construction1" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onConstructionClick(1,0)" onSecondaryClick="onConstructionClick(1,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="construction2" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                    <image id="construction2" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onConstructionClick(2,0)" onSecondaryClick="onConstructionClick(2,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="construction3" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                    <image id="construction3" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onConstructionClick(3,0)" onSecondaryClick="onConstructionClick(3,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="construction4" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                    <image id="construction4" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onConstructionClick(4,0)" onSecondaryClick="onConstructionClick(4,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="construction5" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                    <image id="construction5" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onConstructionClick(5,0)" onSecondaryClick="onConstructionClick(5,1)" />                                     
                                     </image>
                             
                                 </panel>
-                                
-                                <panel id="recruitment_panel0" childLayout="horizontal" >
-                            
-                                    <image id="recruitment0" width="10%" height="*" filename="ui/worldmap/temp.tga" visible="false" >
-                                        <interact onPrimaryClick="onRecruitmentClick(0,0)" onSecondaryClick="onRecruitmentClick(0,1)" />                                     
-                                    </image>
-                                    <panel height="*" width="0.35%"/>
-                                    <image id="recruitment1" width="10%" height="*" filename="ui/worldmap/temp.tga"  >
-                                        <interact onPrimaryClick="onRecruitmentClick(1,0)" onSecondaryClick="onRecruitmentClick(1,1)" />                                     
-                                    </image>
-                                    <panel height="*" width="0.35%"/> 
-                                    <image id="recruitment2" width="10%" height="*" filename="ui/worldmap/temp.tga"  >
-                                        <interact onPrimaryClick="onRecruitmentClick(2,0)" onSecondaryClick="onRecruitmentClick(2,1)" />                                     
-                                    </image>
-                                    <panel height="*" width="0.35%"/> 
-                                    <image id="recruitment3" width="10%" height="*" filename="ui/worldmap/temp.tga"  >
-                                        <interact onPrimaryClick="onRecruitmentClick(3,0)" onSecondaryClick="onRecruitmentClick(3,1)" />                                     
-                                    </image>
-                                    <panel height="*" width="0.35%"/> 
-                                    <image id="recruitment4" width="10%" height="*" filename="ui/worldmap/temp.tga"  >
-                                        <interact onPrimaryClick="onRecruitmentClick(4,0)" onSecondaryClick="onRecruitmentClick(4,1)" />                                     
-                                    </image>
-                                    <panel height="*" width="0.35%"/> 
-                                    <image id="recruitment5" width="10%" height="*" filename="ui/worldmap/temp.tga"  >
-                                        <interact onPrimaryClick="onRecruitmentClick(5,0)" onSecondaryClick="onRecruitmentClick(5,1)" />                                     
-                                    </image>
-                                    <panel height="*" width="0.35%"/> 
-                                    <image id="recruitment6" width="10%" height="*" filename="ui/worldmap/temp.tga"  >
-                                        <interact onPrimaryClick="onRecruitmentClick(6,0)" onSecondaryClick="onRecruitmentClick(6,1)" />                                     
-                                    </image>
-                                    <panel height="*" width="0.35%"/> 
-                                    <image id="recruitment7" width="10%" height="*" filename="ui/worldmap/temp.tga"  >
-                                        <interact onPrimaryClick="onRecruitmentClick(7,0)" onSecondaryClick="onRecruitmentClick(7,1)" />                                     
-                                    </image>
-                                    <panel height="*" width="0.35%"/> 
-                                    <image id="recruitment8" width="10%" height="*" filename="ui/worldmap/temp.tga"  >
-                                        <interact onPrimaryClick="onRecruitmentClick(8,0)" onSecondaryClick="onRecruitmentClick(8,1)" />                                     
-                                    </image>
-                                   
-                                </panel>
-                            </panel>
-                            
-                        </panel>
+                                           
+                                <panel height="0.1%" width="*" />
 
-                        <panel height="0.1%" width="*" />
-
-
-                        <panel height="15%" width="*" childLayout="horizontal" >
-                            
-                            <panel  width="10%"/>
-
-                            <panel childLayout="overlay" width="90%" height="85%">
-                            
                                 <panel id="construction_panel1" childLayout="horizontal" >
                             
-                                    <image id="construction6" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                    <image id="construction6" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onConstructionClick(6,0)" onSecondaryClick="onConstructionClick(6,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="construction7" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                    <image id="construction7" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onConstructionClick(7,0)" onSecondaryClick="onConstructionClick(7,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="construction8" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                    <image id="construction8" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onConstructionClick(8,0)" onSecondaryClick="onConstructionClick(8,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="construction9" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                    <image id="construction9" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onConstructionClick(9,0)" onSecondaryClick="onConstructionClick(9,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="construction10" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                    <image id="construction10" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onConstructionClick(10,0)" onSecondaryClick="onConstructionClick(10,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="construction11" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                    <image id="construction11" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onConstructionClick(11,0)" onSecondaryClick="onConstructionClick(11,1)" />                                     
                                     </image>
                             
                                 </panel>
                                 
-                                <panel id="recruitment_panel1" childLayout="horizontal" >
-                            
-                                    <image id="recruitment9" width="10%" height="*" filename="ui/worldmap/temp.tga"  >
-                                        <interact onPrimaryClick="onRecruitmentClick(9,0)" onSecondaryClick="onRecruitmentClick(9,1)" />                                     
-                                    </image>
-                                    <panel height="*" width="0.35%"/>
-                                    <image id="recruitment10" width="10%" height="*" filename="ui/worldmap/temp.tga"  >
-                                        <interact onPrimaryClick="onRecruitmentClick(10,0)" onSecondaryClick="onRecruitmentClick(10,1)" />                                     
-                                    </image>
-                                    <panel height="*" width="0.35%"/> 
-                                    <image id="recruitment11" width="10%" height="*" filename="ui/worldmap/temp.tga"  >
-                                        <interact onPrimaryClick="onRecruitmentClick(11,0)" onSecondaryClick="onRecruitmentClick(11,1)" />                                     
-                                    </image>
-                                    <panel height="*" width="0.35%"/> 
-                                    <image id="recruitment12" width="10%" height="*" filename="ui/worldmap/temp.tga"  >
-                                        <interact onPrimaryClick="onRecruitmentClick(12,0)" onSecondaryClick="onRecruitmentClick(12,1)" />                                     
-                                    </image>
-                                    <panel height="*" width="0.35%"/> 
-                                    <image id="recruitment13" width="10%" height="*" filename="ui/worldmap/temp.tga"  >
-                                        <interact onPrimaryClick="onRecruitmentClick(13,0)" onSecondaryClick="onRecruitmentClick(13,1)" />                                     
-                                    </image>
-                                    <panel height="*" width="0.35%"/> 
-                                    <image id="recruitment14" width="10%" height="*" filename="ui/worldmap/temp.tga"  >
-                                        <interact onPrimaryClick="onRecruitmentClick(14,0)" onSecondaryClick="onRecruitmentClick(14,1)" />                                     
-                                    </image>
-                                    <panel height="*" width="0.35%"/> 
-                                    <image id="recruitment15" width="10%" height="*" filename="ui/worldmap/temp.tga"  >
-                                        <interact onPrimaryClick="onRecruitmentClick(15,0)" onSecondaryClick="onRecruitmentClick(15,1)" />                                     
-                                    </image>
-                                    <panel height="*" width="0.35%"/> 
-                                    <image id="recruitment16" width="10%" height="*" filename="ui/worldmap/temp.tga"  >
-                                        <interact onPrimaryClick="onRecruitmentClick(16,0)" onSecondaryClick="onRecruitmentClick(16,1)" />                                     
-                                    </image>
-                                    <panel height="*" width="0.35%"/> 
-                                    <image id="recruitment17" width="10%" height="*" filename="ui/worldmap/temp.tga"  >
-                                        <interact onPrimaryClick="onRecruitmentClick(17,0)" onSecondaryClick="onRecruitmentClick(17,1)" />                                     
-                                    </image>
-                                   
-                                </panel>
-                            </panel>
-                        
-                        </panel>
+                                <panel height="5%" width="*" />
 
-                        <panel height="10%" width="*" />
-                        
-                        <panel height="15%" width="*" childLayout="horizontal">
-                            
-                            <panel  width="10%"/>
-
-                            <panel childLayout="overlay" width="90%" height="85%">
-                            
+                                
                                 <panel id="constructionlist_panel" childLayout="horizontal" >
 
                                     <panel width="16.5%" height="*" childLayout="overlay">
-                                        <image id="constructionList0"  filename="ui/worldmap/temp.tga"  >
+                                        <image id="constructionList0"    >
                                             <interact onPrimaryClick="onConstructionListClick(0,0)" onSecondaryClick="onConstructionListClick(0,1)" />                                     
                                         </image>
                                         <image id="constructionList0Bar" />                              
                                     </panel>
                             
                                     <panel height="*" width="0.35%"/>
-                                    <image id="constructionList1" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                
+                                    <image id="constructionList1" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onConstructionListClick(1,0)" onSecondaryClick="onConstructionListClick(1,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="constructionList2" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                    <image id="constructionList2" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onConstructionListClick(2,0)" onSecondaryClick="onConstructionListClick(2,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="constructionList3" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                    <image id="constructionList3" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onConstructionListClick(3,0)" onSecondaryClick="onConstructionListClick(3,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="constructionList4" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                    <image id="constructionList4" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onConstructionListClick(4,0)" onSecondaryClick="onConstructionListClick(4,1)" />                                     
                                     </image>
                                     <panel height="*" width="0.35%"/>
-                                    <image id="constructionList5" width="16.5%" height="*" filename="ui/worldmap/temp.tga"  >
+                                    <image id="constructionList5" width="16.5%" height="*"   >
                                         <interact onPrimaryClick="onConstructionListClick(5,0)" onSecondaryClick="onConstructionListClick(5,1)" />                                     
                                     </image>
-                                </panel>                            
+                                </panel>   
                             
+                            
+                            
+                            
+                                <panel height="10%" width="*" />
+
+                            
+                            
+                                
+                                <panel id="recruitment_panel0" childLayout="horizontal" >
+                            
+                                    <image id="recruitment0" width="10%" height="*"  visible="false" >
+                                        <interact onPrimaryClick="onRecruitmentClick(0,0)" onSecondaryClick="onRecruitmentClick(0,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/>
+                                    <image id="recruitment1" width="10%" height="*"   >
+                                        <interact onPrimaryClick="onRecruitmentClick(1,0)" onSecondaryClick="onRecruitmentClick(1,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/> 
+                                    <image id="recruitment2" width="10%" height="*"   >
+                                        <interact onPrimaryClick="onRecruitmentClick(2,0)" onSecondaryClick="onRecruitmentClick(2,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/> 
+                                    <image id="recruitment3" width="10%" height="*"   >
+                                        <interact onPrimaryClick="onRecruitmentClick(3,0)" onSecondaryClick="onRecruitmentClick(3,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/> 
+                                    <image id="recruitment4" width="10%" height="*"   >
+                                        <interact onPrimaryClick="onRecruitmentClick(4,0)" onSecondaryClick="onRecruitmentClick(4,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/> 
+                                    <image id="recruitment5" width="10%" height="*"   >
+                                        <interact onPrimaryClick="onRecruitmentClick(5,0)" onSecondaryClick="onRecruitmentClick(5,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/> 
+                                    <image id="recruitment6" width="10%" height="*"   >
+                                        <interact onPrimaryClick="onRecruitmentClick(6,0)" onSecondaryClick="onRecruitmentClick(6,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/> 
+                                    <image id="recruitment7" width="10%" height="*"   >
+                                        <interact onPrimaryClick="onRecruitmentClick(7,0)" onSecondaryClick="onRecruitmentClick(7,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/> 
+                                    <image id="recruitment8" width="10%" height="*"   >
+                                        <interact onPrimaryClick="onRecruitmentClick(8,0)" onSecondaryClick="onRecruitmentClick(8,1)" />                                     
+                                    </image>
+                                   
+                                </panel>
+                     
+
+                                <panel height="0.1%" width="*" />
+                      
+                                
+                                <panel id="recruitment_panel1" childLayout="horizontal" >
+                            
+                                    <image id="recruitment9" width="10%" height="*"   >
+                                        <interact onPrimaryClick="onRecruitmentClick(9,0)" onSecondaryClick="onRecruitmentClick(9,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/>
+                                    <image id="recruitment10" width="10%" height="*"   >
+                                        <interact onPrimaryClick="onRecruitmentClick(10,0)" onSecondaryClick="onRecruitmentClick(10,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/> 
+                                    <image id="recruitment11" width="10%" height="*"   >
+                                        <interact onPrimaryClick="onRecruitmentClick(11,0)" onSecondaryClick="onRecruitmentClick(11,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/> 
+                                    <image id="recruitment12" width="10%" height="*"   >
+                                        <interact onPrimaryClick="onRecruitmentClick(12,0)" onSecondaryClick="onRecruitmentClick(12,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/> 
+                                    <image id="recruitment13" width="10%" height="*"   >
+                                        <interact onPrimaryClick="onRecruitmentClick(13,0)" onSecondaryClick="onRecruitmentClick(13,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/> 
+                                    <image id="recruitment14" width="10%" height="*"   >
+                                        <interact onPrimaryClick="onRecruitmentClick(14,0)" onSecondaryClick="onRecruitmentClick(14,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/> 
+                                    <image id="recruitment15" width="10%" height="*"   >
+                                        <interact onPrimaryClick="onRecruitmentClick(15,0)" onSecondaryClick="onRecruitmentClick(15,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/> 
+                                    <image id="recruitment16" width="10%" height="*"   >
+                                        <interact onPrimaryClick="onRecruitmentClick(16,0)" onSecondaryClick="onRecruitmentClick(16,1)" />                                     
+                                    </image>
+                                    <panel height="*" width="0.35%"/> 
+                                    <image id="recruitment17" width="10%" height="*"   >
+                                        <interact onPrimaryClick="onRecruitmentClick(17,0)" onSecondaryClick="onRecruitmentClick(17,1)" />                                     
+                                    </image>
+                                   
+                                </panel>
+                           
+
+                                <panel height="5%" width="*" />
+                          
                             
                                 <panel id="recruitmentlist_panel" childLayout="horizontal" >
 
                                     <panel width="10%" height="*" childLayout="overlay">
-                                        <image id="recruitmentList0"  filename="ui/worldmap/temp.tga"  >
+                                        <image id="recruitmentList0"    >
                                             <interact onPrimaryClick="onRecruitmentListClick(0,0)" onSecondaryClick="onRecruitmentListClick(0,1)" />                                     
                                         </image>
                                         <image id="recruitmentList0Bar" />                              
@@ -541,7 +541,7 @@
                                     <panel height="*" width="0.35%"/>
                                     
                                     <panel width="10%" height="*" childLayout="overlay">
-                                        <image id="recruitmentList1"  filename="ui/worldmap/temp.tga"  >
+                                        <image id="recruitmentList1"    >
                                             <interact onPrimaryClick="onRecruitmentListClick(1,0)" onSecondaryClick="onRecruitmentListClick(1,1)" />                                     
                                         </image>
                                         <image id="recruitmentList1Bar" />                              
@@ -549,7 +549,7 @@
                                     <panel height="*" width="0.35%"/>
                                     
                                     <panel width="10%" height="*" childLayout="overlay">
-                                        <image id="recruitmentList2"  filename="ui/worldmap/temp.tga"  >
+                                        <image id="recruitmentList2"    >
                                             <interact onPrimaryClick="onRecruitmentListClick(2,0)" onSecondaryClick="onRecruitmentListClick(2,1)" />                                     
                                         </image>
                                         <image id="recruitmentList2Bar" />                              
@@ -557,7 +557,7 @@
                                     <panel height="*" width="0.35%"/>
                                     
                                     <panel width="10%" height="*" childLayout="overlay">
-                                        <image id="recruitmentList3"  filename="ui/worldmap/temp.tga"  >
+                                        <image id="recruitmentList3"    >
                                             <interact onPrimaryClick="onRecruitmentListClick(3,0)" onSecondaryClick="onRecruitmentListClick(3,1)" />                                     
                                         </image>
                                         <image id="recruitmentList3Bar" />                              
@@ -565,7 +565,7 @@
                                     <panel height="*" width="0.35%"/>
                                     
                                     <panel width="10%" height="*" childLayout="overlay">
-                                        <image id="recruitmentList4"  filename="ui/worldmap/temp.tga"  >
+                                        <image id="recruitmentList4"    >
                                             <interact onPrimaryClick="onRecruitmentListClick(4,0)" onSecondaryClick="onRecruitmentListClick(4,1)" />                                     
                                         </image>
                                         <image id="recruitmentList4Bar" />                              
@@ -573,7 +573,7 @@
                                     <panel height="*" width="0.35%"/>
                                     
                                     <panel width="10%" height="*" childLayout="overlay">
-                                        <image id="recruitmentList5"  filename="ui/worldmap/temp.tga"  >
+                                        <image id="recruitmentList5"    >
                                             <interact onPrimaryClick="onRecruitmentListClick(5,0)" onSecondaryClick="onRecruitmentListClick(5,1)" />                                     
                                         </image>
                                         <image id="recruitmentList5Bar" />                              
@@ -581,7 +581,7 @@
                                     <panel height="*" width="0.35%"/>
                                     
                                     <panel width="10%" height="*" childLayout="overlay">
-                                        <image id="recruitmentList6"  filename="ui/worldmap/temp.tga"  >
+                                        <image id="recruitmentList6"    >
                                             <interact onPrimaryClick="onRecruitmentListClick(6,0)" onSecondaryClick="onRecruitmentListClick(6,1)" />                                     
                                         </image>
                                         <image id="recruitmentList6Bar" />                              
@@ -589,7 +589,7 @@
                                     <panel height="*" width="0.35%"/>
                                     
                                     <panel width="10%" height="*" childLayout="overlay">
-                                        <image id="recruitmentList7"  filename="ui/worldmap/temp.tga"  >
+                                        <image id="recruitmentList7"    >
                                             <interact onPrimaryClick="onRecruitmentListClick(7,0)" onSecondaryClick="onRecruitmentListClick(7,1)" />                                     
                                         </image>
                                         <image id="recruitmentList7Bar" />                              
@@ -597,7 +597,7 @@
                                     <panel height="*" width="0.35%"/>
                                     
                                     <panel width="10%" height="*" childLayout="overlay">
-                                        <image id="recruitmentList8"  filename="ui/worldmap/temp.tga"  >
+                                        <image id="recruitmentList8"    >
                                             <interact onPrimaryClick="onRecruitmentListClick(8,0)" onSecondaryClick="onRecruitmentListClick(8,1)" />                                     
                                         </image>
                                         <image id="recruitmentList8Bar" />                              
@@ -610,9 +610,7 @@
                                 
                             </panel>
                         </panel>
-                    <!-- <image filename="ui/worldmap/menue.tga" imageMode="subImage:106,152,182,190," width="*" height="*" />  -->       
-                    <!-- <image filename="ui/worldmap/temp.tga" imageMode="resize:55,105,23,55,10,163,10,80,23,105,55,55" width="*" height="*" /> -->
-
+                   
                     </panel>
                 </panel>
 

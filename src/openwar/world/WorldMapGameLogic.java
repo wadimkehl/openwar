@@ -66,8 +66,7 @@ public class WorldMapGameLogic {
             if (game.worldMapState.map.selectedArmy != null) {
                 game.worldMapState.map.selectArmy(game.worldMapState.map.selectedArmy);
             } else if (game.worldMapState.map.selectedSettlement != null) {
-                game.worldMapState.uiController.refreshSettlementLayer();
-
+                game.worldMapState.uiController.selectSettlement(game.worldMapState.map.selectedSettlement);
                 game.worldMapState.uiController.drawReachableArea();
             }
         }
