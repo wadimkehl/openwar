@@ -62,30 +62,30 @@ public class WorldMapAppState extends AbstractAppState {
                 cameraAngle -= tpf * value;
             }
 
+            if (!Main.devMode) {
+                // Some math to ensure we don't leave the map
+                float c = -loc.y / dir.y;
+                float z0 = -c * dir.z;
+                float z1 = map.width - c * dir.z;
+                if (loc.x < 0f) {
+                    loc.x = 0;
+                } else if (loc.x > map.width) {
+                    loc.x = map.width;
+                }
+                if (loc.z < z0) {
+                    loc.z = z0;
+                } else if (loc.z > z1) {
+                    loc.z = z1;
+                }
+                if (cameraAngle <= 2.15f) {
+                    cameraAngle = 2.15f;
+                } else if (cameraAngle >= 2.75f) {
+                    cameraAngle = 2.75f;
+                }
 
-            // Some math to ensure we don't leave the map
-            float c = -loc.y / dir.y;
-            float z0 = -c * dir.z;
-            float z1 = map.width - c * dir.z;
-            if (loc.x < 0f) {
-                loc.x = 0;
-            } else if (loc.x > map.width) {
-                loc.x = map.width;
+                loc.y = 20f * FastMath.pow(2, 3f * (3f * FastMath.QUARTER_PI - cameraAngle));
             }
-            if (loc.z < z0) {
-                loc.z = z0;
-            } else if (loc.z > z1) {
-                loc.z = z1;
-            }
-            if (cameraAngle <= 2.15f) {
-                cameraAngle = 2.15f;
-            } else if (cameraAngle >= 2.75f) {
-                cameraAngle = 2.75f;
-            }
-            
-            
-            
-            loc.y = 20f*FastMath.pow(2, 3f*(3f* FastMath.QUARTER_PI-cameraAngle));
+
             game.getCamera().setLocation(loc);
             Quaternion rot = new Quaternion();
             rot.lookAt(dir, game.getCamera().getUp());
