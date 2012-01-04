@@ -171,7 +171,7 @@ public class WorldMap {
         showGrid(false);
 
         // Create mesh data with material and place its north-western edge to the origin
-        heightMap = new WorldHeightMap(Main.DB.heightmapTex, Main.DB.heightmapParams.x,
+        heightMap = new WorldHeightMap(Main.DB.heightmapTex.getImage(), Main.DB.heightmapParams.x,
                 Main.DB.heightmapParams.y, Main.DB.heightmapParams.z);
         heightMap.load(false, false);
         terrain = new TerrainQuad("terrain", 32, heightMap.getSize(), heightMap.getHeightMap());
@@ -537,10 +537,8 @@ public class WorldMap {
 
         deselectAll();
         selectedSettlement = s;
-
         game.worldMapState.uiController.selectSettlement(s);
-        game.worldMapState.uiController.switchToBuildingsLayer(s.buildings);
-        game.showUIElement("settlement_layer", true);
+
 
 
         game.doScript("onSettlementSelected()");

@@ -46,7 +46,7 @@ def onBeginTurn(String faction)
 // round is current round number 
 def onBeginRound(round)
 {        
-        println "Round began"
+    println "Round began"
 
    
     
@@ -75,28 +75,25 @@ def onWorldMapUIClicked(String element, int button)
     
     if (element == "build")
     {
-        playSound("ui_window_open")
-        //toggleUIElement("settlement_layer")
         s = game.worldMapState.map.selectedSettlement
         if(s != null)
         {
-          game.worldMapState.uiController.switchToUnitsLayer(s.units)
+            game.worldMapState.uiController.switchToBuildingsLayer()
 
         }
+        
 
     }
     
     if (element == "recruit")
     {
+  
         s = game.worldMapState.map.selectedSettlement
         if(s != null)
         {
-          game.worldMapState.uiController.switchToBuildingsLayer(s.buildings)
+            game.worldMapState.uiController.switchToUnitsLayer(s.units)
 
         }
-        //toggleUIElement("front_unit_layer")
-        //toggleUIElement("front_building_layer")
-
     }
     
     
