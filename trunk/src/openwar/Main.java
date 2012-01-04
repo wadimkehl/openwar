@@ -5,20 +5,22 @@
 package openwar;
 
 import com.jme3.app.Application;
+import java.io.UnsupportedEncodingException;
 import javax.script.ScriptException;
 import openwar.DB.XMLDataLoader;
 import openwar.world.WorldMapAppState;
 import com.jme3.asset.plugins.*;
 import com.jme3.app.state.ScreenshotAppState;
 import com.jme3.audio.AudioNode;
-import com.jme3.audio.AudioRenderer;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.input.FlyByCamera;
 import com.jme3.input.KeyInput;
+import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 
 import com.jme3.math.Ray;
@@ -28,7 +30,6 @@ import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.system.AppSettings;
-import com.jme3.system.JmeSystem;
 import de.lessvoid.nifty.Nifty;
 import java.io.File;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ import javax.script.ScriptEngineManager;
 import openwar.DB.GameDatabase;
 
 import de.lessvoid.nifty.elements.Element;
+import java.net.URLDecoder;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -69,9 +71,29 @@ public class Main extends Application {
     private static final Logger logger = Logger.getLogger(Main.class.getName());
     public HashMap<String, String> hashedPopUpId;
 
+    private String getJarFolder() {
+        String path = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        path = path.substring(0, path.lastIndexOf("/") + 1);
+        try {
+            return URLDecoder.decode(path, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
     public boolean readXMLConfig() {
         try {
-            File config = new File("config.xml");
+
+            String rootPath = "";
+
+
+            // TODO: This line has to be included for deploying
+            //rootPath = getJarFolder(); 
+
+
+
+            File config = new File(rootPath + "config.xml");
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document dom = db.parse(config.getCanonicalPath());
@@ -95,7 +117,7 @@ public class Main extends Application {
             }
 
 
-            locatorRoot = module.getAttribute("dir") + File.separator;
+            locatorRoot = rootPath + module.getAttribute("dir") + File.separator;
 
             devMode = Boolean.parseBoolean(dev.getAttribute("devMode"));
             debugUI = Boolean.parseBoolean(dev.getAttribute("debugUI"));
@@ -207,6 +229,10 @@ public class Main extends Application {
         getInputManager().addMapping("mouse_left", new MouseButtonTrigger(0));
         getInputManager().addMapping("mouse_right", new MouseButtonTrigger(1));
 
+        getInputManager().addMapping("map_scrollup", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, false));
+        getInputManager().addMapping("map_scrolldown", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, true));
+
+
         getInputManager().addMapping("shift", new KeyTrigger(KeyInput.KEY_LSHIFT));
         getInputManager().addMapping("shift", new KeyTrigger(KeyInput.KEY_RSHIFT));
         getInputManager().addMapping("ctrl", new KeyTrigger(KeyInput.KEY_LCONTROL));
@@ -245,19 +271,29 @@ public class Main extends Application {
 
     }
 
-// Calculates a mouse pick with a spatial and returns nearest result or null
-    public CollisionResult getMousePick(Spatial s) {
-
-        Vector2f mouse = inputManager.getCursorPosition();
-        Vector3f t0 = cam.getWorldCoordinates(mouse, 0f);
-        Vector3f t1 = cam.getWorldCoordinates(mouse, 1f);
+    public CollisionResult getPick(Ray r, Spatial s) {
         CollisionResults results = new CollisionResults();
-        Ray ray = new Ray(t0, t1.subtractLocal(t0).normalizeLocal());
-        s.collideWith(ray, results);
+        s.collideWith(r, results);
         if (results.size() > 0) {
             return results.getClosestCollision();
         }
         return null;
+    }
+
+    public CollisionResult getPick(Vector3f start, Vector3f end, Spatial s) {
+        return getPick(new Ray(start, end.subtract(start).normalizeLocal()), s);
+    }
+
+    public CollisionResult getPick(Vector2f pos, Spatial s) {
+        Vector3f t0 = cam.getWorldCoordinates(pos, 0f);
+        Vector3f t1 = cam.getWorldCoordinates(pos, 1f);
+        return getPick(t0, t1, s);
+    }
+
+    // Calculates a mouse pick with a spatial and returns nearest result or null
+    public CollisionResult getMousePick(Spatial s) {
+        return getPick(inputManager.getCursorPosition(), s);
+
     }
 
     public Object doReturnScript(String line) {
