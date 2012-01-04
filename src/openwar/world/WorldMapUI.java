@@ -40,14 +40,11 @@ import openwar.Main;
  */
 public class WorldMapUI implements ScreenController {
 
-    
-        public enum LastLayerSelection
-    {
+    public enum LastLayerSelection {
+
         Units,
         Buildings
     };
-    
-        
     Nifty nifty;
     Screen screen;
     public Main game;
@@ -74,8 +71,6 @@ public class WorldMapUI implements ScreenController {
     EffectProperties prop = new EffectProperties(p);
     boolean hintShown;
     public LastLayerSelection lastSettlementLayerSelection = LastLayerSelection.Units;
-    
-
 
     public WorldMapUI() {
     }
@@ -268,6 +263,7 @@ public class WorldMapUI implements ScreenController {
         game.showUIElement("front_building_layer", false);
         game.showUIElement("front_unit_layer", true);
 
+        lastSettlementLayerSelection = LastLayerSelection.Units;
 
         for (int i = 0; i < 12; i++) {
             game.worldMapState.uiController.setBuildingImage(i, null);
@@ -279,16 +275,21 @@ public class WorldMapUI implements ScreenController {
     }
 
     public void switchToBuildingsLayer() {
-        
+
         game.showUIElement("front_building_layer", true);
         game.showUIElement("front_unit_layer", false);
+
+        lastSettlementLayerSelection = LastLayerSelection.Buildings;
+
 
         for (int i = 0; i < 20; i++) {
             game.worldMapState.uiController.setUnitImage(i, null);
         }
-        
-        if(selectedSettlement == null) return;
-        
+
+        if (selectedSettlement == null) {
+            return;
+        }
+
         HashMap<String, Building> list = selectedSettlement.buildings;
 
         int i = 0;
@@ -324,16 +325,17 @@ public class WorldMapUI implements ScreenController {
     }
 
     public void selectSettlement(Settlement s) {
-                
+
         selectedSettlement = s;
         game.showUIElement("settlement_layer", true);
 
-        
-        if(lastSettlementLayerSelection == LastLayerSelection.Units)
+
+        if (lastSettlementLayerSelection == LastLayerSelection.Units) {
             switchToUnitsLayer(s.units);
-        else
+        } else {
             switchToBuildingsLayer();
-        
+        }
+
         refreshSettlementLayer();
 
 

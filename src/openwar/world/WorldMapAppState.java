@@ -11,6 +11,9 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.collision.CollisionResult;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
+import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -29,6 +32,7 @@ import openwar.Main;
  */
 public class WorldMapAppState extends AbstractAppState {
 
+    float cameraAngle = 3f * FastMath.QUARTER_PI;
     public Node sceneNode;
     public boolean showGrid;
     public boolean shiftPressed, ctrlPressed;
@@ -42,25 +46,64 @@ public class WorldMapAppState extends AbstractAppState {
         public void onAnalog(String name, float value, float tpf) {
 
             Vector3f loc = game.getCamera().getLocation();
+            Vector3f dir = game.getCamera().getDirection();
+            boolean movement=false,scroll=false;
 
-            
             if (name.equals("map_strafeup")) {
                 loc.addLocal(0, 0, tpf * -35f);
+                movement=true;
             } else if (name.equals("map_strafedown")) {
                 loc.addLocal(0, 0, tpf * 35f);
+                                movement=true;
+
             } else if (name.equals("map_strafeleft")) {
-                loc.addLocal(tpf * -35f,0,0);
+                loc.addLocal(tpf * -35f, 0, 0);
+                                movement=true;
+
             } else if (name.equals("map_straferight")) {
-                loc.addLocal(tpf * 35f,0,0);
+                loc.addLocal(tpf * 35f, 0, 0);
+                                movement=true;
+
+            } else if (name.equals("map_scrollup")) {
+                cameraAngle += tpf * value;
+            } else if (name.equals("map_scrolldown")) {
+                cameraAngle -= tpf * value;
             }
 
-            if (loc.x < 0f) loc.x = 0f;
-            if (loc.x > map.width) loc.x = map.width;
-            if (loc.z < 10f) loc.z = 10f;
-            if (loc.z > map.width+15f) loc.z = map.width+15f;
+
+            // Some math to ensure we don't leave the map
+            float c = -loc.y / dir.y;
+            float z0 = -c * dir.z;
+            float z1 = map.width - c * dir.z;
+            if (loc.x < 0f) {
+                loc.x = 0;
+            } else if (loc.x > map.width) {
+                loc.x = map.width;
+            }
+            if (loc.z < z0) {
+                loc.z = z0;
+            } else if (loc.z > z1) {
+                loc.z = z1;
+            }
 
 
+            if (cameraAngle <= 2.15f) {
+                cameraAngle = 2.15f;
+            } else if (cameraAngle >= 2.75f) {
+                cameraAngle = 2.75f;
+            }
+            
+            loc.y = 20f*FastMath.pow(2, 3f*(3f* FastMath.QUARTER_PI-cameraAngle));
             game.getCamera().setLocation(loc);
+
+
+            Quaternion rot = new Quaternion();
+            rot.lookAt(dir, game.getCamera().getUp());
+            Quaternion q = new Quaternion().fromAngleAxis(cameraAngle, Vector3f.UNIT_X);
+            dir = q.mult(rot).mult(dir);
+            game.getCamera().lookAtDirection(dir, game.getCamera().getUp());
+
+
 
 
         }
@@ -239,8 +282,8 @@ public class WorldMapAppState extends AbstractAppState {
         uiController.game = game;
 
         logic = new WorldMapGameLogic(game);
-        
-        
+
+
         game.getInputManager().addListener(actionListener, "mouse_left");
         game.getInputManager().addListener(actionListener, "mouse_right");
         game.getInputManager().addListener(actionListener, "show_grid");
@@ -251,6 +294,8 @@ public class WorldMapAppState extends AbstractAppState {
         game.getInputManager().addListener(analogListener, "map_strafedown");
         game.getInputManager().addListener(analogListener, "map_strafeleft");
         game.getInputManager().addListener(analogListener, "map_straferight");
+        game.getInputManager().addListener(analogListener, "map_scrollup");
+        game.getInputManager().addListener(analogListener, "map_scrolldown");
 
         sceneNode = new Node("WorldMap");
         map = new WorldMap(game, sceneNode);
@@ -260,12 +305,12 @@ public class WorldMapAppState extends AbstractAppState {
 
         game.rootNode.attachChild(sceneNode);
         game.getCamera().lookAtDirection(new Vector3f(0f, -1f, -1f).normalizeLocal(), Vector3f.UNIT_Y);
-        game.getCamera().getLocation().y = 15f;
+        game.getCamera().getLocation().y = 20f;
 
         moveCameraTo(Main.DB.hashedSettlements.get(Main.DB.hashedFactions.get(Main.DB.playerFaction).capital));
 
         initialized = true;
-        
+
         logic.beginGame();
         game.audioState.setMusicMode(MusicMode.WorldMapIdle);
 
@@ -341,6 +386,4 @@ public class WorldMapAppState extends AbstractAppState {
             return 0;
         }
     }
-
-   
 }

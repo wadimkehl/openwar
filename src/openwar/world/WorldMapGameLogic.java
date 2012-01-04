@@ -87,6 +87,11 @@ public class WorldMapGameLogic {
 
         if (Main.DB.currentTurn.equals(Main.DB.playerFaction)) {
             game.worldMapState.uiController.deselectAll();
+
+            game.playSound("turn_end");
+
+
+
         }
 
 
