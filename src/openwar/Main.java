@@ -208,17 +208,12 @@ public class Main extends Application {
 
 
         hashedPopUpId = new HashMap<String, String>();
+  
 
-
-
-
-
+        inputManager.clearMappings();
         camera = new FlyByCamera(cam);
         camera.registerWithInput(inputManager);
         camera.setMoveSpeed(35);
-
-        inputManager.clearMappings();
-
 
         getInputManager().addMapping("show_grid", new KeyTrigger(KeyInput.KEY_G));
         getInputManager().addMapping("quit_game", new KeyTrigger(KeyInput.KEY_ESCAPE));
