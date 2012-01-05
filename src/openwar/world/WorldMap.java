@@ -24,9 +24,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.scene.control.UpdateControl;
-import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Quad;
-import com.jme3.scene.shape.Sphere;
 import com.jme3.shadow.PssmShadowRenderer;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import com.jme3.texture.Image;
@@ -39,19 +37,16 @@ import java.util.Stack;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import openwar.DB.Building;
-import openwar.DB.Building.RecruitmentStats;
 import openwar.DB.Climate;
 import openwar.DB.Faction;
-import openwar.DB.GenericBuilding;
-import openwar.DB.GenericBuilding.GenericRecruitmentStats;
 import openwar.DB.GenericTile;
 import openwar.DB.Region;
 import openwar.DB.Settlement;
-import openwar.DB.Settlement.Construction;
 import openwar.DB.Unit;
 
 import openwar.Main;
+import openwar.world.TilePathFinder.Border;
+import openwar.world.TilePathFinder.DrawingAreaTile;
 
 /**
  *
@@ -561,32 +556,51 @@ public class WorldMap {
 
     public void drawReachableArea(ArrayList<Unit> units, int posX, int posZ) {
 
-        ArrayList<Tile> area = pathFinder.getReachableArea(units, posX, posZ, true, false);
+        ArrayList<DrawingAreaTile> area = pathFinder.getReachableArea(units, posX, posZ, true, false);
 
-
-        ArrayList<Vector2f> corners = new ArrayList<Vector2f>();
-        for (Tile t : area) {
-            corners.add(new Vector2f(t.x, t.z + 1));
-            corners.add(new Vector2f(t.x + 1, t.z + 1));
-            corners.add(new Vector2f(t.x + 1, t.z));
-            corners.add(new Vector2f(t.x, t.z));
-        }
-
-        Mesh m = new Mesh();
-        float[] verts = new float[corners.size() * 3];
-        float[] colors = new float[corners.size() * 4];
+        float[] verts = new float[area.size() * 12];
+        float[] colors = new float[area.size() * 16];
         int[] indices = new int[area.size() * 6];
 
-        for (int i = 0; i < corners.size(); i++) {
-            float x = corners.get(i).x;
-            float z = corners.get(i).y;
-            verts[i * 3] = corners.get(i).x;
-            verts[i * 3 + 1] = heightMap.getInterpolatedHeight(x, z) + 0.01f;
-            verts[i * 3 + 2] = corners.get(i).y;
+        for (int i = 0; i < area.size(); i++) {
+            DrawingAreaTile t = area.get(i);
 
-            colors[i * 4] = 0f;
-            colors[i * 4 + 1] = 1f;
-            colors[i * 4 + 2] = 0f;
+            float r = 0f;
+            float g = 1f;
+            float b = 0f;
+
+            if (t.l == Border.Unreachable || t.r == Border.Unreachable || t.t == Border.Unreachable || t.b == Border.Unreachable) {
+                r = 0f;
+                g = 0f;
+                b = 1f;
+            }
+            verts[i * 12 + 0] = t.x;
+            verts[i * 12 + 1] = heightMap.getScaledHeightAtPoint(t.x, t.z) + 0.01f;
+            verts[i * 12 + 2] = t.z;
+            colors[i * 16 + 0] = r;
+            colors[i * 16 + 1] = g;
+            colors[i * 16 + 2] = b;
+
+            verts[i * 12 + 3] = t.x;
+            verts[i * 12 + 4] = heightMap.getScaledHeightAtPoint(t.x, t.z + 1) + 0.01f;
+            verts[i * 12 + 5] = t.z + 1;
+            colors[i * 16 + 4] = r;
+            colors[i * 16 + 5] = g;
+            colors[i * 16 + 6] = b;
+
+            verts[i * 12 + 6] = t.x + 1;
+            verts[i * 12 + 7] = heightMap.getScaledHeightAtPoint(t.x + 1, t.z + 1) + 0.01f;
+            verts[i * 12 + 8] = t.z + 1;
+            colors[i * 16 + 8] = r;
+            colors[i * 16 + 9] = g;
+            colors[i * 16 + 10] = b;
+
+            verts[i * 12 + 9] = t.x + 1;
+            verts[i * 12 + 10] = heightMap.getScaledHeightAtPoint(t.x + 1, t.z) + 0.01f;
+            verts[i * 12 + 11] = t.z;
+            colors[i * 16 + 12] = r;
+            colors[i * 16 + 13] = g;
+            colors[i * 16 + 14] = b;
 
 
         }
@@ -594,14 +608,15 @@ public class WorldMap {
         for (int i = 0; i < area.size(); i++) {
             int base_ind = i * 6;
             int base_vert = i * 4;
-            indices[base_ind] = base_vert;
-            indices[base_ind + 1] = base_vert + 1;
-            indices[base_ind + 2] = base_vert + 2;
-            indices[base_ind + 3] = base_vert + 0;
-            indices[base_ind + 4] = base_vert + 2;
-            indices[base_ind + 5] = base_vert + 3;
+            indices[base_ind] = base_vert + 1;
+            indices[base_ind + 1] = base_vert + 2;
+            indices[base_ind + 2] = base_vert + 3;
+            indices[base_ind + 3] = base_vert + 3;
+            indices[base_ind + 4] = base_vert + 0;
+            indices[base_ind + 5] = base_vert + 1;
         }
 
+        Mesh m = new Mesh();
         m.setBuffer(Type.Position, 3, verts);
         m.setBuffer(Type.Index, 1, indices);
         m.setBuffer(Type.Color, 4, colors);

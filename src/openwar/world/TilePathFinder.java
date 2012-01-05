@@ -30,6 +30,24 @@ public class TilePathFinder {
             ancestor = a;
         }
     }
+
+    public enum Border {
+
+        None,
+        Unreachable,
+        Hostile
+    }
+
+    public class DrawingAreaTile extends Tile {
+
+        Border l, t, r, b;
+
+        public DrawingAreaTile(int x, int z) {
+            super(x, z);
+            l = r = t = b = Border.None;
+        }
+    }
+    
     WorldMap map;
     private int max_distance = 150;
 
@@ -147,8 +165,8 @@ public class TilePathFinder {
         return path;
     }
 
-    public ArrayList<Tile> getReachableArea(ArrayList<Unit> units, int posX, int posZ, boolean walks, boolean sails) {
-        ArrayList<Tile> area = new ArrayList<Tile>();
+    public ArrayList<DrawingAreaTile> getReachableArea(ArrayList<Unit> units, int posX, int posZ, boolean walks, boolean sails) {
+        ArrayList<DrawingAreaTile> area = new ArrayList<DrawingAreaTile>();
 
         int points = 10000;
         for (Unit u : units) {
@@ -156,14 +174,16 @@ public class TilePathFinder {
         }
 
         if (points <= 0) {
-            area.add(new Tile(posX, posZ));
+            DrawingAreaTile d = new DrawingAreaTile(posX, posZ);
+            d.l = d.t = d.r = d.b = Border.Unreachable;
+            area.add(d);
             return area;
         }
 
         // Holds global distance values discovered yet
-        double[][] distance = new double[2 * points][2 * points];
-        for (int x = 0; x < 2 * points; x++) {
-            for (int z = 0; z < 2 * points; z++) {
+        double[][] distance = new double[2 * (points+1)][2 * (points+1)];
+        for (int x = 0; x < 2 * (points+1); x++) {
+            for (int z = 0; z < 2 * (points+1); z++) {
                 distance[x][z] = 10000;
             }
         }
@@ -211,7 +231,17 @@ public class TilePathFinder {
         for (int z = -points; z < points; z++) {
             for (int x = -points; x < points; x++) {
                 if (distance[points + x][points + z] <= points) {
-                    area.add(new Tile(posX + x, posZ + z));
+                    DrawingAreaTile t = new DrawingAreaTile(posX + x, posZ + z);
+                    
+                    if (distance[points + x -1][points + z] > points)
+                        t.l=Border.Unreachable;
+                    if (distance[points + x +1][points + z] > points)
+                        t.r=Border.Unreachable;
+                    if (distance[points + x][points + z-1] > points)
+                        t.t=Border.Unreachable;
+                    if (distance[points + x][points + z+1] > points)
+                        t.b=Border.Unreachable;
+                    area.add(t);
                 }
             }
         }
@@ -219,7 +249,7 @@ public class TilePathFinder {
         return area;
     }
 
-    public ArrayList<Tile> getReachableArea(Army army, boolean walks, boolean sails) {
+    public ArrayList<DrawingAreaTile> getReachableArea(Army army, boolean walks, boolean sails) {
 
         return getReachableArea(army.units, army.posX, army.posZ, walks, sails);
     }
