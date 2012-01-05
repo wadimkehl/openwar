@@ -60,7 +60,7 @@
     <factions>
         
         <faction refname="roman" gold="1000" capital="roma">
-            <army posx="31" posz="15" >
+            <army posx="29" posz="15" >
                 <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
