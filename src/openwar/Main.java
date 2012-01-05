@@ -107,13 +107,10 @@ public class Main extends Application {
             settings.setWidth(Integer.parseInt(display.getAttribute("x")));
             settings.setHeight(Integer.parseInt(display.getAttribute("y")));
             settings.setFullscreen(!Boolean.parseBoolean(display.getAttribute("windowed")));
-            settings.setVSync(Boolean.parseBoolean(display.getAttribute("vsync")));
 
-            if (settings.isFullscreen()) {
-                settings.setBitsPerPixel(32);
+            
+            if (settings.isFullscreen() && System.getProperty("os.name").equals("Mac OS X")) {
                 settings.setFrequency(0);
-            } else {
-                settings.setBitsPerPixel(24);
             }
 
 
@@ -122,7 +119,7 @@ public class Main extends Application {
             devMode = Boolean.parseBoolean(dev.getAttribute("devMode"));
             debugUI = Boolean.parseBoolean(dev.getAttribute("debugUI"));
 
-            if (devMode) {
+             if (devMode) {
                 Logger.getLogger("").setLevel(Level.WARNING);
             }
 
@@ -150,6 +147,7 @@ public class Main extends Application {
 
         app.settings.setTitle("openwar    r" + version);
         app.settings.setFrameRate(30);
+        app.settings.setVSync(true);
 
 
         app.start();
@@ -208,7 +206,7 @@ public class Main extends Application {
 
 
         hashedPopUpId = new HashMap<String, String>();
-  
+
 
         inputManager.clearMappings();
         camera = new FlyByCamera(cam);
