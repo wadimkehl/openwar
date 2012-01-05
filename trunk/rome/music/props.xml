@@ -3,9 +3,7 @@
 <root>
 
  <music refname="main_menu" file="main.ogg" mode="menu" />
-    
- <music refname="idle0" file="celtic_impulse.ogg"  mode="idle"/>
-    <music refname="idle1" file="germanic_peace_1.ogg" mode="idle" />
+        <music refname="idle1" file="germanic_peace_1.ogg" mode="idle" />
     <music refname="idle2" file="carthage_peace_1.ogg" mode="idle" />
     <music refname="idle3" file="germanic_peace_3.ogg" mode="idle" />
 

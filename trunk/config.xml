@@ -4,7 +4,7 @@
 <config>
 
 
-    <display x="800" y="600" windowed="true" vsync="true" />
+    <display x="800" y="600" windowed="false" />
     <module dir="rome" />
     
     
