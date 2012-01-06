@@ -337,17 +337,16 @@ public class WorldMap {
         }
 
 
-        if (!Main.devMode) {
-            BloomFilter bloom = new BloomFilter();
-            bloom.setExposurePower(8f);
-            bloom.setBloomIntensity(1f);
-            fpp.addFilter(bloom);
 
-            PssmShadowRenderer pssm = new PssmShadowRenderer(assetManager, 1024, 8);
-            pssm.setDirection(Main.DB.sun_direction);
-            game.getViewPort().addProcessor(pssm);
+        BloomFilter bloom = new BloomFilter();
+        bloom.setExposurePower(8f);
+        bloom.setBloomIntensity(1.5f);
+        fpp.addFilter(bloom);
 
-        }
+        PssmShadowRenderer pssm = new PssmShadowRenderer(assetManager, 1024, 8);
+        pssm.setDirection(Main.DB.sun_direction);
+        game.getViewPort().addProcessor(pssm);
+
 
         game.getViewPort().addProcessor(fpp);
 
@@ -369,6 +368,14 @@ public class WorldMap {
         return new Vector3f(newx, heightMap.getInterpolatedHeight(newx, newz), newz);
     }
 
+    public Vector3f getGLTileCenterAboveSea(int x, int z) {
+        float newx = x + 0.5f;
+        float newz = z + 0.5f;
+        Vector3f ret = new Vector3f(newx, heightMap.getInterpolatedHeight(newx, newz), newz);
+        ret.y = ret.y < Main.DB.waterHeight ? Main.DB.waterHeight : ret.y;
+        return ret;
+    }
+
     public Vector3f getGLTileCenter(Tile t) {
         return getGLTileCenter(t.x, t.z);
     }
@@ -378,10 +385,20 @@ public class WorldMap {
         return new Vector3f(x, heightMap.getInterpolatedHeight(x, z), z);
     }
 
+    public Vector3f getGLTileCornerAboveSea(int x, int z) {
+        Vector3f ret = new Vector3f(x, heightMap.getInterpolatedHeight(x, z), z);
+        ret.y = ret.y < Main.DB.waterHeight ? Main.DB.waterHeight : ret.y;
+        return ret;
+    }
+
     public void update(float tpf) {
 
 
         minimap.update();
+
+        for (Settlement s : Main.DB.settlements) {
+            s.update(tpf);
+        }
 
         for (Faction f : Main.DB.factions) {
             for (Army a : f.armies) {
@@ -396,7 +413,15 @@ public class WorldMap {
     // Spawns a physical army on the world map
     public Army createArmy(int x, int z, String owner, ArrayList<Unit> units) {
 
-        return null;
+        Army a = new Army();
+        a.posX = x;
+        a.posZ = z;
+        a.owner = owner;
+        a.units = units;
+        a.calculateMovePoints();
+        Main.DB.hashedFactions.get(owner).armies.add(a);
+        a.createData(this);
+        return a;
 
     }
 
@@ -556,7 +581,7 @@ public class WorldMap {
 
     public void drawReachableArea(ArrayList<Unit> units, int posX, int posZ) {
 
-        ArrayList<DrawingAreaTile> area = pathFinder.getReachableArea(units, posX, posZ, true, false);
+        ArrayList<DrawingAreaTile> area = pathFinder.getReachableArea(units, posX, posZ);
 
         float[] verts = new float[area.size() * 12];
         float[] colors = new float[area.size() * 16];
@@ -575,32 +600,36 @@ public class WorldMap {
                 b = 1f;
             }
             verts[i * 12 + 0] = t.x;
-            verts[i * 12 + 1] = heightMap.getScaledHeightAtPoint(t.x, t.z) + 0.01f;
+            verts[i * 12 + 1] = getGLTileCornerAboveSea(t.x,t.z).y + 0.025f;
             verts[i * 12 + 2] = t.z;
             colors[i * 16 + 0] = r;
             colors[i * 16 + 1] = g;
             colors[i * 16 + 2] = b;
+            colors[i * 16 + 3] = 0.5f;
 
             verts[i * 12 + 3] = t.x;
-            verts[i * 12 + 4] = heightMap.getScaledHeightAtPoint(t.x, t.z + 1) + 0.01f;
+            verts[i * 12 + 4] = getGLTileCornerAboveSea(t.x, t.z + 1).y + 0.025f;
             verts[i * 12 + 5] = t.z + 1;
             colors[i * 16 + 4] = r;
             colors[i * 16 + 5] = g;
             colors[i * 16 + 6] = b;
+            colors[i * 16 + 7] = 0.5f;
 
             verts[i * 12 + 6] = t.x + 1;
-            verts[i * 12 + 7] = heightMap.getScaledHeightAtPoint(t.x + 1, t.z + 1) + 0.01f;
+            verts[i * 12 + 7] = getGLTileCornerAboveSea(t.x + 1, t.z + 1).y + 0.025f;
             verts[i * 12 + 8] = t.z + 1;
             colors[i * 16 + 8] = r;
             colors[i * 16 + 9] = g;
             colors[i * 16 + 10] = b;
+            colors[i * 16 + 11] = 0.5f;
 
             verts[i * 12 + 9] = t.x + 1;
-            verts[i * 12 + 10] = heightMap.getScaledHeightAtPoint(t.x + 1, t.z) + 0.01f;
+            verts[i * 12 + 10] = getGLTileCornerAboveSea(t.x + 1, t.z).y + 0.025f;
             verts[i * 12 + 11] = t.z;
             colors[i * 16 + 12] = r;
             colors[i * 16 + 13] = g;
             colors[i * 16 + 14] = b;
+            colors[i * 16 + 15] = 0.5f;
 
 
         }
@@ -630,12 +659,12 @@ public class WorldMap {
         mat.setBoolean("VertexColor", true);
         mat.getAdditionalRenderState().setBlendMode(BlendMode.Modulate);
         reachableArea.setMaterial(mat);
+        reachableArea.setShadowMode(ShadowMode.Receive);
         reachableArea.setQueueBucket(Bucket.Transparent);
         scene.attachChild(reachableArea);
 
     }
-
-    // Run BFS to find the reachable tiles for the army
+     // Run BFS to find the reachable tiles for the army
     public void drawReachableArea(Army army) {
 
         drawReachableArea(army.units, army.posX, army.posZ);
@@ -674,7 +703,9 @@ public class WorldMap {
     public void marchTo(Army a, int x, int z) {
 
         a.calculateMovePoints();
-        Stack<Tile> p = pathFinder.findPath(new Tile(a.posX, a.posZ), new Tile(x, z), true, false);
+        Tile start = new Tile(a.posX, a.posZ);
+        Tile end = new Tile(x, z);
+        Stack<Tile> p = pathFinder.findPath(start, end, a.canWalk(), a.canSail());
         if (p != null) {
             a.setRoute(p);
         }

@@ -94,8 +94,8 @@ public class WorldMinimap {
         return new Tile((int) ((x - imageX) * disparityX),
                 (int) ((y - (map.game.getCamera().getHeight() - imageY)) * disparityZ));
     }
-    
-     public Tile screenToMinimapJME(int x, int y) {
+
+    public Tile screenToMinimapJME(int x, int y) {
         return new Tile((int) ((x - imageX) * disparityX),
                 (int) -(((y - imageY)) * disparityZ));
     }
@@ -119,10 +119,12 @@ public class WorldMinimap {
             c = 2 * HX;
             M = 2 * HY;
             for (;;) {
-                int base = (map.ensureInTerrainZ(y) * mapHeight + map.ensureInTerrainX(x)) * 3;
-                data.put(base, (byte) (((int) minimapCameraColor.x) & 0xff));
-                data.put(base + 1, (byte) (((int) minimapCameraColor.y) & 0xff));
-                data.put(base + 2, (byte) (((int) minimapCameraColor.z) & 0xff));
+                if (map.insideTerrain(x, y)) {
+                    int base = (y * mapHeight + x) * 3;
+                    data.put(base, (byte) (((int) minimapCameraColor.x) & 0xff));
+                    data.put(base + 1, (byte) (((int) minimapCameraColor.y) & 0xff));
+                    data.put(base + 2, (byte) (((int) minimapCameraColor.z) & 0xff));
+                }
                 if (x == xQ) {
                     break;
                 }
@@ -137,10 +139,12 @@ public class WorldMinimap {
             c = 2 * HY;
             M = 2 * HX;
             for (;;) {
-                int base = (map.ensureInTerrainZ(y) * mapHeight + map.ensureInTerrainX(x)) * 3;
-                data.put(base, (byte) (((int) minimapCameraColor.x) & 0xff));
-                data.put(base + 1, (byte) (((int) minimapCameraColor.y) & 0xff));
-                data.put(base + 2, (byte) (((int) minimapCameraColor.z) & 0xff));
+                if (map.insideTerrain(x, y)) {
+                    int base = (y * mapHeight + x) * 3;
+                    data.put(base, (byte) (((int) minimapCameraColor.x) & 0xff));
+                    data.put(base + 1, (byte) (((int) minimapCameraColor.y) & 0xff));
+                    data.put(base + 2, (byte) (((int) minimapCameraColor.z) & 0xff));
+                }
                 if (y == yQ) {
                     break;
                 }

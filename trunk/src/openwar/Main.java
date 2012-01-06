@@ -27,8 +27,12 @@ import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.niftygui.NiftyJmeDisplay;
+import com.jme3.renderer.Camera;
+import com.jme3.renderer.ViewPort;
+import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.Spatial.CullHint;
 import com.jme3.system.AppSettings;
 import de.lessvoid.nifty.Nifty;
 import java.io.File;
@@ -108,7 +112,7 @@ public class Main extends Application {
             settings.setHeight(Integer.parseInt(display.getAttribute("y")));
             settings.setFullscreen(!Boolean.parseBoolean(display.getAttribute("windowed")));
 
-            
+
             if (settings.isFullscreen() && System.getProperty("os.name").equals("Mac OS X")) {
                 settings.setFrequency(0);
             }
@@ -119,7 +123,7 @@ public class Main extends Application {
             devMode = Boolean.parseBoolean(dev.getAttribute("devMode"));
             debugUI = Boolean.parseBoolean(dev.getAttribute("debugUI"));
 
-             if (devMode) {
+            if (devMode) {
                 Logger.getLogger("").setLevel(Level.WARNING);
             }
 
@@ -166,10 +170,8 @@ public class Main extends Application {
     @Override
     public void initialize() {
         super.initialize();
-        viewPort.attachScene(rootNode);
-        guiViewPort.attachScene(guiNode);
-        assetManager.registerLocator(locatorRoot, FileLocator.class.getName());
 
+        assetManager.registerLocator(locatorRoot, FileLocator.class.getName());
         ScriptEngineManager factory = new ScriptEngineManager();
         scriptEngine = factory.getEngineByName("groovy");
         Bindings bindings = scriptEngine.createBindings();
@@ -185,8 +187,16 @@ public class Main extends Application {
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
                 assetManager, inputManager, audioRenderer, guiViewPort);
         nifty = niftyDisplay.getNifty();
-        guiViewPort.addProcessor(niftyDisplay);
 
+
+        viewPort.attachScene(rootNode);
+        guiViewPort.attachScene(guiNode);
+        guiNode.setQueueBucket(Bucket.Gui);
+
+        Camera guiCam = new Camera(settings.getWidth(), settings.getHeight());
+        ViewPort guiViewPort2 = renderManager.createPostView("Gui 2 Default", guiCam);
+        guiViewPort2.addProcessor(niftyDisplay);
+        guiViewPort2.setClearFlags(false, false, false);
 
 
 
@@ -335,6 +345,8 @@ public class Main extends Application {
         guiNode.updateLogicalState(tpf);
         guiNode.updateGeometricState();
         stateManager.render(renderManager);
+
+
         renderManager.render(tpf, context.isRenderable());
         stateManager.postRender();
 

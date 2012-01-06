@@ -2,13 +2,13 @@
 
 <root>
 
-    <unit name="Bowmen" refname="bowmen" maxcount="100" maxmovepoints="20" turnstorecruit="1" walks="true" sails="false" />
+    <unit name="Trireme" refname="trireme" maxcount="15" maxmovepoints="20" turnstorecruit="2" walks="false" sails="true"  />
     
     <description card="unitcard.jpg" detail="info.jpg" info="info.txt"  />
 
     
     <stats att_melee="1" att_assault="1" att_range="5" armor="1" shield="0" melee="true" ranged="true" />
-    <model refname="ranged_unit" skeleton="ranged_unit" texture="bowmen.jpg" />
+    <model refname="trireme" skeleton="ship" texture="bowmen.jpg" />
 
 
 </root>

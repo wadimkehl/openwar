@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Stack;
 import openwar.DB.Unit;
+import openwar.Main;
 
 /**
  *
@@ -87,7 +88,7 @@ public class TilePathFinder {
             double min = 100000;
             PathTile best = null;
             for (PathTile temp : open) {
-                if ((temp.distance + temp.heuristic) < min && map.walkableTile(temp)) {
+                if ((temp.distance + temp.heuristic) < min && (map.walkableTile(temp) || map.sailableTile(temp))) {
                     min = temp.distance + temp.heuristic;
                     best = temp;
                 }
@@ -165,9 +166,18 @@ public class TilePathFinder {
         return path;
     }
 
-    public ArrayList<DrawingAreaTile> getReachableArea(ArrayList<Unit> units, int posX, int posZ, boolean walks, boolean sails) {
+    public ArrayList<DrawingAreaTile> getReachableArea(ArrayList<Unit> units, int posX, int posZ) {
         ArrayList<DrawingAreaTile> area = new ArrayList<DrawingAreaTile>();
 
+        boolean walks = true;
+        for (Unit u : units) {
+            walks &= Main.DB.genUnits.get(u.refName).walks;
+        }
+        boolean sails = true;
+        for (Unit u : units) {
+            sails &= Main.DB.genUnits.get(u.refName).sails;
+        }
+        
         int points = 10000;
         for (Unit u : units) {
             points = Math.min(u.currMovePoints, points);
@@ -249,8 +259,8 @@ public class TilePathFinder {
         return area;
     }
 
-    public ArrayList<DrawingAreaTile> getReachableArea(Army army, boolean walks, boolean sails) {
+    public ArrayList<DrawingAreaTile> getReachableArea(Army army) {
 
-        return getReachableArea(army.units, army.posX, army.posZ, walks, sails);
+        return getReachableArea(army.units, army.posX, army.posZ);
     }
 }

@@ -256,6 +256,9 @@ public class XMLDataLoader {
             entity.maxCount = Integer.parseInt(unit.getAttribute("maxcount"));
             entity.maxMovePoints = Integer.parseInt(unit.getAttribute("maxmovepoints"));
             entity.turnsToRecruit = Integer.parseInt(unit.getAttribute("turnstorecruit"));
+            entity.walks = Boolean.parseBoolean(unit.getAttribute("walks"));
+            entity.sails = Boolean.parseBoolean(unit.getAttribute("sails"));
+
 
             Description desc = new Description();
             String image = "units" + File.separator + entity.refName + File.separator + d.getAttribute("card");
@@ -533,7 +536,18 @@ public class XMLDataLoader {
                         se.buildings.put(b.refName, b);
                     }
 
+
+                    if (r.getElementsByTagName("dock").getLength() > 0) {
+                        Element dock = (Element) r.getElementsByTagName("dock").item(0);
+                        se.createDockInfo(Integer.parseInt(dock.getAttribute("posx")),
+                                Integer.parseInt(dock.getAttribute("posz")),
+                                Integer.parseInt(dock.getAttribute("spawnx")),
+                                Integer.parseInt(dock.getAttribute("spawnz")));
+                    }
+
                 }
+
+
 
 
 

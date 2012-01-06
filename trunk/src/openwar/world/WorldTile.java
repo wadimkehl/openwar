@@ -24,7 +24,7 @@ public class WorldTile extends Tile {
         groundType = type;
         cost = co;
         climate = c;
-
+        modifier = 0;
     }
 
     public String shortInfo() {
@@ -32,11 +32,21 @@ public class WorldTile extends Tile {
         if (!"".equals(owner)) {
             owner = "     Owner: " + Main.DB.genFactions.get(Main.DB.hashedRegions.get(region).owner).name;
         }
-        return super.toString() 
+        return super.toString()
                 + "     Region: " + Main.DB.hashedRegions.get(region).name + owner
                 + "     Climate: " + Main.DB.hashedClimates.get(climate).name;
 
 
+
+    }
+
+    public String MinimapInfo() {
+        String owner = Main.DB.hashedRegions.get(region).owner;
+        if (!"".equals(owner)) {
+            owner = "\nOwner: " + Main.DB.genFactions.get(Main.DB.hashedRegions.get(region).owner).name;
+        }
+        return "Region: " + Main.DB.hashedRegions.get(region).name
+                + owner;
 
     }
 

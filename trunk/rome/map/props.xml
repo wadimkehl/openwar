@@ -88,19 +88,18 @@
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>
             </settlement>
-            <dock posx="0" posz="0" azimuth="180" />
+            <dock posx="35" posz="23" spawnx="35" spawnz="24"/>
         </region>
         
         <region name="Arretium" refname="arretium" color="255 255 0" owner="roman" >
             <settlement name="Arretium" posx="24" posz="8" level="0" population="1000" base_growth="2.0" culture="roman_culture">          
             </settlement>
-            <dock posx="0" posz="0" azimuth="180" />
         </region>
         
         <region name="Tarentum" refname="tarentum" color="0 255 255" owner="roman" >
             <settlement name="Tarentum" posx="52" posz="27" level="0" population="1000" base_growth="2.0" culture="roman_culture">          
             </settlement>
-            <dock posx="0" posz="0" azimuth="180" />
+            <dock posx="45" posz="31" spawnx="44" spawnz="32"/>
         </region>
         
         <region name="Syracuse" refname="syracuse" color="0 255 0" owner="greek" >
@@ -111,18 +110,19 @@
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>
             </settlement>
-            <dock posx="0" posz="0" azimuth="180" />
         </region>
         
         <region name="Segesta" refname="segesta" color="100 255 100" owner="greek" >
             <settlement name="Segesta" posx="35" posz="46" level="0" population="1000" base_growth="2.0" culture="greek_culture">          
                 <building refname="irrigation" level="0" />
                 <building refname="barracks" level="0" />
+                <building refname="docks" level="0" />
                 
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>
             </settlement>
-            <dock posx="0" posz="0" azimuth="180" />
+            <dock posx="40" posz="44" spawnx="40" spawnz="43"/>
+
         </region>
         
         <region name="Carthage" refname="carthage" color="100 100 100" owner="rebels" >
@@ -133,7 +133,6 @@
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>
             </settlement>
-            <dock posx="0" posz="0" azimuth="180" />
         </region>
 
     </regions>

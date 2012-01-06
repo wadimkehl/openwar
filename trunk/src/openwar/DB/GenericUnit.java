@@ -10,16 +10,14 @@ import java.util.Map;
  *
  * @author kehl
  */
- public class GenericUnit
-    {
-        public String refName;
-        public String name;
-        public int maxCount;
-        public int maxMovePoints;
-        public int turnsToRecruit;
+public class GenericUnit {
 
-        public Map<String,Integer> stats;
-        public Description desc;
-        
-        
-    }
+    public String refName;
+    public String name;
+    public int maxCount;
+    public int maxMovePoints;
+    public int turnsToRecruit;
+    public boolean walks, sails;
+    public Map<String, Integer> stats;
+    public Description desc;
+}

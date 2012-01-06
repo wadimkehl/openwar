@@ -8,6 +8,7 @@ import com.jme3.font.BitmapText;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
@@ -15,6 +16,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.BillboardControl;
 import com.jme3.scene.shape.Box;
+import com.jme3.scene.shape.Cylinder;
 import com.jme3.scene.shape.Quad;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -103,6 +105,16 @@ public class Settlement extends WorldEntity {
         public Recruitment() {
         }
     }
+
+    public class Dock {
+
+        public int builtLevel;
+        public Spatial model;
+        public int posX, posZ, spawnX, spawnZ;
+
+        public Dock() {
+        }
+    }
     public Statistics stats;
     public String name;
     public String region;
@@ -110,6 +122,8 @@ public class Settlement extends WorldEntity {
     public int level;
     public HashMap<String, Building> buildings;
     public Spatial billBoard;
+    public BitmapText label;
+    public Dock dock;
     public ArrayList<Construction> constructions;
     public ArrayList<Recruitment> recruitments;
     public HashMap<String, Construction> constructionPool;
@@ -138,6 +152,11 @@ public class Settlement extends WorldEntity {
 
             for (GenericRecruitmentStats grs : gb.levels.get(b.level).genRecStats.values()) {
                 b.createRecruitmentStats(grs);
+            }
+
+            // Special cases for roads and docks
+            if (gb.levels.get(b.level).provides.containsKey("dock")) {
+                constructDock(b.level);
             }
         }
 
@@ -174,36 +193,60 @@ public class Settlement extends WorldEntity {
     public void createBillBoard() {
 
 
-        BitmapText label = new BitmapText(map.game.getAssetManager().loadFont("ui/fonts/palatino.fnt"), false);
-        label.setSize(1f);
+        label = new BitmapText(map.game.getAssetManager().loadFont("ui/fonts/palatino.fnt"), false);
+        label.setSize(25f);
         label.setText(name);
         float width = label.getLineWidth();
         float height = label.getLineHeight();
 
         label.setColor(ColorRGBA.Black);
-        label.setQueueBucket(Bucket.Translucent);
 
-        label.setLocalTranslation(-1.25f, 7 - height / 2, 0.0001f);
-        label.addControl(new BillboardControl());
-        node.attachChild(label);
-
-        billBoard = new Geometry(name + "_billboard", new Quad(width + 0.5f, height + 0.5f, false));
+        billBoard = new Geometry(name + "_billboard", new Quad(width, height, false));
         Material mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
-//        mat.setTexture("ColorMap",game.getAssetManager().loadTexture("Textures/ColoredTex/Monkey.png"));
+        //mat.setTexture("ColorMap",map.game.getAssetManager().loadTexture("ui/fonts/palatino.png"));
         billBoard.setMaterial(mat);
-        billBoard.setQueueBucket(Bucket.Transparent);
-        billBoard.addControl(new BillboardControl());
-        billBoard.setLocalTranslation(-1.5f, 5, 0);
 
-        node.attachChild(billBoard);
+
+        map.game.guiNode.attachChild(billBoard);
+        map.game.guiNode.attachChild(label);
 
 
 
     }
 
     public boolean requirementMet(String name, String value) {
+
+        if ("dock".equals(name) && dock == null) {
+            return false;
+        }
+
         return true;
+    }
+
+    public void createDockInfo(int posx, int posz, int spawnx, int spawnz) {
+        dock = new Dock();
+        dock.posX = posx;
+        dock.posZ = posz;
+        dock.spawnX = spawnx;
+        dock.spawnZ = spawnz;
+        dock.builtLevel = -1;
+
+    }
+
+    public void constructDock(int level) {
+        if (dock == null) {
+            return;
+        }
+
+        dock.builtLevel = level;
+
+        dock.model = (Spatial) new Geometry("dock", new Cylinder(5, 5, 0.5f, 1f));
+        Material mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
+        dock.model.setMaterial(mat);
+        dock.model.setShadowMode(ShadowMode.CastAndReceive);
+        dock.model.setLocalTranslation(map.getGLTileCenter(dock.posX, dock.posZ));
+        map.scene.attachChild(dock.model);
+
     }
 
     public void calculateConstructionPool() {
@@ -376,10 +419,14 @@ public class Settlement extends WorldEntity {
         if (!constructions.isEmpty()) {
             Construction c = constructions.get(0);
             c.currentTurn++;
+
+            // If building is finished
             if (c.currentTurn == c.nrTurns) {
                 constructions.remove(0);
                 Building b = new Building(c.refName, c.level);
 
+                // TODO: remove grs from lower-level building or else multi counting
+                // Refresh
                 GenericBuilding gb = Main.DB.genBuildings.get(c.refName);
                 for (GenericRecruitmentStats grs : gb.levels.get(c.level).genRecStats.values()) {
                     b.createRecruitmentStats(grs);
@@ -394,6 +441,11 @@ public class Settlement extends WorldEntity {
                 String eval = r.owner + "','" + r.refName + "','" + b.refName + "'," + b.level;
                 map.game.doScript("onBuildingBuilt('" + eval + ")");
 
+                // Special cases for roads and docks
+                if (gb.levels.get(b.level).provides.containsKey("dock")) {
+                    constructDock(b.level);
+                }
+
             }
         }
 
@@ -404,7 +456,24 @@ public class Settlement extends WorldEntity {
             if (r.currentTurn == Main.DB.genUnits.get(r.refName).turnsToRecruit) {
                 recruitments.remove(0);
                 Unit u = new Unit(r.refName);
-                units.add(u);
+
+
+                // Check if we recruited a naval unit and either add to flotilla or create new one
+                if (Main.DB.genUnits.get(u.refName).sails) {
+
+                    Army a = map.getArmy(dock.spawnX, dock.spawnZ);
+                    if (a == null) {
+                        ArrayList<Unit> un = new ArrayList<Unit>();
+                        un.add(u);
+                        map.createArmy(dock.spawnX, dock.spawnZ, owner, un);
+                    } else {
+                        a.addUnit(u);
+                    }
+
+
+                } else {
+                    units.add(u);
+                }
                 Region reg = Main.DB.hashedRegions.get(region);
                 String eval = reg.owner + "','" + reg.refName + "','" + u.refName;
                 map.game.doScript("onUnitRecruited('" + eval + "')");
@@ -421,6 +490,14 @@ public class Settlement extends WorldEntity {
 
     @Override
     public void update(float tpf) {
+
+
+        Vector3f pos = map.game.getCamera().getScreenCoordinates(map.getGLTileCenter(posX, posZ));
+        float width = label.getLineWidth();
+        float height = label.getLineHeight();
+        billBoard.setLocalTranslation(pos.x - width / 2, pos.y - 50, -1);
+        label.setLocalTranslation(pos.x - width / 2, pos.y - 50 + height, -1);
+
     }
 
     public Army dispatchArmy(ArrayList<Unit> split) {
