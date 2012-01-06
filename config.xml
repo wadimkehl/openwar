@@ -4,7 +4,7 @@
 <config>
 
 
-    <display x="800" y="600" windowed="false" />
+    <display x="800" y="600" windowed="true" />
     <module dir="rome" />
     
     

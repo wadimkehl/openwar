@@ -85,7 +85,7 @@ public class Army extends WorldEntity {
             route = null;
             onRoute = false;
 
-        }  else {
+        } else {
 
             Tile t = route.peek();
             Vector3f checkpoint = map.getGLTileCenter(t);
@@ -157,6 +157,22 @@ public class Army extends WorldEntity {
         onRoute = true;
 
 
+    }
+
+    public boolean canWalk() {
+        boolean ret = true;
+        for (Unit u : units) {
+            ret &= Main.DB.genUnits.get(u.refName).walks;
+        }
+        return ret;
+    }
+
+    public boolean canSail() {
+        boolean ret = true;
+        for (Unit u : units) {
+            ret &= Main.DB.genUnits.get(u.refName).sails;
+        }
+        return ret;
     }
 
     public void mergeWith(final Army a) {

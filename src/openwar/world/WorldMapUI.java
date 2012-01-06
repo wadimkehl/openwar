@@ -507,7 +507,7 @@ public class WorldMapUI implements ScreenController {
         WorldTile t = game.worldMapState.map.worldTiles[temp.x][temp.z];
 
 
-        prop.setProperty("hintText", t.shortInfo());
+        prop.setProperty("hintText", t.MinimapInfo());
         h.activate(nifty, screen.findElementByName("minimap"), prop);
         h.execute(screen.findElementByName("minimap"), 10, null, nifty.getRenderEngine());
         hintShown = true;

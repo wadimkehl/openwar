@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+
+    <building name="Docks" refname="docks" maxlevel="0" > 
+        <requires name="faction" value="roman greek" />
+        <requires name="dock" value="" />
+    </building>
+      
+    
+    <level level="0" name="Small docks" refname="small_docks" cost="1500" turns="3"  >
+        
+        <description card="image.jpg" detail="detail.jpg" info="info.txt" />
+        
+        <provides name="growth" value="0.5" />
+        <provides name="trade" value="0.5" />
+        <provides name="unit" value="trireme 1 2" />
+        <provides name="dock" value="" />
+                 
+    </level>
+
+
+</root>

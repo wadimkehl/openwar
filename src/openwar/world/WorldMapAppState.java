@@ -57,9 +57,9 @@ public class WorldMapAppState extends AbstractAppState {
             } else if (name.equals("map_straferight")) {
                 loc.addLocal(tpf * 35f, 0, 0);
             } else if (name.equals("map_scrollup")) {
-                cameraAngle += tpf * value;
+                cameraAngle += tpf * value * 0.2f;
             } else if (name.equals("map_scrolldown")) {
-                cameraAngle -= tpf * value;
+                cameraAngle -= tpf * value * 0.2f;
             }
 
             if (!Main.devMode) {
@@ -79,8 +79,8 @@ public class WorldMapAppState extends AbstractAppState {
                 }
                 if (cameraAngle <= 2.15f) {
                     cameraAngle = 2.15f;
-                } else if (cameraAngle >= 2.75f) {
-                    cameraAngle = 2.75f;
+                } else if (cameraAngle >= 2.7f) {
+                    cameraAngle = 2.7f;
                 }
 
                 loc.y = 20f * FastMath.pow(2, 3f * (3f * FastMath.QUARTER_PI - cameraAngle));
@@ -314,7 +314,6 @@ public class WorldMapAppState extends AbstractAppState {
     public void update(float tpf) {
 
         map.update(tpf);
-
 
     }
 
