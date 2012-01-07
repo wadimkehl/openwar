@@ -29,6 +29,7 @@ public class Army extends WorldEntity {
     public int currMovePoints;
     public Stack<Tile> route;
     public boolean onRoute = false;
+    public ArrayList<Unit> cargo = new ArrayList<Unit>();
 
     public Army() {
 
@@ -48,9 +49,9 @@ public class Army extends WorldEntity {
         model.setLocalTranslation(0f, 0.5f, 0f);
         node.attachChild(model);
 
-        banner = (Spatial) new Geometry("", new Quad(0.75f, 1.5f));
+        banner = (Spatial) new Geometry("", new Quad(1f, 2f));
         float random_offset = (((float) Math.random()) - 0.5f) * 0.01f;
-        banner.setLocalTranslation(-0.5f, 1.5f, random_offset);
+        banner.setLocalTranslation(-0.5f, 1f, random_offset);
         Material mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         mat.setTexture("ColorMap", Main.DB.genFactions.get(owner).banner);
@@ -101,7 +102,13 @@ public class Army extends WorldEntity {
                     if (a != null) {
 
                         if (a.owner.equals(owner)) {
-                            mergeWith(a);
+
+                            // Load this army as cargo
+                            if (a.canCargo() && !this.canCargo()) {
+                                a.loadCargo(this);
+                            } else {
+                                mergeWith(a);
+                            }
                         } else {
                             ArrayList<Army> a1 = new ArrayList<Army>();
                             ArrayList<Army> a2 = new ArrayList<Army>();
@@ -127,7 +134,15 @@ public class Army extends WorldEntity {
 
                     Settlement s = map.getSettlement(t);
                     if (s != null) {
-                        garrisonArmy(s);
+
+                        if (s.owner == owner) {
+                            garrisonArmy(s);
+                        } else {
+                            ArrayList<Army> a1 = new ArrayList<Army>();
+                            ArrayList<Army> a2 = new ArrayList<Army>();
+                            a1.add(this);
+                            int result = map.game.worldMapState.siege(a1, a2, s);
+                        }
                     }
                     return;
                 }
@@ -175,6 +190,52 @@ public class Army extends WorldEntity {
         return ret;
     }
 
+    public boolean canCargo() {
+        boolean ret = true;
+        for (Unit u : units) {
+            ret &= Main.DB.genUnits.get(u.refName).cargo;
+        }
+        return ret;
+    }
+
+    public boolean loadCargo(final Army a) {
+
+        if (a.units.size() + cargo.size() > 20) {
+            //map.game.playSound("army_merge");
+            return false;
+        }
+
+
+        for (Unit u : a.units) {
+            cargo.add(u);
+        }
+
+        //map.game.playSound("army_merge");
+        map.selectArmy(this);
+        map.removeArmy(a);
+        return true;
+    }
+
+    public boolean unloadCargo() {
+
+        if (!map.walkableTile(posX, posZ)) {
+            //map.game.playSound("army_merge");
+            return false;
+        }
+
+
+        Army a = cloneSimple();
+        for (Unit u : cargo) {
+            a.units.add(u);
+        }
+        a.calculateMovePoints();
+        map.selectArmy(a);
+
+        //map.game.playSound("army_merge");
+        cargo.clear();
+        return true;
+    }
+
     public void mergeWith(final Army a) {
         final Army l = this;
         for (Unit u : l.units) {
@@ -194,6 +255,8 @@ public class Army extends WorldEntity {
         a.owner = owner;
         a.posX = posX;
         a.posZ = posZ;
+        a.createData(map);
+        map.scene.attachChild(a.node);
 
         return a;
     }
@@ -202,8 +265,6 @@ public class Army extends WorldEntity {
 
         Army a = cloneSimple();
         mergeUnitsTo(a, split);
-        a.createData(map);
-        map.scene.attachChild(a.node);
         map.game.playSound("army_split");
 
 

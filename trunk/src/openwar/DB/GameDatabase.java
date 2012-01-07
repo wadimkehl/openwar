@@ -23,7 +23,7 @@ public class GameDatabase {
     public HashMap<String, GenericBuilding> genBuildings;
     public HashMap<Integer, GenericTile> genTiles;
     public Texture heightmapTex, regionsTex, climatesTex, typesTex;
-    public boolean flipOrderClimates,flipOrderTypes,flipOrderRegions;
+    public boolean flipOrderClimates, flipOrderTypes, flipOrderRegions;
     public HashMap<String, Spatial> decorations;
     public ArrayList<WorldDecoration> worldDecorations;
     public HashMap<String, AudioNode> musicNodes;
@@ -31,6 +31,8 @@ public class GameDatabase {
     public ArrayList<Texture> tileTextures;
     public ArrayList<Float> tileTextures_scales;
     public int tilesTexturesCount;
+    public ArrayList<Culture> cultures;
+    public HashMap<String, Culture> hashedCultures;
     public ArrayList<Region> regions;
     public HashMap<String, Region> hashedRegions;
     public ArrayList<Settlement> settlements;
@@ -39,7 +41,7 @@ public class GameDatabase {
     public HashMap<String, Climate> hashedClimates;
     public ArrayList<Faction> factions;
     public HashMap<String, Faction> hashedFactions;
-    public String playerFaction = "roman";
+    public String playerFaction;
     public int currentRound = 0;
     public String currentTurn;
     public Vector3f heightmapParams, sun_color, sun_direction, water_color;
@@ -64,11 +66,15 @@ public class GameDatabase {
         tileTextures_scales = new ArrayList<Float>();
 
         regions = new ArrayList<Region>();
+        cultures = new ArrayList<Culture>();
+
         settlements = new ArrayList<Settlement>();
         climates = new ArrayList<Climate>();
         factions = new ArrayList<Faction>();
 
         hashedFactions = new HashMap<String, Faction>();
+        hashedCultures = new HashMap<String, Culture>();
+
         hashedRegions = new HashMap<String, Region>();
         hashedClimates = new HashMap<String, Climate>();
         hashedSettlements = new HashMap<String, Settlement>();

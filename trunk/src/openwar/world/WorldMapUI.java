@@ -51,17 +51,12 @@ public class WorldMapUI implements ScreenController {
     public Element unitImage[] = new Element[20];
     public Element buildingImage[] = new Element[12];
     public Element constructionImage[] = new Element[12];
-    public Element recruitmentImage[] = new Element[18];
-    public Element recruitmentListImage[] = new Element[9];
+    public Element recruitmentImage[] = new Element[10];
+    public Element recruitmentListImage[] = new Element[10];
     public Element constructionListImage[] = new Element[6];
     public Element constructionListBarImage;
-    public Element recruitmentListBarImage[] = new Element[9];
-    public Element constructionPanel0;
-    public Element constructionPanel1;
-    public Element constructionListPanel;
-    public Element recruitmentPanel0;
-    public Element recruitmentPanel1;
-    public Element recruitmentListPanel;
+    public Element recruitmentListBarImage[] = new Element[10];
+
     public ArrayList<Unit> selectedUnits = new ArrayList<Unit>();
     public WorldEntity selectedFrom = null;
     public Settlement selectedSettlement;
@@ -93,30 +88,22 @@ public class WorldMapUI implements ScreenController {
         for (int i = 0; i < 12; i++) {
             constructionImage[i] = nifty.getCurrentScreen().findElementByName("construction" + i);
         }
-        for (int i = 0; i < 18; i++) {
+        for (int i = 0; i < 10; i++) {
             recruitmentImage[i] = nifty.getCurrentScreen().findElementByName("recruitment" + i);
         }
         for (int i = 0; i < 6; i++) {
             constructionListImage[i] = nifty.getCurrentScreen().findElementByName("constructionList" + i);
         }
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 10; i++) {
             recruitmentListImage[i] = nifty.getCurrentScreen().findElementByName("recruitmentList" + i);
         }
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 10; i++) {
             recruitmentListBarImage[i] = nifty.getCurrentScreen().findElementByName("recruitmentList" + i + "Bar");
         }
 
         constructionListBarImage = nifty.getCurrentScreen().findElementByName("constructionList0Bar");
 
-        constructionPanel0 = nifty.getCurrentScreen().findElementByName("construction_panel0");
-        constructionPanel1 = nifty.getCurrentScreen().findElementByName("construction_panel1");
-        recruitmentPanel0 = nifty.getCurrentScreen().findElementByName("recruitment_panel0");
-        recruitmentPanel1 = nifty.getCurrentScreen().findElementByName("recruitment_panel1");
-
-        constructionListPanel = nifty.getCurrentScreen().findElementByName("constructionlist_panel");
-        recruitmentListPanel = nifty.getCurrentScreen().findElementByName("recruitmentlist_panel");
-
-
+     
     }
 
     @Override
@@ -136,10 +123,10 @@ public class WorldMapUI implements ScreenController {
         for (int i = 0; i < 6; i++) {
             setConstructionListImage(i, null);
         }
-        for (int i = 0; i < 18; i++) {
+        for (int i = 0; i < 10; i++) {
             setRecruitmentImage(i, null);
         }
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 10; i++) {
             setRecruitmentListImage(i, null);
         }
 
@@ -182,16 +169,15 @@ public class WorldMapUI implements ScreenController {
             int l = s.constructions.get(0).currentTurn;
             ByteBuffer buf = ByteBuffer.allocateDirect(h * 4);
 
-            for (int p = 0; p < h; p++) {
+            for (int p = h-1; p >= 0; p--) {
 
                 buf.put((byte) (0));
                 buf.put((byte) ((0xff & 255)));
                 buf.put((byte) (0));
-                if (p > l) {
-                    buf.put((byte) (0));
-
-                } else {
+                if (p >= l) {
                     buf.put((byte) ((0xff & 128)));
+                } else {
+                    buf.put((byte) (0));
                 }
 
             }
@@ -222,10 +208,10 @@ public class WorldMapUI implements ScreenController {
         for (int i = 0; i < 6; i++) {
             setConstructionListImage(i, null);
         }
-        for (int i = 0; i < 18; i++) {
+        for (int i = 0; i < 10; i++) {
             setRecruitmentImage(i, null);
         }
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 10; i++) {
             setRecruitmentListImage(i, null);
         }
         game.showUIElement("settlement_layer", false);
@@ -301,28 +287,6 @@ public class WorldMapUI implements ScreenController {
         }
     }
 
-    public void switchToConstructions() {
-        constructionPanel0.setVisible(true);
-        constructionPanel1.setVisible(true);
-        constructionListPanel.setVisible(true);
-        recruitmentPanel0.setVisible(false);
-        recruitmentPanel1.setVisible(false);
-        recruitmentListPanel.setVisible(false);
-
-
-
-    }
-
-    public void switchToRecruitments() {
-        constructionPanel0.setVisible(false);
-        constructionPanel1.setVisible(false);
-        constructionListPanel.setVisible(false);
-        recruitmentPanel0.setVisible(true);
-        recruitmentPanel1.setVisible(true);
-        recruitmentListPanel.setVisible(true);
-
-
-    }
 
     public void selectSettlement(Settlement s) {
 

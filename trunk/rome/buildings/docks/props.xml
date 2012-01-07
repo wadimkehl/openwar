@@ -3,7 +3,7 @@
 <root>
 
     <building name="Docks" refname="docks" maxlevel="0" > 
-        <requires name="faction" value="roman greek" />
+        <requires name="faction" value="romans greeks" />
         <requires name="dock" value="" />
     </building>
       
@@ -14,8 +14,8 @@
         
         <provides name="growth" value="0.5" />
         <provides name="trade" value="0.5" />
-        <provides name="unit" value="trireme 1 2" />
-        <provides name="dock" value="" />
+        <provides name="unit" value="trireme 1 3" />
+        <provides name="dock" value="0" />
                  
     </level>
 

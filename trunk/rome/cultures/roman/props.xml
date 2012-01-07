@@ -6,9 +6,15 @@
     
  <settlement>
      
-     <model level="0" file="" />
+     <model level="0" file="roman_settlement_0.blend" />
      
-     </settlement
+     </settlement>
+    
+    <dock>
+        
+        <model level="0" file="roman_dock_0.blend" />
+        
+        </dock>
  
 
 </root>

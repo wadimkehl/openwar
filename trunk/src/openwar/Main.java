@@ -61,17 +61,18 @@ public class Main extends Application {
     public BulletAppState bulletState = new BulletAppState();
     public ScreenshotAppState screenshotState = new ScreenshotAppState();
     public WorldMapAppState worldMapState = new WorldMapAppState();
+    public GameLoaderAppState gameLoaderState = new GameLoaderAppState();
     public DevModeAppState debugState = new DevModeAppState();
     public AudioAppState audioState = new AudioAppState(this);
+    public MenuAppState mainMenuState = new MenuAppState();
     static public GameDatabase DB = new GameDatabase();
-    public XMLDataLoader DataLoader;
     static public ScriptEngine scriptEngine;
     static public boolean devMode;
     static public boolean debugUI;
     private AppActionListener actionListener = new AppActionListener();
     public Node rootNode = new Node("Root Node"), guiNode = new Node("GUI Node");
     protected FlyByCamera camera;
-    public boolean forceQuit;
+    public boolean wishToQuit;
     private static final Logger logger = Logger.getLogger(Main.class.getName());
     public HashMap<String, String> hashedPopUpId;
 
@@ -178,37 +179,26 @@ public class Main extends Application {
         bindings.put("game", this);
         scriptEngine.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
 
-        DataLoader = new XMLDataLoader(this);
-        if (!DataLoader.loadAll()) {
-            forceQuit = true;
-            return;
-        }
+
 
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
                 assetManager, inputManager, audioRenderer, guiViewPort);
         nifty = niftyDisplay.getNifty();
+        nifty.fromXml("ui/loading/ui.xml", "start", mainMenuState);
 
 
         viewPort.attachScene(rootNode);
         guiViewPort.attachScene(guiNode);
         guiNode.setQueueBucket(Bucket.Gui);
+        guiNode.setCullHint(CullHint.Never);
 
         Camera guiCam = new Camera(settings.getWidth(), settings.getHeight());
-        ViewPort guiViewPort2 = renderManager.createPostView("Gui 2 Default", guiCam);
+        ViewPort guiViewPort2 = renderManager.createPostView("guiNode Viewport", guiCam);
         guiViewPort2.addProcessor(niftyDisplay);
         guiViewPort2.setClearFlags(false, false, false);
 
 
 
-        this.stateManager.attach(audioState);
-        this.stateManager.attach(bulletState);
-        this.stateManager.attach(worldMapState);
-        this.stateManager.attach(screenshotState);
-
-
-        if (devMode) {
-            this.stateManager.attach(debugState);
-        }
 
         if (debugUI) {
             nifty.setDebugOptionPanelColors(true);
@@ -325,7 +315,7 @@ public class Main extends Application {
             }
 
             if (name.equals("quit_game")) {
-                forceQuit = true;
+                wishToQuit = true;
 
             }
         }
@@ -338,6 +328,7 @@ public class Main extends Application {
             return;
         }
 
+
         float tpf = timer.getTimePerFrame() * speed;
         stateManager.update(tpf);
         rootNode.updateLogicalState(tpf);
@@ -346,13 +337,22 @@ public class Main extends Application {
         guiNode.updateGeometricState();
         stateManager.render(renderManager);
 
-
         renderManager.render(tpf, context.isRenderable());
         stateManager.postRender();
 
-        if (forceQuit) {
+        if (wishToQuit) {
             stop();
         }
+
+
+        if (gameLoaderState.status == GameLoaderAppState.Status.None) {
+            stateManager.attach(gameLoaderState);
+
+        }
+
+
+
+
     }
 
     public void playSound(String name) {

@@ -41,7 +41,7 @@
         <tile type="9" name="snow"              color="200 200 200" walkable="true" sailable="false" cost="2" textureid="9"/> 
         <tile type="10" name="beach"            color="255 255 255" walkable="true" sailable="true" cost="2" textureid="10"/>  
         <tile type="11" name="mountains"        color="128 128 128" walkable="true" sailable="false" cost="10" textureid="11"/>             
-        <tile type="12" name="ocean"            color="0 0 64"      walkable="false" sailable="true" cost="5" textureid="10"/> 
+        <tile type="12" name="ocean"            color="0 0 64"      walkable="false" sailable="true" cost="1" textureid="10"/> 
         <tile type="13" name="impassable"       color="0 0 0"       walkable="false" sailable="false" cost="1000" textureid="11"/> 
        
         <heightmap factor0="1.0" factor1="0.0" cutoff="0.1"/>
@@ -59,7 +59,7 @@
     
     <factions>
         
-        <faction refname="roman" gold="1000" capital="roma">
+        <faction refname="romans" gold="1000" capital="roma">
             <army posx="29" posz="15" >
                 <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
@@ -71,7 +71,7 @@
             
         </faction>
         
-        <faction refname="greek" gold="1000" capital="syracuse">
+        <faction refname="greeks" gold="1000" capital="syracuse">
         </faction>
         
     </factions>
@@ -80,7 +80,7 @@
         
         <region name="Ocean" refname="" owner="" color="0 0 0" />
         
-        <region name="Roma" refname="roma" color="255 0 0" owner="roman" >
+        <region name="Roma" refname="roma" color="255 0 0" owner="romans" >
             <settlement name="Rome" posx="31" posz="17" level="0" population="1000" base_growth="2.0" culture="roman_culture">          
                 <building refname="irrigation" level="0" />
                 <building refname="barracks" level="0" />
@@ -91,18 +91,18 @@
             <dock posx="35" posz="23" spawnx="35" spawnz="24"/>
         </region>
         
-        <region name="Arretium" refname="arretium" color="255 255 0" owner="roman" >
+        <region name="Arretium" refname="arretium" color="255 255 0" owner="romans" >
             <settlement name="Arretium" posx="24" posz="8" level="0" population="1000" base_growth="2.0" culture="roman_culture">          
             </settlement>
         </region>
         
-        <region name="Tarentum" refname="tarentum" color="0 255 255" owner="roman" >
+        <region name="Tarentum" refname="tarentum" color="0 255 255" owner="romans" >
             <settlement name="Tarentum" posx="52" posz="27" level="0" population="1000" base_growth="2.0" culture="roman_culture">          
             </settlement>
             <dock posx="45" posz="31" spawnx="44" spawnz="32"/>
         </region>
         
-        <region name="Syracuse" refname="syracuse" color="0 255 0" owner="greek" >
+        <region name="Syracuse" refname="syracuse" color="0 255 0" owner="greeks" >
             <settlement name="Syracuse" posx="43" posz="50" level="0" population="1000" base_growth="2.0" culture="greek_culture">          
                 <building refname="irrigation" level="0" />
                 <building refname="barracks" level="0" />
@@ -112,7 +112,7 @@
             </settlement>
         </region>
         
-        <region name="Segesta" refname="segesta" color="100 255 100" owner="greek" >
+        <region name="Segesta" refname="segesta" color="100 255 100" owner="greeks" >
             <settlement name="Segesta" posx="35" posz="46" level="0" population="1000" base_growth="2.0" culture="greek_culture">          
                 <building refname="irrigation" level="0" />
                 <building refname="barracks" level="0" />

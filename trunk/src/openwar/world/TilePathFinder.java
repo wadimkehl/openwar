@@ -20,11 +20,11 @@ public class TilePathFinder {
     // Serves for path finding things
     public class PathTile extends Tile {
 
-        public double distance;
-        public double heuristic;
+        public float distance;
+        public float heuristic;
         public PathTile ancestor;
 
-        public PathTile(int x, int z, double d, double h, PathTile a) {
+        public PathTile(int x, int z, float d, float h, PathTile a) {
             super(x, z);
             distance = d;
             heuristic = h;
@@ -48,9 +48,8 @@ public class TilePathFinder {
             l = r = t = b = Border.None;
         }
     }
-    
     WorldMap map;
-    private int max_distance = 150;
+    private int max_distance = 250;
 
     public TilePathFinder(WorldMap m) {
         this.map = m;
@@ -70,7 +69,7 @@ public class TilePathFinder {
             return null;
         }
 
-        double h = Math.sqrt((end.x - start.x) * (end.x - start.x) + (end.z - start.z) * (end.z - start.z));
+        float h = (float) Math.sqrt((end.x - start.x) * (end.x - start.x) + (end.z - start.z) * (end.z - start.z));
 
         if (h > max_distance) {
             return null;
@@ -79,7 +78,7 @@ public class TilePathFinder {
 
         LinkedList<PathTile> open = new LinkedList<PathTile>();
         LinkedList<PathTile> closed = new LinkedList<PathTile>();
-        open.add(new PathTile(start.x, start.z, 0, h, null));
+        open.add(new PathTile(start.x, start.z, 0f, h, null));
 
         PathTile p = null;
         while (!open.isEmpty()) {
@@ -127,7 +126,7 @@ public class TilePathFinder {
                         continue;
                     }
 
-                    double new_distance = best.distance + map.getTileCosts(newx, newz);
+                    float new_distance = best.distance + map.getTileCosts(newx, newz);
 
                     // check if in open list
                     boolean alreadyOpen = false;
@@ -144,7 +143,7 @@ public class TilePathFinder {
                     }
 
                     if (!alreadyOpen) {
-                        h = Math.sqrt((end.x - newx) * (end.x - newx) + (end.z - newz) * (end.z - newz));
+                        h = (float) Math.sqrt((end.x - newx) * (end.x - newx) + (end.z - newz) * (end.z - newz));
                         open.add(new PathTile(newx, newz, new_distance, h, best));
                     }
 
@@ -177,7 +176,7 @@ public class TilePathFinder {
         for (Unit u : units) {
             sails &= Main.DB.genUnits.get(u.refName).sails;
         }
-        
+
         int points = 10000;
         for (Unit u : units) {
             points = Math.min(u.currMovePoints, points);
@@ -191,13 +190,14 @@ public class TilePathFinder {
         }
 
         // Holds global distance values discovered yet
-        double[][] distance = new double[2 * (points+1)][2 * (points+1)];
-        for (int x = 0; x < 2 * (points+1); x++) {
-            for (int z = 0; z < 2 * (points+1); z++) {
+        int center = points + 1;
+        float[][] distance = new float[2 * center+1][2 * center+1];
+        for (int x = 0; x < 2 * center+1; x++) {
+            for (int z = 0; z < 2 * center+1; z++) {
                 distance[x][z] = 10000;
             }
         }
-        distance[points][points] = 0;
+        distance[center][center] = 0;
 
         // Do BFS for all tiles in question starting from army's position
         LinkedList<PathTile> q = new LinkedList<PathTile>();
@@ -220,16 +220,18 @@ public class TilePathFinder {
                         continue;
                     }
 
-                    int offset_x = t.x - posX + x + points;
-                    int offset_z = t.z - posZ + z + points;
-                    if (offset_x < 0 || offset_x > points * 2 - 1 || offset_z < 0 || offset_z > points * 2 - 1) {
+                    int offset_x = (t.x - posX) + x + center;
+                    int offset_z = (t.z - posZ) + z + center;
+                    if (offset_x < 0 || offset_x > center * 2 || offset_z < 0 || offset_z > center * 2) {
                         continue;
                     }
 
-                    double new_d = map.getTileCosts(t.x + x, t.z + z) + t.distance;
+                    float new_d = map.getTileCosts(t.x + x, t.z + z) + t.distance;
                     if (new_d > points) {
                         continue;
                     }
+
+
                     if (new_d < distance[offset_x][offset_z]) {
                         distance[offset_x][offset_z] = new_d;
                         q.add(new PathTile(t.x + x, t.z + z, new_d, 0, t));
@@ -237,20 +239,22 @@ public class TilePathFinder {
                 }
             }
         }
-
-        for (int z = -points; z < points; z++) {
-            for (int x = -points; x < points; x++) {
-                if (distance[points + x][points + z] <= points) {
+        for (int z = -points; z <= points; z++) {
+            for (int x = -points; x <= points; x++) {
+                if (distance[center + x][center + z] <= points) {
                     DrawingAreaTile t = new DrawingAreaTile(posX + x, posZ + z);
-                    
-                    if (distance[points + x -1][points + z] > points)
-                        t.l=Border.Unreachable;
-                    if (distance[points + x +1][points + z] > points)
-                        t.r=Border.Unreachable;
-                    if (distance[points + x][points + z-1] > points)
-                        t.t=Border.Unreachable;
-                    if (distance[points + x][points + z+1] > points)
-                        t.b=Border.Unreachable;
+                    if (distance[center + x - 1][center + z] > points) {
+                        t.l = Border.Unreachable;
+                    }
+                    if (distance[center + x + 1][center + z] > points) {
+                        t.r = Border.Unreachable;
+                    }
+                    if (distance[center + x][center + z - 1] > points) {
+                        t.t = Border.Unreachable;
+                    }
+                    if (distance[center + x][center + z + 1] > points) {
+                        t.b = Border.Unreachable;
+                    }
                     area.add(t);
                 }
             }

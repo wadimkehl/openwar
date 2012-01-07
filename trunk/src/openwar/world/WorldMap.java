@@ -308,7 +308,6 @@ public class WorldMap {
             return false;
         }
 
-        minimap = new WorldMinimap(this);
 
         scene.addControl(new UpdateControl());
 

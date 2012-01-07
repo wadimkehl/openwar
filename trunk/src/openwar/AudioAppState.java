@@ -30,19 +30,19 @@ public class AudioAppState extends AbstractAppState {
     public float soundVolume = 1f, musicVolume = 1f;
     public float secsBetweenSongs = 5.0f;
     public float currentSecsWait = 0f;
-    public AudioNode fadeOutNode = null;
+    public ArrayList<AudioNode> fadeOutNodes;
 
     public AudioAppState(Main g) {
         game = g;
         menu = new ArrayList<String>();
         loading = new ArrayList<String>();
-
+        fadeOutNodes = new ArrayList<AudioNode>();
         worldMapIdle = new ArrayList<String>();
     }
-    
+
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
-    initialized=true;
+        initialized = true;
     }
 
     public void setMusicVolume(float v) {
@@ -66,7 +66,7 @@ public class AudioAppState extends AbstractAppState {
         }
 
         if (currentMusic != null) {
-            fadeOutNode = Main.DB.musicNodes.get(currentMusic);
+            fadeOutNodes.add(Main.DB.musicNodes.get(currentMusic));
         }
 
         mode = m;
@@ -86,6 +86,10 @@ public class AudioAppState extends AbstractAppState {
             case Loading:
                 list = loading;
                 break;
+
+            case Menu:
+                list = menu;
+                break;
         }
 
         Random r = new Random();
@@ -101,18 +105,24 @@ public class AudioAppState extends AbstractAppState {
     @Override
     public void update(float tpf) {
 
-        if (fadeOutNode != null) {
+        if (!fadeOutNodes.isEmpty()) {
+            AudioNode nodeToRemove = null;
 
-            fadeOutNode.setVolume(fadeOutNode.getVolume() - 0.01f);
+            for (AudioNode fadeOutNode : fadeOutNodes) {
+                fadeOutNode.setVolume(fadeOutNode.getVolume() - 0.01f);
 
-            if (fadeOutNode.getVolume() <= 0.01f) {
-                fadeOutNode.stop();
-                fadeOutNode.setVolume(soundVolume);
-                fadeOutNode = null;
+                if (fadeOutNode.getVolume() <= 0.01f) {
+                    fadeOutNode.stop();
+                    fadeOutNode.setVolume(soundVolume);
+                    nodeToRemove = fadeOutNode;
+                }
+            }
+            if (nodeToRemove != null) {
+                fadeOutNodes.remove(nodeToRemove);
             }
 
         }
-        
+
 
         if (mode == MusicMode.None || currentMusic == null) {
             return;

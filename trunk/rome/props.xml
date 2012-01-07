@@ -2,12 +2,13 @@
 
 <root>
 
- <title name="Rome" />
- 
+ <info name="Rome" description="" />
+     
  <credits>
      <person name="Wadim Kehl" job="Everything"/>
-     <person name="James Nicholls" job="Everything"/>
-
+     <person name="Andreas Kehl" job="Voice talent" />
+     <person name="Konstantin Tönnesen" job="2D/3D Artist" />
+     
      <person name="Kevin MacLeod" job="Music" />
  </credits>
  

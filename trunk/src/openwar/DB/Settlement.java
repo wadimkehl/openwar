@@ -8,6 +8,7 @@ import com.jme3.font.BitmapText;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
@@ -156,25 +157,25 @@ public class Settlement extends WorldEntity {
 
             // Special cases for roads and docks
             if (gb.levels.get(b.level).provides.containsKey("dock")) {
-                constructDock(b.level);
+                String dockLevel = gb.levels.get(b.level).provides.get("dock").get(0);
+                constructDock(Integer.parseInt(dockLevel));
             }
         }
 
         calculateConstructionPool();
         calculateRecruitmentPool();
 
-
-        //Spatial m = Main.DB.genBuildings.get("city").levels.get(level).model.clone();
-        model = (Spatial) new Geometry("city", new Box(Vector3f.ZERO, 1.2f, 0.25f, 1.2f));
+        String file = Main.DB.hashedCultures.get(culture).settlementModels.get(level);
+        model = map.game.getAssetManager().loadModel("models/" + file);
         Material mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
         model.setMaterial(mat);
         model.setShadowMode(ShadowMode.CastAndReceive);
-        model.setLocalTranslation(0f, 0.25f, 0f);
+        model.setLocalTranslation(0.25f, 0f, 0.25f);
         node.attachChild(model);
 
 
-        banner = (Spatial) new Geometry("", new Quad(0.75f, 1.5f));
-        banner.setLocalTranslation(-0.25f, 1.5f, 0f);
+        banner = (Spatial) new Geometry("", new Quad(1f, 2f));
+        banner.setLocalTranslation(-0.5f, 1f, 0f);
         mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         mat.setTexture("ColorMap", Main.DB.genFactions.get(owner).banner);
@@ -185,8 +186,18 @@ public class Settlement extends WorldEntity {
         createBillBoard();
 
 
-        node.setLocalTranslation(map.getGLTileCenter(posX, posZ));
+        node.setLocalTranslation(map.getGLTileCenterAboveSea(posX, posZ));
         map.scene.attachChild(node);
+
+    }
+
+    public void changeOwner(String o) {
+        Main.DB.hashedRegions.get(region).owner = o;
+        owner = o;
+        Material mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+        mat.setTexture("ColorMap", Main.DB.genFactions.get(owner).banner);
+        banner.setMaterial(mat);
 
     }
 
@@ -240,11 +251,17 @@ public class Settlement extends WorldEntity {
 
         dock.builtLevel = level;
 
-        dock.model = (Spatial) new Geometry("dock", new Cylinder(5, 5, 0.5f, 1f));
+        String file = Main.DB.hashedCultures.get(culture).dockModels.get(level);
+        dock.model = map.game.getAssetManager().loadModel("models/" + file);
         Material mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
         dock.model.setMaterial(mat);
         dock.model.setShadowMode(ShadowMode.CastAndReceive);
-        dock.model.setLocalTranslation(map.getGLTileCenter(dock.posX, dock.posZ));
+        dock.model.setLocalTranslation(map.getGLTileCenterAboveSea(dock.posX, dock.posZ));
+        Vector3f dir = map.getGLTileCenterAboveSea(dock.spawnX, dock.spawnZ).subtractLocal(
+                map.getGLTileCenterAboveSea(dock.posX, dock.posZ));
+        Quaternion q = new Quaternion();
+        q.lookAt(dir, Vector3f.UNIT_Y);
+        dock.model.setLocalRotation(q);
         map.scene.attachChild(dock.model);
 
     }
@@ -343,12 +360,21 @@ public class Settlement extends WorldEntity {
     }
 
     public void startConstruction(Construction c) {
+
+        if (constructions.size() >= 6) {
+            return;
+        }
+
         constructions.add(c);
         constructionPool.remove(c.refName);
 
     }
 
     public void startRecruitment(String r) {
+        if (recruitments.size() >= 10) {
+            return;
+        }
+
         int n = recruitmentPool.get(r);
         Recruitment rec = new Recruitment();
         rec.refName = r;
@@ -443,7 +469,8 @@ public class Settlement extends WorldEntity {
 
                 // Special cases for roads and docks
                 if (gb.levels.get(b.level).provides.containsKey("dock")) {
-                    constructDock(b.level);
+                    String dockLevel = gb.levels.get(b.level).provides.get("dock").get(0);
+                    constructDock(Integer.parseInt(dockLevel));
                 }
 
             }
