@@ -2,7 +2,7 @@
 
 <root>
 
-    <faction name="Romans" refname="roman" color="116 48 87" religion="roman_pantheon"/>
+    <faction name="Romans" refname="romans" color="116 48 87" religion="roman_pantheon" />
     <images banner="banner.png" flag="flag.png" icon="icon.png" />
     
     <names>
