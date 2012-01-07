@@ -5,11 +5,15 @@
     <culture name="Greek Culture" refname="greek_culture" />
 
     
- <settlement>
-     
-     <model level="0" file="" />
-     
-     </settlement
- 
-
+    <settlement>
+        
+        <model level="0" file="roman_settlement_0.blend" />
+        
+    </settlement>
+    
+    <dock>
+        
+        <model level="0" file="roman_dock_0.blend" />
+        
+    </dock>
 </root>

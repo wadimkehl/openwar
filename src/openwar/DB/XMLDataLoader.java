@@ -62,6 +62,37 @@ public class XMLDataLoader {
         }
     }
 
+    private boolean loadCulture(Element root) {
+        Culture c=null;
+        try {
+            Element cul = (Element) root.getElementsByTagName("culture").item(0);
+            c = new Culture(cul.getAttribute("name"), cul.getAttribute("refname"));
+            Main.DB.cultures.add(c);
+            Main.DB.hashedCultures.put(c.refName, c);
+
+            Element sett = (Element) root.getElementsByTagName("settlement").item(0);
+            NodeList nodes = sett.getElementsByTagName("model");
+            for (int i = 0; i < nodes.getLength(); i++) {
+                int l = Integer.parseInt(((Element) nodes.item(i)).getAttribute("level"));
+                c.settlementModels.put(l, ((Element) nodes.item(i)).getAttribute("file"));
+            }
+
+            Element dock = (Element) root.getElementsByTagName("dock").item(0);
+            nodes = dock.getElementsByTagName("model");
+            for (int i = 0; i < nodes.getLength(); i++) {
+                int l = Integer.parseInt(((Element) nodes.item(i)).getAttribute("level"));
+                c.dockModels.put(l, ((Element) nodes.item(i)).getAttribute("file"));
+            }
+
+
+            logger.log(Level.WARNING, "*Culture loaded: {0} *", c.refName);
+            return true;
+        } catch (Exception E) {
+            logger.log(Level.SEVERE, "Culture CANNOT be loaded: {0}", c.refName);
+            return false;
+        }
+    }
+
     private boolean loadSounds(Element root) {
         AudioNode entity = new AudioNode();
         String refname = null;
@@ -230,6 +261,9 @@ public class XMLDataLoader {
                 } else if ("factions".equals(folder)) {
                     result = loadFaction(root);
                 }
+                else if ("cultures".equals(folder)) {
+                    result = loadCulture(root);
+                }
 
                 if (!result) {
                     return false;
@@ -258,6 +292,7 @@ public class XMLDataLoader {
             entity.turnsToRecruit = Integer.parseInt(unit.getAttribute("turnstorecruit"));
             entity.walks = Boolean.parseBoolean(unit.getAttribute("walks"));
             entity.sails = Boolean.parseBoolean(unit.getAttribute("sails"));
+            entity.cargo = Boolean.parseBoolean(unit.getAttribute("cargo"));
 
 
             Description desc = new Description();
@@ -509,6 +544,7 @@ public class XMLDataLoader {
                     se.level = Integer.parseInt(sett.getAttribute("level"));
                     se.stats.population = Integer.parseInt(sett.getAttribute("population"));
                     se.stats.base_growth = Double.parseDouble(sett.getAttribute("base_growth"));
+                    se.culture = sett.getAttribute("culture");
                     se.region = reg.refName;
                     reg.settlement = se;
                     Main.DB.settlements.add(se);
@@ -597,10 +633,7 @@ public class XMLDataLoader {
 
             }
 
-            // Make sure that the player faction is the first in the list
-            Main.DB.factions.remove(Main.DB.hashedFactions.get(Main.DB.playerFaction));
-            Main.DB.factions.add(0, Main.DB.hashedFactions.get(Main.DB.playerFaction));
-
+        
             c = decorations.getElementsByTagName("decoration");
             for (int i = 0; i < c.getLength(); i++) {
                 Element r = (Element) c.item(i);
@@ -645,6 +678,8 @@ public class XMLDataLoader {
             boolean result = true;
             logger.log(Level.WARNING, "Loading factions");
             result = result & loadData("factions");
+            logger.log(Level.WARNING, "Loading cultures");
+            result = result & loadData("cultures");
             logger.log(Level.WARNING, "Loading units");
             result = result & loadData("units");
             logger.log(Level.WARNING, "Loading buildings");

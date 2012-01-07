@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+
+ <building name="Archery Range" refname="archery_range" maxlevel="0" />
+   
+    <level level="0" name="Small Archery Range" refname="small_archery_range" cost="1500" turns="2"  >
+        
+        <description card="image.jpg" detail="detail.jpg" info="info.txt" />
+        
+        <provides name="unit" value="bowmen 1 1" />
+                 
+    </level>
+
+    
+
+
+</root>

@@ -13,15 +13,13 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
-import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.terrain.geomipmap.TerrainPatch;
-import java.io.File;
+import de.lessvoid.nifty.screen.Screen;
 import java.util.ArrayList;
 import openwar.AudioAppState.MusicMode;
-import openwar.DB.Faction;
 import openwar.DB.Settlement;
 import openwar.DB.Unit;
 import openwar.Main;
@@ -57,9 +55,9 @@ public class WorldMapAppState extends AbstractAppState {
             } else if (name.equals("map_straferight")) {
                 loc.addLocal(tpf * 35f, 0, 0);
             } else if (name.equals("map_scrollup")) {
-                cameraAngle += tpf * value * 0.2f;
+                cameraAngle += tpf * value * 0.8f;
             } else if (name.equals("map_scrolldown")) {
-                cameraAngle -= tpf * value * 0.2f;
+                cameraAngle -= tpf * value * 0.8f;
             }
 
             if (!Main.devMode) {
@@ -165,6 +163,7 @@ public class WorldMapAppState extends AbstractAppState {
             return;
         }
 
+        spat = (Spatial) r.getGeometry().getParent().getParent();
         Settlement s = map.getSettlement(spat);
         if (s != null) {
 
@@ -237,10 +236,16 @@ public class WorldMapAppState extends AbstractAppState {
         }
 
         // TODO: BLENDER exports spatial into two cascaded nodes!
-        //Spatial s = (Spatial) r.getGeometry().getParent().getParent();
         Spatial s = (Spatial) r.getGeometry();
         Army ar = map.getArmy(s);
         if (ar != null) {
+
+            if (ar == map.selectedArmy) {
+                if (ar.canCargo() && !ar.cargo.isEmpty()) {
+                    ar.unloadCargo();
+                }
+            }
+
             if (!ar.owner.equals(a.owner)) {
                 game.playSound("army_attack");
             } else {
@@ -250,6 +255,7 @@ public class WorldMapAppState extends AbstractAppState {
             return;
         }
 
+        s = (Spatial) r.getGeometry().getParent().getParent();
         Settlement c = map.getSettlement(s);
         if (c != null) {
             map.marchTo(a, c);
@@ -265,11 +271,6 @@ public class WorldMapAppState extends AbstractAppState {
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         game = (Main) app;
-
-        uiController = new WorldMapUI();
-        game.nifty.fromXml("ui" + File.separator + "worldmap"
-                + File.separator + "ui.xml", "start", uiController);
-        uiController.game = game;
 
         logic = new WorldMapGameLogic(game);
 
@@ -287,26 +288,32 @@ public class WorldMapAppState extends AbstractAppState {
         game.getInputManager().addListener(analogListener, "map_scrollup");
         game.getInputManager().addListener(analogListener, "map_scrolldown");
 
-        sceneNode = new Node("WorldMap");
-        map = new WorldMap(game, sceneNode);
-        if (!map.createWorldMap()) {
-            game.forceQuit = true;
-        }
 
+        sceneNode = new Node("WorldMap");
         game.rootNode.attachChild(sceneNode);
         game.getCamera().lookAtDirection(new Vector3f(0f, -1f, -1f).normalizeLocal(), Vector3f.UNIT_Y);
         game.getCamera().getLocation().y = 20f;
 
         moveCameraTo(Main.DB.hashedSettlements.get(Main.DB.hashedFactions.get(Main.DB.playerFaction).capital));
 
-        initialized = true;
+
+        map = new WorldMap(game, sceneNode);
+        if (!map.createWorldMap()) {
+            game.wishToQuit = true;
+        }
+
+
+        uiController = new WorldMapUI();
+        uiController.game = game;
+        game.nifty.fromXml("ui/worldmap/ui.xml", "start", uiController);
+        map.minimap = new WorldMinimap(map);
 
         logic.beginGame();
-        game.audioState.setMusicMode(MusicMode.WorldMapIdle);
 
-        if (Main.devMode) {
-            return;
-        }
+
+        initialized = true;
+
+
 
     }
 
@@ -362,6 +369,43 @@ public class WorldMapAppState extends AbstractAppState {
                 map.removeArmy(a);
                 game.playSound("army_death");
             }
+            return 1;
+        }
+        if (power1 < power2) {
+            for (Army a : a1) {
+                map.removeArmy(a);
+                game.playSound("army_death");
+
+            }
+            return 2;
+        } else {
+            return 0;
+        }
+    }
+
+    public int siege(ArrayList<Army> a1, ArrayList<Army> a2, Settlement s) {
+        int power1 = 0, power2 = 0;
+
+        for (Army a : a1) {
+            power1 += a.units.size();
+        }
+        for (Army a : a2) {
+            power2 += a.units.size();
+        }
+
+        power2 += s.units.size();
+
+        if (power1 > power2) {
+            for (Army a : a2) {
+                map.removeArmy(a);
+                game.playSound("army_death");
+            }
+            s.units.clear();
+            s.changeOwner(a1.get(0).owner);
+            for (Army a : a1) {
+                a.garrisonArmy(s);
+            }
+
             return 1;
         }
         if (power1 < power2) {

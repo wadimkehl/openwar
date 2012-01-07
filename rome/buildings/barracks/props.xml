@@ -3,7 +3,7 @@
 <root>
 
     <building name="Barracks" refname="barracks" maxlevel="2" >
-        <requires name="faction" value="roman greek" />
+        <requires name="faction" value="romans greeks" />
     </building>
     
     <level level="0" name="Recruiting tent" refname="low_barracks" cost="500" turns="1" >
