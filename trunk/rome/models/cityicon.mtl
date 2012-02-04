@@ -1,0 +1,155 @@
+# Blender3D MTL File: cityicon.blend
+# Material Count: 14
+newmtl Material.010_stones.jpg
+Ns 286.274510
+Ka 0.000000 0.000000 0.000000
+Kd 0.548800 0.420000 0.316800
+Ks 0.022500 0.022500 0.022500
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd stones.jpg
+
+
+newmtl Material.001_yellowstn.png
+Ns 286.274510
+Ka 0.000000 0.000000 0.000000
+Kd 0.524000 0.392000 0.166400
+Ks 0.022500 0.022500 0.022500
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd yellowstn.png
+
+
+newmtl Material.013_zigel.jpg
+Ns 286.274510
+Ka 0.000000 0.000000 0.000000
+Kd 0.429600 0.156800 0.156800
+Ks 0.022500 0.022500 0.022500
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd zigel.jpg
+
+
+newmtl Material.005_stones.jpg
+Ns 286.274510
+Ka 0.000000 0.000000 0.000000
+Kd 0.548800 0.420000 0.316800
+Ks 0.022500 0.022500 0.022500
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd stones.jpg
+
+
+newmtl Material.011_yellowstn.png
+Ns 286.274510
+Ka 0.000000 0.000000 0.000000
+Kd 0.524000 0.392000 0.166400
+Ks 0.022500 0.022500 0.022500
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd yellowstn.png
+
+
+newmtl Material.007_zigel.jpg
+Ns 286.274510
+Ka 0.000000 0.000000 0.000000
+Kd 0.429600 0.156800 0.156800
+Ks 0.022500 0.022500 0.022500
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd zigel.jpg
+
+
+newmtl Material
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ni 1.000000
+d 1.000000
+illum 2
+
+
+newmtl Material.015_zigel.jpg
+Ns 286.274510
+Ka 0.000000 0.000000 0.000000
+Kd 0.429600 0.156800 0.156800
+Ks 0.022500 0.022500 0.022500
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd zigel.jpg
+
+
+newmtl Material.008_yellowstn.png
+Ns 286.274510
+Ka 0.000000 0.000000 0.000000
+Kd 0.524000 0.392000 0.166400
+Ks 0.022500 0.022500 0.022500
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd yellowstn.png
+
+
+newmtl Material.006_yellowstn.png
+Ns 286.274510
+Ka 0.000000 0.000000 0.000000
+Kd 0.524000 0.392000 0.166400
+Ks 0.022500 0.022500 0.022500
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd yellowstn.png
+
+
+newmtl Material.012_zigel.jpg
+Ns 286.274510
+Ka 0.000000 0.000000 0.000000
+Kd 0.429600 0.156800 0.156800
+Ks 0.022500 0.022500 0.022500
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd zigel.jpg
+
+
+newmtl Material.014_yellowstn.png
+Ns 286.274510
+Ka 0.000000 0.000000 0.000000
+Kd 0.524000 0.392000 0.166400
+Ks 0.022500 0.022500 0.022500
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd yellowstn.png
+
+
+newmtl Material.002_yellowstn.png
+Ns 286.274510
+Ka 0.000000 0.000000 0.000000
+Kd 0.524000 0.392000 0.166400
+Ks 0.022500 0.022500 0.022500
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd yellowstn.png
+
+
+newmtl Material.003_yellowstn.png
+Ns 286.274510
+Ka 0.000000 0.000000 0.000000
+Kd 0.524000 0.392000 0.166400
+Ks 0.022500 0.022500 0.022500
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd yellowstn.png
+
+
