@@ -8,7 +8,7 @@
     <module dir="rome" />
     
     
-    <dev devMode="true"  debugUI="false" />
+    <dev devMode="false"  debugUI="false" />
 
 
 </config>
