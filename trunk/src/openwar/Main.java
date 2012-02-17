@@ -54,7 +54,7 @@ import org.w3c.dom.Document;
 
 public class Main extends Application {
 
-    static public int version = 4;
+    static public String version = "$Revision";
     public String locatorRoot;
     public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(4);
     public Nifty nifty;

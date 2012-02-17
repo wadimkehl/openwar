@@ -16,4 +16,10 @@
         <model level="0" file="roman_dock_0.blend" />
         
     </dock>
+    
+    <army file="emessairyicon.obj" />
+
+    <fleet file="manowar.obj" />
+  
+    
 </root>

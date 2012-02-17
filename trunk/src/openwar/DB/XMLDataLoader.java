@@ -83,6 +83,15 @@ public class XMLDataLoader {
                 int l = Integer.parseInt(((Element) nodes.item(i)).getAttribute("level"));
                 c.dockModels.put(l, ((Element) nodes.item(i)).getAttribute("file"));
             }
+            
+              
+            Element army = (Element) root.getElementsByTagName("army").item(0);
+            c.armyModel = army.getAttribute("file");
+            
+            Element fleet = (Element) root.getElementsByTagName("fleet").item(0);
+            c.fleetModel = fleet.getAttribute("file");
+            
+  
 
 
             logger.log(Level.WARNING, "*Culture loaded: {0} *", c.refName);
