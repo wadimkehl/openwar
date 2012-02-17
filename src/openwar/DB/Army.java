@@ -41,12 +41,23 @@ public class Army extends WorldEntity {
     public void createData(WorldMap m) {
 
         this.map = m;
-
-        model = (Spatial) new Geometry("", new Sphere(10, 10, 0.5f));
+        
+        // Because a faction has no culture, but settlements do
+        // we just take the first culture in the list
+        // TODO: model should like the the best unit in the army
+        
+        String file;
+        if(this.canSail()){
+                file = Main.DB.cultures.get(0).fleetModel;           
+        }else {
+                file = Main.DB.cultures.get(0).armyModel;
+        }
+        
+        model = map.game.getAssetManager().loadModel("models/" + file);
         model.setMaterial(new Material(map.game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md"));
         model.setShadowMode(ShadowMode.CastAndReceive);
+        model.setLocalTranslation(0f, .1f, 0f);
         node.setLocalTranslation(map.getGLTileCenter(posX, posZ));
-        model.setLocalTranslation(0f, 0.5f, 0f);
         node.attachChild(model);
 
         banner = (Spatial) new Geometry("", new Quad(1f, 2f));

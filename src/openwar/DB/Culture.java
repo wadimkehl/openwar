@@ -14,6 +14,8 @@ public class Culture {
 
     public String Name;
     public String refName;
+    public String armyModel,fleetModel;
+
     public HashMap<Integer, String> settlementModels;
     public HashMap<Integer, String> dockModels;
 

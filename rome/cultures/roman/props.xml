@@ -4,17 +4,22 @@
 
     <culture name="Roman Culture" refname="roman_culture" />
     
- <settlement>
+    <settlement>
      
-     <model level="0" file="cityicon.blend" />
+        <model level="0" file="cityicon.blend" />
      
-     </settlement>
+    </settlement>
     
     <dock>
         
         <model level="0" file="roman_dock_0.blend" />
         
-        </dock>
+    </dock>
+        
+    <army file="emessairyicon.obj" />
+
+    <fleet file="manowar.obj" />
+  
  
 
 </root>
