@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+
+    <culture name="Roman Culture" refname="roman_culture" />
+    
+ <settlement>
+     
+     <model level="0" file="cityicon.blend" />
+     
+     </settlement>
+    
+    <army>
+        
+        <model level="0" file="emessairyicon.obj" />
+        
+    </army>
+
+    <fleet>
+        
+        <model level="0" file="manowar.obj" />
+        
+    </fleet>
+
+   <dock>
+        
+        <model level="0" file="roman_dock_0.blend" />
+        
+        </dock>
+ 
+
+</root>
