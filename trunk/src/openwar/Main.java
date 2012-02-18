@@ -33,6 +33,7 @@ import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.Spatial.CullHint;
+import com.jme3.scene.control.UpdateControl;
 import com.jme3.system.AppSettings;
 import de.lessvoid.nifty.Nifty;
 import java.io.File;
@@ -48,13 +49,14 @@ import openwar.DB.GameDatabase;
 
 import de.lessvoid.nifty.elements.Element;
 import java.net.URLDecoder;
+import java.util.concurrent.Callable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 
 public class Main extends Application {
 
-    static public String version = "$Revision";
+    static public String version = "$Revision$";
     public String locatorRoot;
     public ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(4);
     public Nifty nifty;
@@ -150,7 +152,7 @@ public class Main extends Application {
             return;
         }
 
-        app.settings.setTitle("openwar    r" + version);
+        app.settings.setTitle("openwar  " + version);
         app.settings.setFrameRate(30);
         app.settings.setVSync(true);
 
@@ -186,7 +188,7 @@ public class Main extends Application {
         nifty = niftyDisplay.getNifty();
         nifty.fromXml("ui/loading/ui.xml", "start", mainMenuState);
 
-
+        rootNode.addControl(new UpdateControl());
         viewPort.attachScene(rootNode);
         guiViewPort.attachScene(guiNode);
         guiNode.setQueueBucket(Bucket.Gui);
@@ -224,6 +226,8 @@ public class Main extends Application {
 
         getInputManager().addMapping("map_scrollup", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, false));
         getInputManager().addMapping("map_scrolldown", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, true));
+  getInputManager().addMapping("battle_strafeup", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, false));
+        getInputManager().addMapping("battle_strafedown", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, true));
 
 
         getInputManager().addMapping("shift", new KeyTrigger(KeyInput.KEY_LSHIFT));
@@ -239,6 +243,10 @@ public class Main extends Application {
             getInputManager().addMapping("map_strafedown", new KeyTrigger(KeyInput.KEY_S));
             getInputManager().addMapping("map_strafeleft", new KeyTrigger(KeyInput.KEY_A));
             getInputManager().addMapping("map_straferight", new KeyTrigger(KeyInput.KEY_D));
+            getInputManager().addMapping("battle_forward", new KeyTrigger(KeyInput.KEY_W));
+            getInputManager().addMapping("battle_backward", new KeyTrigger(KeyInput.KEY_S));
+            getInputManager().addMapping("battle_strafeleft", new KeyTrigger(KeyInput.KEY_A));
+            getInputManager().addMapping("battle_straferight", new KeyTrigger(KeyInput.KEY_D));
 
         } else {
 
@@ -259,7 +267,6 @@ public class Main extends Application {
             getInputManager().addMapping("dump", new KeyTrigger(KeyInput.KEY_RETURN));
 
         }
-
 
 
     }
@@ -349,9 +356,6 @@ public class Main extends Application {
             stateManager.attach(gameLoaderState);
 
         }
-
-
-
 
     }
 

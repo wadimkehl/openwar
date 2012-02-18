@@ -566,8 +566,8 @@ public class XMLDataLoader {
                         u.refName = unit.getAttribute("refname");
                         u.count = Integer.parseInt(unit.getAttribute("count"));
                         u.exp = Integer.parseInt(unit.getAttribute("exp"));
-                        u.att_bonus = Integer.parseInt(unit.getAttribute("att_bonus"));
-                        u.def_bonus = Integer.parseInt(unit.getAttribute("def_bonus"));
+                        u.att = Integer.parseInt(unit.getAttribute("att_bonus"));
+                        u.def = Integer.parseInt(unit.getAttribute("def_bonus"));
                         u.resetMovePoints();
                         se.units.add(u);
                     }
@@ -629,8 +629,8 @@ public class XMLDataLoader {
                         u.refName = unit.getAttribute("refname");
                         u.count = Integer.parseInt(unit.getAttribute("count"));
                         u.exp = Integer.parseInt(unit.getAttribute("exp"));
-                        u.att_bonus = Integer.parseInt(unit.getAttribute("att_bonus"));
-                        u.def_bonus = Integer.parseInt(unit.getAttribute("def_bonus"));
+                        u.att = Integer.parseInt(unit.getAttribute("att_bonus"));
+                        u.def = Integer.parseInt(unit.getAttribute("def_bonus"));
                         u.resetMovePoints();
                         a.units.add(u);
                     }

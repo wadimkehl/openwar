@@ -66,7 +66,8 @@ public class WorldMap {
     public Geometry reachableArea;
     public Army selectedArmy;
     public Settlement selectedSettlement;
-    FilterPostProcessor fpp;
+    public FilterPostProcessor fpp;
+    public PssmShadowRenderer pssm;
     public TilePathFinder pathFinder = new TilePathFinder(this);
     private static final Logger logger = Logger.getLogger(WorldMap.class.getName());
     public WorldMinimap minimap;
@@ -169,7 +170,7 @@ public class WorldMap {
         heightMap = new WorldHeightMap(Main.DB.heightmapTex.getImage(), Main.DB.heightmapParams.x,
                 Main.DB.heightmapParams.y, Main.DB.heightmapParams.z);
         heightMap.load(false, false);
-        terrain = new TerrainQuad("terrain", 32, heightMap.getSize(), heightMap.getHeightMap());
+        terrain = new TerrainQuad("terrain", 33, heightMap.getSize(), heightMap.getHeightMap());
         terrain.setMaterial(matTerrain);
         terrain.setLocalTranslation(width / 2f, 0f, height / 2f);
 
@@ -287,7 +288,8 @@ public class WorldMap {
         return true;
 
     }
-
+    
+ 
     // Create the whole world map
     public boolean createWorldMap() {
 
@@ -342,7 +344,7 @@ public class WorldMap {
         bloom.setBloomIntensity(1.5f);
         fpp.addFilter(bloom);
 
-        PssmShadowRenderer pssm = new PssmShadowRenderer(assetManager, 1024, 8);
+        pssm = new PssmShadowRenderer(assetManager, 1024, 8);
         pssm.setDirection(Main.DB.sun_direction);
         game.getViewPort().addProcessor(pssm);
 

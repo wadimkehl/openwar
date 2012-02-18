@@ -22,7 +22,7 @@ public class AudioAppState extends AbstractAppState {
 
     public enum MusicMode {
 
-        None, Menu, Loading, WorldMapIdle;
+        None, Menu, Loading, WorldMapIdle, BattleIdle;
     }
     public String currentMusic;
     public MusicMode mode = MusicMode.None;
@@ -80,6 +80,8 @@ public class AudioAppState extends AbstractAppState {
         ArrayList<String> list = null;
         switch (mode) {
             case WorldMapIdle:
+            case BattleIdle:
+
                 list = worldMapIdle;
                 break;
 
@@ -109,9 +111,9 @@ public class AudioAppState extends AbstractAppState {
             AudioNode nodeToRemove = null;
 
             for (AudioNode fadeOutNode : fadeOutNodes) {
-                fadeOutNode.setVolume(fadeOutNode.getVolume() - 0.01f);
+                fadeOutNode.setVolume(fadeOutNode.getVolume() - 0.02f);
 
-                if (fadeOutNode.getVolume() <= 0.01f) {
+                if (fadeOutNode.getVolume() <= 0.4f) {
                     fadeOutNode.stop();
                     fadeOutNode.setVolume(soundVolume);
                     nodeToRemove = fadeOutNode;

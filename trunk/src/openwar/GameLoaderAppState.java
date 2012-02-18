@@ -7,10 +7,14 @@ package openwar;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.control.UpdateControl;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
+import java.util.concurrent.Callable;
 import openwar.DB.XMLDataLoader;
+import openwar.battle.BattleAppState;
 
 /**
  *
@@ -24,7 +28,8 @@ public class GameLoaderAppState extends AbstractAppState implements ScreenContro
         Init,
         MainMenu,
         Idle,
-        LoadingWorldMap
+        LoadingWorldMap,
+        LoadingBattle
     }
     Main game;
     AppStateManager manager;
@@ -32,6 +37,7 @@ public class GameLoaderAppState extends AbstractAppState implements ScreenContro
     Nifty nifty;
     Screen screen;
     public XMLDataLoader DataLoader;
+    Object loadObject;
 
     public GameLoaderAppState() {
         status = Status.None;
@@ -66,6 +72,13 @@ public class GameLoaderAppState extends AbstractAppState implements ScreenContro
 
     }
 
+    public void loadBattle(BattleAppState battle) {
+        game.nifty.fromXml("ui/loading/ui.xml", "start", this);
+        game.audioState.setMusicMode(AudioAppState.MusicMode.Loading);
+        status = Status.LoadingBattle;
+        loadObject = battle;
+    }
+
     public void loadWorldMap() {
         game.nifty.fromXml("ui/loading/ui.xml", "start", this);
         //game.audioState.setMusicMode(AudioAppState.MusicMode.Loading);
@@ -73,6 +86,7 @@ public class GameLoaderAppState extends AbstractAppState implements ScreenContro
 
     }
 
+    @Override
     public void update(float tpf) {
 
 
@@ -98,6 +112,16 @@ public class GameLoaderAppState extends AbstractAppState implements ScreenContro
                 game.audioState.setMusicMode(AudioAppState.MusicMode.WorldMapIdle);
                 status = Status.Idle;
                 break;
+
+            case LoadingBattle:
+
+                if (game.getStateManager().hasState(game.worldMapState)) {
+                    game.worldMapState.disableStateAndScene();
+                }
+                manager.attach((BattleAppState) loadObject);
+                loadObject = null;
+                status = Status.Idle;
+                break;
         }
 
 
@@ -111,12 +135,19 @@ public class GameLoaderAppState extends AbstractAppState implements ScreenContro
         manager.attach(game.screenshotState);
         manager.attach(game.mainMenuState);
 
+       // if (Main.devMode) {
+            //game.bulletState.getPhysicsSpace().enableDebug(game.getAssetManager());
+        //}
+
+        game.bulletState.getPhysicsSpace().setGravity(new Vector3f(0,1,0));
+
+        
         DataLoader = new XMLDataLoader(game);
         if (!DataLoader.loadAll()) {
             game.wishToQuit = true;
             return;
         }
 
-        game.audioState.setMusicVolume(0.5f);
+        game.audioState.setMusicVolume(0.05f);
     }
 }

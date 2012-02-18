@@ -99,6 +99,7 @@ public class Army extends WorldEntity {
 
         } else {
 
+            // Look where to go
             Tile t = route.peek();
             Vector3f checkpoint = map.getGLTileCenter(t);
 
@@ -107,19 +108,26 @@ public class Army extends WorldEntity {
                 route.pop();
                 reduceMovePoints(map.getTileCosts(t));
 
-
+                    
+                // If we reached the goal
                 if (route.isEmpty()) {
                     Army a = map.getArmy(t);
+                    
+                    // if we reached another army
                     if (a != null) {
-
+                        
+                        
+                        // Friendly army
                         if (a.owner.equals(owner)) {
 
-                            // Load this army as cargo
+                            // Load this army as cargo, if possible OR merge
                             if (a.canCargo() && !this.canCargo()) {
                                 a.loadCargo(this);
                             } else {
                                 mergeWith(a);
                             }
+                            
+                        // Hostile army
                         } else {
                             ArrayList<Army> a1 = new ArrayList<Army>();
                             ArrayList<Army> a2 = new ArrayList<Army>();
@@ -141,12 +149,15 @@ public class Army extends WorldEntity {
                     map.drawReachableArea(this);
                 }
 
+                // if we reached our goal
                 if (route.isEmpty()) {
 
+                    // Check if we reached a settlement
                     Settlement s = map.getSettlement(t);
                     if (s != null) {
 
-                        if (s.owner == owner) {
+                        // Garrison if friendly, or besiege if enemy
+                        if (s.owner.equals(owner)) {
                             garrisonArmy(s);
                         } else {
                             ArrayList<Army> a1 = new ArrayList<Army>();
@@ -158,6 +169,7 @@ public class Army extends WorldEntity {
                     return;
                 }
 
+                // If next tile to expensive, stay
                 if (currMovePoints < map.getTileCosts(route.peek())) {
                     onRoute = false;
                     return;
@@ -165,6 +177,7 @@ public class Army extends WorldEntity {
 
             }
 
+            // Move towards the tile
             t = route.peek();
             checkpoint = map.getGLTileCenter(t);
             Vector3f dir = checkpoint.subtract(node.getLocalTranslation()).normalizeLocal();
