@@ -234,6 +234,9 @@ public class Main extends Application {
         getInputManager().addMapping("shift", new KeyTrigger(KeyInput.KEY_RSHIFT));
         getInputManager().addMapping("ctrl", new KeyTrigger(KeyInput.KEY_LCONTROL));
         getInputManager().addMapping("ctrl", new KeyTrigger(KeyInput.KEY_RCONTROL));
+        getInputManager().addMapping("alt", new KeyTrigger(KeyInput.KEY_LMENU));
+        getInputManager().addMapping("alt", new KeyTrigger(KeyInput.KEY_RMENU));
+ 
         getInputManager().setCursorVisible(true);
         camera.setEnabled(false);
 
