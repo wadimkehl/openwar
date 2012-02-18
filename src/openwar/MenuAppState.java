@@ -10,6 +10,10 @@ import com.jme3.app.state.AppStateManager;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
+import java.util.ArrayList;
+import openwar.DB.Unit;
+import openwar.battle.BattleAppState;
+import openwar.world.Tile;
 
 /**
  *
@@ -56,6 +60,38 @@ public class MenuAppState extends AbstractAppState implements ScreenController {
         Main.DB.factions.add(0, Main.DB.hashedFactions.get(Main.DB.playerFaction));
 
         game.gameLoaderState.loadWorldMap();
+    }
+
+    public void quickBattle() {
+
+        Main.DB.playerFaction = "A";
+
+        Unit m = new Unit("militia");
+        m.count=20;
+        m.att=3;
+        m.def=2;
+        m.exp=0;
+        
+        Unit l = new Unit("bowmen");
+        l.count=20;
+        l.att=1;
+        l.def=1;
+        l.exp=0;
+        
+        
+        ArrayList<Unit> a1 = new ArrayList<Unit>();
+        ArrayList<Unit> a2 = new ArrayList<Unit>();
+        
+        a1.add(m);
+        a1.add(m);
+        a1.add(l);
+        
+        a2.add(m);
+        a2.add(l);
+
+        BattleAppState b = new BattleAppState(a1, a2);
+        game.gameLoaderState.loadBattle(b);
+
     }
 
     public void quitGame() {

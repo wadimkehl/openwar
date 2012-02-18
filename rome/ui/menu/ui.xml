@@ -6,19 +6,30 @@
        
 
         <layer id="back_layer" childLayout="vertical">
-            <panel height="33%" width="100%" childLayout="center">
+            
+            
+            <panel height="10%" />
+            
+            <panel height="20%" width="100%" childLayout="center">
                 <text id="new_game" font="ui/fonts/palatino.fnt" color="#f00f" text="New Game" >
                     <interact onPrimaryClick="startGame()" /> 
                 </text>
             </panel>
             
-            <panel height="33%" width="100%" childLayout="center">
+                <panel height="20%" width="100%" childLayout="center">
+                <text id="quick_battle" font="ui/fonts/palatino.fnt" color="#f00f" text="Quick Battle" >
+                    <interact onPrimaryClick="quickBattle()" /> 
+                </text>
+            </panel>
+            
+            
+            <panel height="20%" width="100%" childLayout="center">
                 <text id="options" font="ui/fonts/palatino.fnt" color="#f00f" text="Options" >
                     <interact onPrimaryClick="" /> 
                 </text>
             </panel>
             
-            <panel height="33%" width="100%" childLayout="center">
+            <panel height="20%" width="100%" childLayout="center">
                 <text id="quit_game" font="ui/fonts/palatino.fnt" color="#f00f" text="Quit">
                     <interact onPrimaryClick="quitGame()" /> 
                 </text>

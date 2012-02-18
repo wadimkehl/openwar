@@ -16,9 +16,9 @@
         
     </dock>
         
-    <army file="emessairyicon.obj" />
+    <army file="cityicon.blend" />
 
-    <fleet file="manowar.obj" />
+    <fleet file="cityicon.blend" />
   
  
 

@@ -16,13 +16,13 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.control.UpdateControl;
 import com.jme3.terrain.geomipmap.TerrainPatch;
-import de.lessvoid.nifty.screen.Screen;
 import java.util.ArrayList;
-import openwar.AudioAppState.MusicMode;
 import openwar.DB.Settlement;
 import openwar.DB.Unit;
 import openwar.Main;
+import openwar.battle.BattleAppState;
 
 /**
  *
@@ -42,6 +42,10 @@ public class WorldMapAppState extends AbstractAppState {
 
         @Override
         public void onAnalog(String name, float value, float tpf) {
+
+            if (!isEnabled()) {
+                return;
+            }
 
             Vector3f loc = game.getCamera().getLocation();
             Vector3f dir = game.getCamera().getDirection();
@@ -101,6 +105,11 @@ public class WorldMapAppState extends AbstractAppState {
         @Override
         public void onAction(String name, boolean pressed, float tpf) {
 
+            if (!isEnabled()) {
+                return;
+            }
+
+
             if (name.equals("mouse_left") && !pressed) {
 
                 CollisionResult r = game.getMousePick(map.scene);
@@ -133,7 +142,6 @@ public class WorldMapAppState extends AbstractAppState {
         Vector3f pt = r.getContactPoint();
         int x = (int) pt.x;
         int z = (int) pt.z;
-
         if (r.getGeometry() == null) {
             return;
         }
@@ -287,7 +295,9 @@ public class WorldMapAppState extends AbstractAppState {
         game.getInputManager().addListener(analogListener, "map_scrolldown");
 
 
-        sceneNode = new Node("WorldMap");
+        sceneNode = new Node("WorldMapScene");
+        sceneNode.addControl(new UpdateControl());
+
         game.rootNode.attachChild(sceneNode);
         game.getCamera().lookAtDirection(new Vector3f(0f, -1f, -1f).normalizeLocal(), Vector3f.UNIT_Y);
         game.getCamera().getLocation().y = 20f;
@@ -322,6 +332,21 @@ public class WorldMapAppState extends AbstractAppState {
 
     }
 
+    public void enableStateAndScene() {
+        setEnabled(true);
+        game.rootNode.attachChild(sceneNode);
+        game.getViewPort().addProcessor(map.fpp);
+        game.getViewPort().addProcessor(map.pssm);
+    }
+
+    public void disableStateAndScene() {
+        setEnabled(false);
+        game.guiNode.detachAllChildren();
+        game.rootNode.detachAllChildren();
+        game.getViewPort().removeProcessor(map.fpp);
+        game.getViewPort().removeProcessor(map.pssm);
+    }
+
     public void moveCameraTo(Tile t) {
         moveCameraTo(t.x, t.z);
     }
@@ -353,32 +378,39 @@ public class WorldMapAppState extends AbstractAppState {
     }
 
     public int battle(ArrayList<Army> a1, ArrayList<Army> a2) {
-        int power1 = 0, power2 = 0;
 
-        for (Army a : a1) {
-            power1 += a.units.size();
-        }
-        for (Army a : a2) {
-            power2 += a.units.size();
-        }
+        BattleAppState b = new BattleAppState(a1, a2, new Tile(a1.get(0).posX, a1.get(0).posZ));
+        game.gameLoaderState.loadBattle(b);
 
-        if (power1 > power2) {
-            for (Army a : a2) {
-                map.removeArmy(a);
-                game.playSound("army_death");
-            }
-            return 1;
-        }
-        if (power1 < power2) {
-            for (Army a : a1) {
-                map.removeArmy(a);
-                game.playSound("army_death");
 
-            }
-            return 2;
-        } else {
-            return 0;
-        }
+        return 0;
+
+//        int power1 = 0, power2 = 0;
+//
+//        for (Army a : a1) {
+//            power1 += a.units.size();
+//        }
+//        for (Army a : a2) {
+//            power2 += a.units.size();
+//        }
+//
+//        if (power1 > power2) {
+//            for (Army a : a2) {
+//                map.removeArmy(a);
+//                game.playSound("army_death");
+//            }
+//            return 1;
+//        }
+//        if (power1 < power2) {
+//            for (Army a : a1) {
+//                map.removeArmy(a);
+//                game.playSound("army_death");
+//
+//            }
+//            return 2;
+//        } else {
+//            return 0;
+//        }
     }
 
     public int siege(ArrayList<Army> a1, ArrayList<Army> a2, Settlement s) {

@@ -13,7 +13,7 @@ import openwar.Main;
 public class Unit {
 
     public String refName;
-    public int count, exp, att_bonus, def_bonus, currMovePoints;
+    public int count, exp, att, def, currMovePoints;
 
     public Unit(String r) {
         
@@ -21,7 +21,7 @@ public class Unit {
         resetMovePoints();
     }
 
-    Unit() {
+    public Unit() {
     }
 
     public void resetMovePoints() {
