@@ -44,7 +44,7 @@ public class Soldier {
     Status status;
     Material mat;
     public float hp = 1f;
-    Vector2f pos, dir, goal;
+    Vector2f currPos, currDir, goalPos, goalDir;
     // Cylinder collision shape
     float height = 1.8f;
     float radius = 0.5f;
@@ -53,23 +53,25 @@ public class Soldier {
     public Soldier(Unit ref) {
         unit = ref;
         status = Status.Idle;
-        pos = new Vector2f();
-        goal = new Vector2f();
+        currPos = new Vector2f();
+        currDir = new Vector2f();
+        goalPos = new Vector2f();
+        goalDir = new Vector2f();
 
     }
 
     public void createData() {
-        
+
         terrain = unit.battle.terrain.terrainQuad;
 
-        
+
         //model = unit.battle.game.getAssetManager().loadModel("models/" + Main.DB.cultures.get(0).armyModel);
-        model = (Spatial) new Geometry("", new Cylinder(16,16,radius,height,true));
+        model = (Spatial) new Geometry("", new Cylinder(16, 16, radius, height, true));
         mat = new Material(unit.battle.game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
         model.setMaterial(mat);
         model.setShadowMode(ShadowMode.CastAndReceive);
         model.setLocalRotation(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_X));
-        model.setLocalTranslation(0, height*0.5f, 0);
+        model.setLocalTranslation(0, height * 0.5f, 0);
 
         selectionQuad = (Spatial) new Geometry("", new Quad(1f, 1f));
         Material m = new Material(unit.battle.game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
@@ -85,29 +87,50 @@ public class Soldier {
 
 
     }
-    
-    public void select(boolean on)
-    {
-     if(on)
-         mat.setTexture("DiffuseMap", unit.battle.game.getAssetManager().loadTexture("factions/rebels/icon.png"));
-     else
-         mat.setTexture("DiffuseMap", null);
-    }
-    public void setPosition(float x, float z) {
-        pos.x = x;
-        pos.y = z;
-        float y = terrain.getHeight(pos);
-        node.setLocalTranslation(pos.x, y, pos.y);
+
+    public void select(boolean on) {
+        if (on) {
+            mat.setTexture("DiffuseMap", unit.battle.game.getAssetManager().loadTexture("factions/rebels/icon.png"));
+        } else {
+            mat.setTexture("DiffuseMap", null);
+        }
     }
 
-    public void setGoal(float x, float z, boolean run) {
-        goal.x = x;
-        goal.y = z;
+    
+    public void setPosition(Vector2f pos, Vector2f dir) {
+        setPosition(pos.x,pos.y,dir.x,dir.y);
+    }
+
+    
+    public void setPosition(float x, float z, float dx, float dz) {
+        currPos.x = x;
+        currPos.y = z;
+        currDir.x =dx;
+        currDir.y = dz;
+        goalPos = currPos.clone();
+        goalDir = currDir.clone();
+        float y = terrain.getHeight(currPos);
+        node.setLocalTranslation(currPos.x, y, currPos.y);
+        node.setLocalRotation(new Quaternion().fromAngleAxis(FastMath.atan2(dx,dz),
+                Vector3f.UNIT_Y));
+                    
+    }
+
+    public void setGoal(float x, float z, float dx, float dz, boolean run) {
+        goalPos.x = x;
+        goalPos.y = z;
+        goalDir.x = dx;
+        goalDir.y = dz;
         
-        if(run)
+        if (run) {
             status = Status.Run;
-        else
+        } else {
             status = Status.Walk;
+        }
+    }
+
+    public void setGoal(Vector2f pos, Vector2f dir, boolean run) {
+        setGoal(pos.x,pos.y,dir.x,dir.y,run);
     }
 
     public void update(float tpf) {
@@ -117,27 +140,41 @@ public class Soldier {
         switch (status) {
 
             case Idle:
+
+                // When idle, make sure to look into the right direction
+                float angle = goalDir.angleBetween(currDir);
+                if (FastMath.abs(angle) > 0.1f) {
+                    float new_angle = FastMath.atan2(currDir.x, currDir.y);
+                    new_angle -= -FastMath.sign(angle) * 0.1f * tpf;
+                    node.setLocalRotation(
+                            new Quaternion().fromAngleAxis(FastMath.DEG_TO_RAD * new_angle, Vector3f.UNIT_Y));
+                    currDir.x = FastMath.cos(new_angle);
+                    currDir.y = FastMath.sin(new_angle);
+
+                }
+
+
                 // check for different things? enemy engages or sth,
                 break;
 
             case Walk:
-                dir = (goal.subtract(pos));
-                if (dir.lengthSquared() < 0.005f) {
+                currDir = (goalPos.subtract(currPos));
+                if (currDir.lengthSquared() < 0.005f) {
                     status = Status.Idle;
                 }
-                dir.normalizeLocal();
-                pos.addLocal(dir.multLocal(tpf));
-                node.setLocalTranslation(pos.x, terrain.getHeight(pos), pos.y);
+                currDir.normalizeLocal();
+                currPos.addLocal(currDir.multLocal(tpf));
+                node.setLocalTranslation(currPos.x, terrain.getHeight(currPos), currPos.y);
                 break;
 
             case Run:
-                dir = (goal.subtract(pos));
-                if (dir.lengthSquared() < 0.005f) {
+                currDir = (goalPos.subtract(currPos));
+                if (currDir.lengthSquared() < 0.005f) {
                     status = Status.Idle;
                 }
-                dir.normalizeLocal();
-                pos.addLocal(dir.multLocal(tpf * 2f));
-                node.setLocalTranslation(pos.x, terrain.getHeight(pos), pos.y);
+                currDir.normalizeLocal();
+                currPos.addLocal(currDir.multLocal(tpf * 2f));
+                node.setLocalTranslation(currPos.x, terrain.getHeight(currPos), currPos.y);
                 break;
 
 

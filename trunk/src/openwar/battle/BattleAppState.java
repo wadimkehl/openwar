@@ -36,10 +36,9 @@ public class BattleAppState extends AbstractAppState {
 
     NanoTimer timer = new NanoTimer();
     long lastClickTime;
-    
     float cameraAngle = 3f * FastMath.QUARTER_PI;
     public Node sceneNode;
-    public boolean shiftPressed, ctrlPressed;
+    public boolean shiftPressed, ctrlPressed, altPressed;
     public Main game;
     public Terrain terrain;
     public ArrayList<Unit> teamA, teamB, selectedUnits;
@@ -109,6 +108,8 @@ public class BattleAppState extends AbstractAppState {
                 shiftPressed = pressed;
             } else if (name.equals("ctrl")) {
                 ctrlPressed = pressed;
+            }else if (name.equals("alt")) {
+                altPressed = pressed;
             }
         }
     };
@@ -152,16 +153,28 @@ public class BattleAppState extends AbstractAppState {
         int z = (int) pt.z;
 
         if (r.getGeometry() instanceof TerrainPatch) {
-            
-            if (selectedUnits.isEmpty()) return;
-            
-            
+
+            if (selectedUnits.isEmpty()) {
+                return;
+            }
+
+
             // Check for double click and either walk or run
             long time = timer.getTime();
-            boolean run=(time-lastClickTime < 300000000);
-            lastClickTime=time;
+            boolean run = (time - lastClickTime < 300000000);
+            lastClickTime = time;
 
-            selectedUnits.get(0).setGoal(x, z, run);
+            // Check if the unit direction should change
+            if(altPressed)
+            {
+                float dx = x-selectedUnits.get(0).currPos.x;
+                float dz = z-selectedUnits.get(0).currPos.y;
+                float sum = dx+dz;
+                selectedUnits.get(0).setGoal(x, z,dx/sum,dz/sum,run);
+            }
+            else
+                selectedUnits.get(0).setGoal(x, z, run);
+            
             return;
 
         }
@@ -260,6 +273,7 @@ public class BattleAppState extends AbstractAppState {
         game.getInputManager().addListener(actionListener, "mouse_right");
         game.getInputManager().addListener(actionListener, "shift");
         game.getInputManager().addListener(actionListener, "ctrl");
+        game.getInputManager().addListener(actionListener, "alt");
 
         game.getInputManager().addListener(analogListener, "battle_strafeup");
         game.getInputManager().addListener(analogListener, "battle_strafedown");
@@ -274,8 +288,8 @@ public class BattleAppState extends AbstractAppState {
 
         float x = 200, z = 100;
         for (Unit u : teamA) {
-            u.pos = new Vector2f(x, z);
             u.createData();
+            u.setPosition(x, z, 0, 1);
             z -= 10;
 
         }
@@ -283,8 +297,9 @@ public class BattleAppState extends AbstractAppState {
         x = 200;
         z = 200;
         for (Unit u : teamB) {
-            u.pos = new Vector2f(x, z);
             u.createData();
+            u.setPosition(x, z, 0, -1);
+
             z += 10;
 
         }

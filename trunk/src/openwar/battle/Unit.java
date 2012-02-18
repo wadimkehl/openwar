@@ -9,6 +9,8 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.control.UpdateControl;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
+import openwar.battle.formations.Formation;
+import openwar.battle.formations.LineFormation;
 
 /**
  *
@@ -33,8 +35,9 @@ public class Unit {
     public float morale = 100f, stamina = 100f;
     public ArrayList<Soldier> soldiers;
     public BattleAppState battle;
-    public Vector2f pos, goal;
+    public Vector2f currPos, goalPos, goalDir, currDir;
     public Status status;
+    public Formation formation;
 
     public Unit(BattleAppState b, openwar.DB.Unit U, String player) {
 
@@ -45,38 +48,43 @@ public class Unit {
         att = U.att;
         def = U.def;
 
-        pos = new Vector2f();
-        goal = new Vector2f();
+        currPos = new Vector2f(0, 0);
+        goalPos = new Vector2f(0, 0);
+
+        currDir = new Vector2f(0, 1);
+        goalDir = new Vector2f(0, 1);
 
         soldiers = new ArrayList<Soldier>();
         for (int i = 0; i < U.count; i++) {
             soldiers.add(new Soldier(this));
         }
 
+        formation = new LineFormation(this);
+
     }
 
     public void createData() {
 
-        float x = pos.x, z = pos.y;
 
         for (Soldier s : soldiers) {
             s.createData();
-            s.setPosition(x, z);
             battle.sceneNode.attachChild(s.node);
-
-            x += 2f;
         }
+
     }
 
     public void update(float tpf) {
 
 
+        currPos.x=currPos.y=currDir.x=currDir.y=0;
 
         boolean allIdle = true;
         for (final Soldier s : soldiers) {
             s.update(tpf);
             allIdle &= (s.status == Soldier.Status.Idle);
-
+            
+            currPos.addLocal(s.currPos);
+            currDir.addLocal(s.goalDir);
 
             // Remove soldier from list if dead
             // TODO: and update battle statistics (if we have one :D )
@@ -93,6 +101,10 @@ public class Unit {
                         });
             }
         }
+
+        
+        currPos.divideLocal(soldiers.size());
+        currDir.divideLocal(soldiers.size());
 
 
         switch (status) {
@@ -126,9 +138,28 @@ public class Unit {
 
     }
 
+    public void setPosition(float x, float z, float dx, float dz) {
+        currPos.x = x;
+        currPos.y = z;
+        currDir.x = dx;
+        currDir.y = dz;
+        goalPos = currPos.clone();
+        goalDir = currDir.clone();
+        formation.doFormation(false, true);
+
+    }
+    
+
+    public void setGoal(float x, float z, float dx, float dz, boolean run) {
+        goalDir.x = dx;
+        goalDir.y = dz;
+        setGoal(x, z, run);
+
+    }
+
     public void setGoal(float x, float z, boolean run) {
-        goal.x = x;
-        goal.y = z;
+        goalPos.x = x;
+        goalPos.y = z;
 
         if (run) {
             status = Status.Run;
@@ -140,10 +171,7 @@ public class Unit {
 
         }
 
-        // TODO: Soldiers need to get their goals according to formation position
-        for (Soldier s : soldiers) {
-            s.setGoal(x, z, run);
-        }
+        formation.doFormation(run, false);
     }
 
     public void toggleSelection(boolean select) {
