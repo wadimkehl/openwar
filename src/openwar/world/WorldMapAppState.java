@@ -33,7 +33,7 @@ public class WorldMapAppState extends AbstractAppState {
     float cameraAngle = 3f * FastMath.QUARTER_PI;
     public Node sceneNode;
     public boolean showGrid;
-    public boolean shiftPressed, ctrlPressed;
+    public boolean shiftPressed, ctrlPressed, altPressed;
     public WorldMap map;
     public Main game;
     public WorldMapUI uiController;
@@ -134,6 +134,8 @@ public class WorldMapAppState extends AbstractAppState {
                 shiftPressed = pressed;
             } else if (name.equals("ctrl")) {
                 ctrlPressed = pressed;
+            }else if (name.equals("alt")) {
+                altPressed = pressed;
             }
         }
     };
@@ -286,6 +288,7 @@ public class WorldMapAppState extends AbstractAppState {
         game.getInputManager().addListener(actionListener, "show_grid");
         game.getInputManager().addListener(actionListener, "shift");
         game.getInputManager().addListener(actionListener, "ctrl");
+        game.getInputManager().addListener(actionListener, "alt");
 
         game.getInputManager().addListener(analogListener, "map_strafeup");
         game.getInputManager().addListener(analogListener, "map_strafedown");

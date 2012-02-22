@@ -14,6 +14,7 @@ import com.jme3.terrain.geomipmap.TerrainLodControl;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import com.jme3.terrain.heightmap.AbstractHeightMap;
 import com.jme3.terrain.heightmap.HillHeightMap;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,7 +37,8 @@ public class Terrain {
 
     public void createData() {
         try {
-            heightmap = new HillHeightMap(size + 1, 1000, 50, 100, 5);
+            Random ran = new Random();
+            heightmap = new HillHeightMap(size + 1, 1000, 50, 100, ran.nextInt());
         } catch (Exception ex) {
             Logger.getLogger(Terrain.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -54,7 +56,7 @@ public class Terrain {
 
         terrainQuad.setShadowMode(ShadowMode.Receive);
 
-        
+
 //        CollisionShape terrainShape = CollisionShapeFactory.createMeshShape(terrainQuad);
 //        bodyControl = new RigidBodyControl(terrainShape, 0);
 //        terrainQuad.addControl(bodyControl);

@@ -5,7 +5,6 @@
 package openwar.battle.formations;
 
 import com.jme3.math.FastMath;
-import com.jme3.math.Vector2f;
 import openwar.battle.Soldier;
 import openwar.battle.Unit;
 
@@ -13,15 +12,19 @@ import openwar.battle.Unit;
  *
  * @author kehl
  */
-public class LineFormation extends Formation {
+public class BoxFormation extends Formation {
 
-    public LineFormation(Unit unit) {
+    float nrPerRow;
+
+    public BoxFormation(Unit unit, int soldierPerRow) {
         u = unit;
+        nrPerRow = soldierPerRow;
     }
 
     @Override
     public void doFormation(boolean run, boolean warp) {
 
+       
         float number = u.soldiers.size();
         float dist = sparseFormation ? 3f : 1.5f;
         float angle = FastMath.atan2(u.goalDir.y, u.goalDir.x);
@@ -29,18 +32,32 @@ public class LineFormation extends Formation {
         angle+=FastMath.HALF_PI;
         float cos = FastMath.cos(angle);
         float sin = FastMath.sin(angle);
+    
+        nrPerRow = number < nrPerRow ? number : nrPerRow;
 
-        for (int i = 0; i < number; i++) {
+        float nrCol = (number) / (nrPerRow);
+        float currRow = 0;
+        float currCol = 0;
 
-            Soldier s = u.soldiers.get(i);
-            
-            float x = u.goalPos.x - (i - number*0.5f) * dist*cos;
-            float z = u.goalPos.y + (i - number*0.5f) * dist*sin;
+        for (Soldier s : u.soldiers) {
+
+            float x = u.goalPos.x - (currRow - nrPerRow * 0.5f) * dist * cos;
+            float z = u.goalPos.y + (currRow - nrPerRow * 0.5f) * dist * sin;
+
+            x += (currCol) * dist * sin;
+            z += (currCol) * dist * cos;
+
+
+            currRow++;
+            if (currRow == nrPerRow) {
+                currRow = 0;
+                currCol++;
+            }
 
             if (warp) {
                 s.setPosition(x, z, u.goalDir.x, u.goalDir.y);
             } else {
-                s.setGoal(x,z, u.goalDir.x,u.goalDir.y, run);
+                s.setGoal(x, z, u.goalDir.x, u.goalDir.y, run);
             }
         }
     }

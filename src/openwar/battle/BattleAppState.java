@@ -52,15 +52,16 @@ public class BattleAppState extends AbstractAppState {
 
             Vector3f loc = game.getCamera().getLocation();
             Vector3f dir = game.getCamera().getDirection();
+            Vector3f left = game.getCamera().getLeft();
 
             if (name.equals("battle_forward")) {
                 loc.addLocal(tpf * speed * dir.x, 0, tpf * speed * dir.z);
             } else if (name.equals("battle_backward")) {
                 loc.addLocal(tpf * speed * -dir.x, 0, tpf * speed * -dir.z);
             } else if (name.equals("battle_strafeleft")) {
-                loc.addLocal(tpf * speed, 0, 0);
+                loc.addLocal(left.mult(tpf * speed));
             } else if (name.equals("battle_straferight")) {
-                loc.addLocal(tpf * -speed, 0, 0);
+                loc.addLocal(left.mult(-tpf * speed));
             } else if (name.equals("battle_strafeup")) {
                 loc.addLocal(0, tpf * 10 * value, 0);
             } else if (name.equals("battle_strafedown")) {
@@ -116,14 +117,13 @@ public class BattleAppState extends AbstractAppState {
 
     public void leftMouseClick(CollisionResult r) {
         Vector3f pt = r.getContactPoint();
-        int x = (int) pt.x;
-        int z = (int) pt.z;
-
+        
         if (r.getGeometry() == null) {
             return;
         }
 
         if (r.getGeometry() instanceof TerrainPatch) {
+            System.err.println(pt);
             deselectAll();
             return;
 
@@ -149,9 +149,6 @@ public class BattleAppState extends AbstractAppState {
     public void rightMouseClick(CollisionResult r) {
 
         Vector3f pt = r.getContactPoint();
-        int x = (int) pt.x;
-        int z = (int) pt.z;
-
         if (r.getGeometry() instanceof TerrainPatch) {
 
             if (selectedUnits.isEmpty()) {
@@ -167,13 +164,12 @@ public class BattleAppState extends AbstractAppState {
             // Check if the unit direction should change
             if(altPressed)
             {
-                float dx = x-selectedUnits.get(0).currPos.x;
-                float dz = z-selectedUnits.get(0).currPos.y;
-                float sum = dx+dz;
-                selectedUnits.get(0).setGoal(x, z,dx/sum,dz/sum,run);
+                float dx = pt.x-selectedUnits.get(0).currPos.x;
+                float dz = pt.z-selectedUnits.get(0).currPos.y;
+                selectedUnits.get(0).setGoal(pt.x, pt.z,dx,dz,run);
             }
             else
-                selectedUnits.get(0).setGoal(x, z, run);
+                selectedUnits.get(0).setGoal(pt.x, pt.z, run);
             
             return;
 
@@ -310,7 +306,8 @@ public class BattleAppState extends AbstractAppState {
 
         game.rootNode.attachChild(sceneNode);
         game.getCamera().lookAtDirection(new Vector3f(0f, -1f, 2f).normalizeLocal(), Vector3f.UNIT_Y);
-        game.getCamera().setLocation(new Vector3f(215, 50, 40));
+        Vector3f start = new Vector3f(200,30,50);
+        game.getCamera().setLocation(start.addLocal(0,teamA.get(0).soldiers.get(0).node.getLocalTranslation().y,0));
 
 
 
@@ -319,7 +316,7 @@ public class BattleAppState extends AbstractAppState {
         dlight.setColor(new ColorRGBA(col.x / 255f, col.y / 255f, col.z / 255f, 1));
         dlight.setDirection(Main.DB.sun_direction);
         sceneNode.addLight(dlight);
-        PssmShadowRenderer pssm = new PssmShadowRenderer(game.getAssetManager(), 1024, 8);
+        PssmShadowRenderer pssm = new PssmShadowRenderer(game.getAssetManager(), 2048, 16);
         pssm.setDirection(Main.DB.sun_direction);
         game.getViewPort().addProcessor(pssm);
 
