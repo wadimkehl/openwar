@@ -5,7 +5,6 @@
 package openwar.battle.formations;
 
 import com.jme3.math.FastMath;
-import com.jme3.math.Vector2f;
 import openwar.battle.Soldier;
 import openwar.battle.Unit;
 
@@ -13,9 +12,9 @@ import openwar.battle.Unit;
  *
  * @author kehl
  */
-public class LineFormation extends Formation {
+public class CircleFormation extends Formation {
 
-    public LineFormation(Unit unit) {
+    public CircleFormation(Unit unit) {
         u = unit;
     }
 
@@ -24,23 +23,29 @@ public class LineFormation extends Formation {
 
         float number = u.soldiers.size();
         float dist = sparseFormation ? 3f : 1.5f;
-        float angle = FastMath.atan2(u.goalDir.y, u.goalDir.x);
-        if (angle<0) angle+=FastMath.TWO_PI;
-        angle+=FastMath.HALF_PI;
-        float cos = FastMath.cos(angle);
-        float sin = FastMath.sin(angle);
+
+        float r = (number * dist) / FastMath.TWO_PI;
+        float rad = 0;
 
         for (int i = 0; i < number; i++) {
 
             Soldier s = u.soldiers.get(i);
-            
-            float x = u.goalPos.x - (i - number*0.5f) * dist*cos;
-            float z = u.goalPos.y + (i - number*0.5f) * dist*sin;
+
+
+            float cos = FastMath.cos(rad);
+            float sin = FastMath.sin(rad);
+
+
+            float x = u.goalPos.x - cos * r;
+            float z = u.goalPos.y + sin * r;
+
+            rad += dist / r;
+
 
             if (warp) {
-                s.setPosition(x, z, u.goalDir.x, u.goalDir.y);
+                s.setPosition(x, z, cos, sin);
             } else {
-                s.setGoal(x,z, u.goalDir.x,u.goalDir.y, run);
+                s.setGoal(x, z, cos, sin, run);
             }
         }
     }
