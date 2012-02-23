@@ -19,13 +19,15 @@ public class CircleFormation extends Formation {
     }
 
     @Override
-    public void doFormation(boolean run, boolean warp) {
+    public void doFormation(boolean run, boolean warp, boolean invert) {
 
         float number = u.soldiers.size();
         float dist = sparseFormation ? 3f : 1.5f;
 
         float r = (number * dist) / FastMath.TWO_PI;
-        float rad = 0;
+        float rad = FastMath.HALF_PI;
+        
+       // if(invert) rad +=FastMath.PI;
 
         for (int i = 0; i < number; i++) {
 
@@ -39,7 +41,11 @@ public class CircleFormation extends Formation {
             float x = u.goalPos.x - cos * r;
             float z = u.goalPos.y + sin * r;
 
-            rad += dist / r;
+//            if (invert) {
+//                rad -= dist / r;
+//            } else {
+                rad += dist / r;
+//            }
 
 
             if (warp) {

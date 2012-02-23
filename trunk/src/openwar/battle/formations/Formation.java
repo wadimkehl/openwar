@@ -17,7 +17,7 @@ public abstract class Formation {
     public Unit u;
     public boolean sparseFormation;
     
-    public abstract void doFormation(boolean run, boolean warp);
+    public abstract void doFormation(boolean run, boolean warp,boolean invert);
     
     
     
