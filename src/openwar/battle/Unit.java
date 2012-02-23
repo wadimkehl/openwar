@@ -207,7 +207,6 @@ public class Unit {
         }
         
         invertFormation ^= goalDir.smallestAngleBetween(oldGoalDir) > FastMath.HALF_PI;
-        System.out.println(invertFormation);
         formation.doFormation(run, false, invertFormation);
         this.run = run;
     }
