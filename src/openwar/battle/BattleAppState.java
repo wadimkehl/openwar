@@ -8,6 +8,7 @@ import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.collision.CollisionResult;
+import com.jme3.input.FlyByCamera;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.light.DirectionalLight;
@@ -16,13 +17,18 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
+import com.jme3.post.FilterPostProcessor;
+import com.jme3.post.filters.BloomFilter;
+import com.jme3.post.filters.FogFilter;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.UpdateControl;
 import com.jme3.shadow.PssmShadowRenderer;
 import com.jme3.system.NanoTimer;
 import com.jme3.terrain.geomipmap.TerrainPatch;
+import com.jme3.util.SkyFactory;
 import java.util.ArrayList;
+import java.util.HashMap;
 import openwar.AudioAppState;
 import openwar.DB.Army;
 import openwar.Main;
@@ -45,6 +51,7 @@ public class BattleAppState extends AbstractAppState {
     public Tile tile;
     public BattleUI uiController;
     public float speed = 80f;
+    public HashMap<Spatial,Soldier> hashedSoldiers;
     private AnalogListener analogListener = new AnalogListener() {
 
         @Override
@@ -67,6 +74,8 @@ public class BattleAppState extends AbstractAppState {
             } else if (name.equals("battle_strafedown")) {
                 loc.addLocal(0, tpf * 10 * -value, 0);
             }
+            
+            
 
 
             game.getCamera().setLocation(loc);
@@ -106,10 +115,13 @@ public class BattleAppState extends AbstractAppState {
 
 
             } else if (name.equals("shift")) {
+                game.camera.setEnabled(pressed);
+                game.getInputManager().setCursorVisible(!pressed);
+         
                 shiftPressed = pressed;
             } else if (name.equals("ctrl")) {
                 ctrlPressed = pressed;
-            }else if (name.equals("alt")) {
+            } else if (name.equals("alt")) {
                 altPressed = pressed;
             }
         }
@@ -117,7 +129,7 @@ public class BattleAppState extends AbstractAppState {
 
     public void leftMouseClick(CollisionResult r) {
         Vector3f pt = r.getContactPoint();
-        
+
         if (r.getGeometry() == null) {
             return;
         }
@@ -162,15 +174,14 @@ public class BattleAppState extends AbstractAppState {
             lastClickTime = time;
 
             // Check if the unit direction should change
-            if(altPressed)
-            {
-                float dx = pt.x-selectedUnits.get(0).currPos.x;
-                float dz = pt.z-selectedUnits.get(0).currPos.y;
-                selectedUnits.get(0).setGoal(pt.x, pt.z,dx,dz,run);
-            }
-            else
+            if (altPressed) {
+                float dx = pt.x - selectedUnits.get(0).currPos.x;
+                float dz = pt.z - selectedUnits.get(0).currPos.y;
+                selectedUnits.get(0).setGoal(pt.x, pt.z, dx, dz, run);
+            } else {
                 selectedUnits.get(0).setGoal(pt.x, pt.z, run);
-            
+            }
+
             return;
 
         }
@@ -279,35 +290,39 @@ public class BattleAppState extends AbstractAppState {
         game.getInputManager().addListener(analogListener, "battle_backward");
 
 
+        hashedSoldiers = new HashMap<Spatial,Soldier>();
+        
         terrain.createData();
 
 
-        float x = 200, z = 100;
+        float z = -50;
         for (Unit u : teamA) {
             u.createData();
-            u.setPosition(x, z, 0, 1);
+            u.setPosition(0, z, 0, 1);
             z -= 10;
 
         }
 
-        x = 200;
-        z = 200;
+        z = 50;
         for (Unit u : teamB) {
             u.createData();
-            u.setPosition(x, z, 0, -1);
+            u.setPosition(0, z, 0, -1);
 
             z += 10;
 
         }
 
+        Spatial sky = SkyFactory.createSky(
+                game.getAssetManager(), "map/9.tga",true);
+        sceneNode.attachChild(sky);
 
 
         sceneNode.attachChild(terrain.terrainQuad);
 
         game.rootNode.attachChild(sceneNode);
-        game.getCamera().lookAtDirection(new Vector3f(0f, -1f, 2f).normalizeLocal(), Vector3f.UNIT_Y);
-        Vector3f start = new Vector3f(200,30,50);
-        game.getCamera().setLocation(start.addLocal(0,teamA.get(0).soldiers.get(0).node.getLocalTranslation().y,0));
+        game.getCamera().lookAtDirection(new Vector3f(0f, -1f, 3f).normalizeLocal(), Vector3f.UNIT_Y);
+        Vector3f start = new Vector3f(0, 30, -100);
+        game.getCamera().setLocation(start.addLocal(0, teamA.get(0).soldiers.get(0).node.getLocalTranslation().y, 0));
 
 
 
@@ -320,7 +335,21 @@ public class BattleAppState extends AbstractAppState {
         pssm.setDirection(Main.DB.sun_direction);
         game.getViewPort().addProcessor(pssm);
 
+        FilterPostProcessor fpp = new FilterPostProcessor(game.getAssetManager());
+        FogFilter fog = new FogFilter();
+        fog.setFogColor(new ColorRGBA(0.9f, 0.7f, 0.7f, 1.0f));
+        fog.setFogDistance(155);
+        fog.setFogDensity(1.0f);
+        //fpp.addFilter(fog);
+        
+        
+        BloomFilter bloom = new BloomFilter();
+        bloom.setExposurePower(8f);
+        bloom.setBloomIntensity(1.5f);
+        fpp.addFilter(bloom);
 
+        
+        game.getViewPort().addProcessor(fpp);
 
 
 

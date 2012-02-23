@@ -20,7 +20,7 @@ public class LineFormation extends Formation {
     }
 
     @Override
-    public void doFormation(boolean run, boolean warp) {
+    public void doFormation(boolean run, boolean warp,boolean invert) {
 
         float number = u.soldiers.size();
         float dist = sparseFormation ? 3f : 1.5f;

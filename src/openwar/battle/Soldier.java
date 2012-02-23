@@ -4,6 +4,12 @@
  */
 package openwar.battle;
 
+import com.jme3.bullet.collision.PhysicsCollisionEvent;
+import com.jme3.bullet.collision.PhysicsCollisionListener;
+import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
+import com.jme3.bullet.control.CharacterControl;
+import com.jme3.bullet.control.GhostControl;
+import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.FastMath;
@@ -21,12 +27,18 @@ import com.jme3.scene.shape.Dome;
 import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.terrain.geomipmap.TerrainQuad;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
  * @author kehl
  */
-public class Soldier {
+public class Soldier implements PhysicsCollisionListener {
+
+    @Override
+    public void collision(PhysicsCollisionEvent event) {
+    }
 
     public enum Status {
 
@@ -49,9 +61,14 @@ public class Soldier {
     Vector2f currPos, currDir, goalPos, goalDir, walkDir;
     // Cylinder collision shape
     float height = 1.8f;
-    float radius = 0.5f;
+    float radius = 0.4f;
     TerrainQuad terrain;
     Node cone;
+    CylinderCollisionShape collShape;
+    SoldierCollision collControl;
+    Vector2f collVec;
+    ArrayList<Soldier> collObjects;
+    int loopCounter;
 
     public Soldier(Unit ref) {
         unit = ref;
@@ -61,6 +78,8 @@ public class Soldier {
         goalPos = new Vector2f();
         goalDir = new Vector2f();
         walkDir = new Vector2f();
+        collVec = new Vector2f();
+        collObjects = new ArrayList<Soldier>();
 
 
     }
@@ -71,12 +90,12 @@ public class Soldier {
 
 
         //model = unit.battle.game.getAssetManager().loadModel("models/" + Main.DB.cultures.get(0).armyModel);
-        model = (Spatial) new Geometry("", new Cylinder(16, 16, radius, height, true));
+        model = (Spatial) new Geometry("", new Cylinder(5, 5, radius, height, true));
         mat = new Material(unit.battle.game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
         model.setMaterial(mat);
         model.setShadowMode(ShadowMode.CastAndReceive);
         model.setLocalRotation(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_X));
-        model.setLocalTranslation(0, height * 0.5f, 0);
+        //model.setLocalTranslation(0, height * 0.5f, 0);
 
         cone = new Node("");
         Spatial dome = (Spatial) new Geometry("", new Dome(Vector3f.ZERO, 2, 12, 0.2f, false));
@@ -103,6 +122,13 @@ public class Soldier {
         node.attachChild(model);
         node.attachChild(cone);
 
+        collShape = new CylinderCollisionShape(new Vector3f(radius, height / 2f, radius), 1);
+        collControl = new SoldierCollision(collShape, this);
+        unit.battle.game.bulletState.getPhysicsSpace().add(collControl);
+
+        node.addControl(collControl);
+        unit.battle.hashedSoldiers.put(node, this);
+
 
     }
 
@@ -126,7 +152,7 @@ public class Soldier {
         currDir.normalizeLocal();
         goalPos = currPos.clone();
         goalDir = currDir.clone();
-        node.setLocalTranslation(currPos.x, terrain.getHeight(currPos), currPos.y);
+        node.setLocalTranslation(currPos.x, terrain.getHeight(currPos) + height * 0.5f, currPos.y);
         node.setLocalRotation(new Quaternion().fromAngleAxis(FastMath.atan2(dz, dx),
                 Vector3f.UNIT_Y));
 
@@ -139,9 +165,9 @@ public class Soldier {
         goalDir.y = dz;
         goalDir.normalizeLocal();
 
-        
+
         status = Status.Move;
-        
+
     }
 
     public void setGoal(Vector2f pos, Vector2f dir, boolean run) {
@@ -213,20 +239,33 @@ public class Soldier {
 
     public void update(float tpf) {
 
+        
+        loopCounter++;
+        if (!collObjects.isEmpty()) {
+            loopCounter = 0;
+            collVec.x = collVec.y = 0;
+            collVec.subtractLocal(collObjects.get(0).currPos.subtract(currPos));
+            collObjects.clear();
+            currPos.addLocal(collVec.multLocal(tpf));
+            node.setLocalTranslation(currPos.x, terrain.getHeight(currPos) + height * 0.5f, currPos.y);
 
-
+        } 
         switch (status) {
 
             case Idle:
 
-                turnToGoalDir(0.02f);
-
-
-                // check for different things? enemy engages or sth,
+                turnToGoalDir(0.03f);
+                if (loopCounter > 100) {
+                    loopCounter=0;
+                    walkDir = goalPos.subtract(currPos);
+                    if (walkDir.lengthSquared() > 0.1f) {
+                        status = Status.Move;
+                    }
+                }
                 break;
 
             case TurnToMove:
-                    if (turnToWalkDir(0.02f)) {
+                if (turnToWalkDir(0.03f)) {
                     status = Status.Move;
                     break;
                 }
@@ -237,7 +276,7 @@ public class Soldier {
 
 
                 walkDir = goalPos.subtract(currPos);
-                if (walkDir.lengthSquared() < 0.001f) {
+                if (walkDir.lengthSquared() < 0.01f) {
                     status = Status.Idle;
                 }
                 walkDir.normalizeLocal();
@@ -253,13 +292,14 @@ public class Soldier {
                 } else {
                     currPos.addLocal(walkDir.mult(tpf));
                 }
-                node.setLocalTranslation(currPos.x, terrain.getHeight(currPos), currPos.y);
+                node.setLocalTranslation(currPos.x, terrain.getHeight(currPos) + height * 0.5f, currPos.y);
 
                 break;
 
-          
-
-
         }
+
+
+
+
     }
 }

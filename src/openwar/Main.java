@@ -74,7 +74,7 @@ public class Main extends Application {
     static public boolean debugUI;
     private AppActionListener actionListener = new AppActionListener();
     public Node rootNode = new Node("Root Node"), guiNode = new Node("GUI Node");
-    protected FlyByCamera camera;
+    public FlyByCamera camera;
     public boolean wishToQuit;
     private static final Logger logger = Logger.getLogger(Main.class.getName());
     public HashMap<String, String> hashedPopUpId;

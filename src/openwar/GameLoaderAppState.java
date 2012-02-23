@@ -7,6 +7,8 @@ package openwar;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.bullet.BulletAppState.ThreadingType;
+import com.jme3.bullet.PhysicsSpace.BroadphaseType;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.control.UpdateControl;
 import de.lessvoid.nifty.Nifty;
@@ -131,18 +133,15 @@ public class GameLoaderAppState extends AbstractAppState implements ScreenContro
     public void InitGame() {
 
         manager.attach(game.audioState);
-        manager.attach(game.bulletState);
         manager.attach(game.screenshotState);
         manager.attach(game.mainMenuState);
+game.bulletState.setThreadingType(ThreadingType.PARALLEL);
 
-       // if (Main.devMode) {
-            //game.bulletState.getPhysicsSpace().enableDebug(game.getAssetManager());
-        //}
+                manager.attach(game.bulletState);
+            game.bulletState.getPhysicsSpace().enableDebug(game.getAssetManager());
+//game.bulletState.setBroadphaseType(BroadphaseType.AXIS_SWEEP_3);
 
-        game.bulletState.getPhysicsSpace().setGravity(new Vector3f(0,1,0));
-
-        
-        DataLoader = new XMLDataLoader(game);
+                DataLoader = new XMLDataLoader(game);
         if (!DataLoader.loadAll()) {
             game.wishToQuit = true;
             return;

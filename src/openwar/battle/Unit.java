@@ -41,11 +41,11 @@ public class Unit {
     public String refName;
     public String owner;
     public int exp, att, def;
-    public boolean selected, run;
+    public boolean selected, run, invertFormation;
     public float morale = 100f, stamina = 100f;
     public ArrayList<Soldier> soldiers;
     public BattleAppState battle;
-    public Vector2f currPos, goalPos, goalDir, currDir;
+    public Vector2f currPos, goalPos, goalDir, currDir, oldGoalDir;
     public Status status;
     public Formation formation;
     public Node cone;
@@ -64,6 +64,7 @@ public class Unit {
 
         currDir = new Vector2f(0, 1);
         goalDir = new Vector2f(0, 1);
+        oldGoalDir = new Vector2f(0, 1);
 
 
         soldiers = new ArrayList<Soldier>();
@@ -71,7 +72,7 @@ public class Unit {
             soldiers.add(new Soldier(this));
         }
 
-        formation = new CircleFormation(this);
+        formation = new BoxFormation(this,15);
 
     }
 
@@ -177,12 +178,13 @@ public class Unit {
         currDir.normalizeLocal();
         goalPos = currPos.clone();
         goalDir = currDir.clone();
-        formation.doFormation(false, true);
+        formation.doFormation(false, true, false);
 
     }
 
     public void setGoal(float x, float z, float dx, float dz, boolean run) {
         //TODO: x needs to be inverted for rotations to work...
+        oldGoalDir = goalDir.clone();
         goalDir.x = -dx;
         goalDir.y = dz;
         goalDir.normalizeLocal();
@@ -203,8 +205,10 @@ public class Unit {
             System.out.println("Unit is walking");
 
         }
-
-        formation.doFormation(run, false);
+        
+        invertFormation ^= goalDir.smallestAngleBetween(oldGoalDir) > FastMath.HALF_PI;
+        System.out.println(invertFormation);
+        formation.doFormation(run, false, invertFormation);
         this.run = run;
     }
 

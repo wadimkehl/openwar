@@ -67,13 +67,13 @@ public class MenuAppState extends AbstractAppState implements ScreenController {
         Main.DB.playerFaction = "A";
 
         Unit m = new Unit("militia");
-        m.count=1;
+        m.count=45;
         m.att=3;
         m.def=2;
         m.exp=0;
         
         Unit l = new Unit("bowmen");
-        l.count=20;
+        l.count=15;
         l.att=1;
         l.def=1;
         l.exp=0;
