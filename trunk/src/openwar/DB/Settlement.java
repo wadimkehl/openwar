@@ -168,7 +168,7 @@ public class Settlement extends WorldEntity {
         String file = Main.DB.hashedCultures.get(culture).settlementModels.get(level);
         model = map.game.getAssetManager().loadModel("models/" + file);
         Material mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
-        model.setMaterial(mat);
+        //model.setMaterial(mat);
         model.setShadowMode(ShadowMode.CastAndReceive);
         model.setLocalTranslation(0.25f, 0f, 0.25f);
         node.attachChild(model);
@@ -254,7 +254,7 @@ public class Settlement extends WorldEntity {
         String file = Main.DB.hashedCultures.get(culture).dockModels.get(level);
         dock.model = map.game.getAssetManager().loadModel("models/" + file);
         Material mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
-        dock.model.setMaterial(mat);
+        //dock.model.setMaterial(mat);
         dock.model.setShadowMode(ShadowMode.CastAndReceive);
         dock.model.setLocalTranslation(map.getGLTileCenterAboveSea(dock.posX, dock.posZ));
         Vector3f dir = map.getGLTileCenterAboveSea(dock.spawnX, dock.spawnZ).subtractLocal(
