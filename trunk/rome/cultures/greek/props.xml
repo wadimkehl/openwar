@@ -13,13 +13,13 @@
     
     <dock>
         
-        <model level="0" file="roman_dock_0.blend" />
+        <model level="0" file="porticon.obj" />
         
     </dock>
     
-    <army file="cityicon.blend" />
+    <army file="emessairyicon.obj" />
 
-    <fleet file="cityicon.blend" />
+    <fleet file="manowaricon.obj" />
   
     
 </root>
