@@ -54,7 +54,7 @@ public class Army extends WorldEntity {
         }
         
         model = map.game.getAssetManager().loadModel("models/" + file);
-        model.setMaterial(new Material(map.game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md"));
+        //model.setMaterial(new Material(map.game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md"));
         model.setShadowMode(ShadowMode.CastAndReceive);
         model.setLocalTranslation(0f, .1f, 0f);
         node.setLocalTranslation(map.getGLTileCenter(posX, posZ));
