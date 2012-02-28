@@ -159,7 +159,7 @@ public class WorldMapAppState extends AbstractAppState {
 
         }
 
-        Spatial spat = (Spatial) r.getGeometry().getParent().getParent();
+        Spatial spat = (Spatial) r.getGeometry();
         Army a = map.getArmy(spat);
         if (a != null && a != map.selectedArmy) {
 
@@ -173,7 +173,7 @@ public class WorldMapAppState extends AbstractAppState {
             return;
         }
 
-        Settlement s = map.getSettlement(spat);
+        Settlement s = map.getSettlement(spat.getParent());
         if (s != null) {
 
             if (!s.owner.equals(Main.DB.playerFaction) && !Main.devMode) {
@@ -245,7 +245,7 @@ public class WorldMapAppState extends AbstractAppState {
         }
 
         // TODO: BLENDER exports spatial into two cascaded nodes!
-        Spatial s = (Spatial) r.getGeometry().getParent().getParent();
+        Spatial s = (Spatial) r.getGeometry();
         Army ar = map.getArmy(s);
         if (ar != null) {
 
@@ -264,7 +264,7 @@ public class WorldMapAppState extends AbstractAppState {
             return;
         }
 
-        Settlement c = map.getSettlement(s);
+        Settlement c = map.getSettlement(s.getParent());
         if (c != null) {
             map.marchTo(a, c);
             game.playSound("army_march");
@@ -305,7 +305,7 @@ public class WorldMapAppState extends AbstractAppState {
         game.getCamera().lookAtDirection(new Vector3f(0f, -1f, -1f).normalizeLocal(), Vector3f.UNIT_Y);
         game.getCamera().getLocation().y = 20f;
 
-        moveCameraTo(Main.DB.hashedSettlements.get(Main.DB.hashedFactions.get(Main.DB.playerFaction).capital));
+        moveCameraTo(Main.DB.settlements.get(Main.DB.factions.get(Main.DB.playerFaction).capital));
 
 
         map = new WorldMap(game, sceneNode);

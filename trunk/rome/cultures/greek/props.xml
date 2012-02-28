@@ -7,19 +7,19 @@
     
     <settlement>
         
-        <model level="0" file="cityicon.blend" />
+        <model level="0" refname="settlement" />
         
     </settlement>
     
     <dock>
         
-        <model level="0" file="porticon.obj" />
+        <model level="0" refname="dock" />
         
     </dock>
     
-    <army file="emessairyicon.obj" />
+    <army refname="army" />
 
-    <fleet file="manowaricon.obj" />
+    <fleet refname="fleet" />
   
     
 </root>

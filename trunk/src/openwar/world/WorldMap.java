@@ -40,6 +40,7 @@ import java.util.logging.Logger;
 import openwar.DB.Climate;
 import openwar.DB.Faction;
 import openwar.DB.GenericTile;
+import openwar.DB.Model;
 import openwar.DB.Region;
 import openwar.DB.Settlement;
 import openwar.DB.Unit;
@@ -264,8 +265,13 @@ public class WorldMap {
     }
 
     public boolean createEntities() {
+        
+        for (Model m : Main.DB.models.values()) {
+            m.createData(assetManager);
+        }
+        
 
-        for (Region r : Main.DB.regions) {
+        for (Region r : Main.DB.regions.values()) {
 
             if (r.settlement == null) {
                 continue;
@@ -275,12 +281,14 @@ public class WorldMap {
 
         }
 
-        for (Faction f : Main.DB.factions) {
+        for (Faction f : Main.DB.factions.values()) {
             for (Army a : f.armies) {
                 a.createData(this);
             }
         }
 
+        
+        
         for (WorldDecoration d : Main.DB.worldDecorations) {
             d.createData(this);
         }
@@ -397,11 +405,11 @@ public class WorldMap {
 
         minimap.update();
 
-        for (Settlement s : Main.DB.settlements) {
+        for (Settlement s : Main.DB.settlements.values()) {
             s.update(tpf);
         }
 
-        for (Faction f : Main.DB.factions) {
+        for (Faction f : Main.DB.factions.values()) {
             for (Army a : f.armies) {
                 a.update(tpf);
             }
@@ -420,7 +428,7 @@ public class WorldMap {
         a.owner = owner;
         a.units = units;
         a.calculateMovePoints();
-        Main.DB.hashedFactions.get(owner).armies.add(a);
+        Main.DB.factions.get(owner).armies.add(a);
         a.createData(this);
         return a;
 
@@ -434,7 +442,7 @@ public class WorldMap {
             @Override
             public Object call() throws Exception {
 
-                Main.DB.hashedFactions.get(a.owner).armies.remove(a);
+                Main.DB.factions.get(a.owner).armies.remove(a);
                 scene.detachChild(a.node);
 
                 if (selectedArmy == a) {
@@ -467,7 +475,7 @@ public class WorldMap {
 
     // Returns army object
     public Army getArmy(Spatial model) {
-        for (Faction f : Main.DB.factions) {
+        for (Faction f : Main.DB.factions.values()) {
             for (Army w : f.armies) {
                 if (w.model == model) {
                     return w;
@@ -484,7 +492,7 @@ public class WorldMap {
 
     // Returns army object
     public Army getArmy(int x, int z) {
-        for (Faction f : Main.DB.factions) {
+        for (Faction f : Main.DB.factions.values()) {
             for (Army w : f.armies) {
                 if (w.posX == x && w.posZ == z) {
                     return w;
@@ -496,7 +504,7 @@ public class WorldMap {
 
     public Settlement getSettlement(Spatial model) {
 
-        for (Settlement s : Main.DB.settlements) {
+        for (Settlement s : Main.DB.settlements.values()) {
             if (s.model == model) {
                 return s;
             }
@@ -510,7 +518,7 @@ public class WorldMap {
 
     public Settlement getSettlement(int x, int z) {
 
-        for (Settlement s : Main.DB.settlements) {
+        for (Settlement s : Main.DB.settlements.values()) {
             if (s.posX == x && s.posZ == z) {
                 return s;
             }
@@ -713,7 +721,7 @@ public class WorldMap {
     }
 
     public Region getRegionByRGB(Vector3f col) {
-        for (Region reg : Main.DB.regions) {
+        for (Region reg : Main.DB.regions.values()) {
             if (reg.color.equals(col)) {
                 return reg;
             }
@@ -726,7 +734,7 @@ public class WorldMap {
     }
 
     public Climate getClimateByRGB(Vector3f col) {
-        for (Climate t : Main.DB.climates) {
+        for (Climate t : Main.DB.climates.values()) {
             if (t.color.equals(col)) {
                 return t;
             }

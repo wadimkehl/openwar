@@ -28,19 +28,15 @@ public class GameDatabase {
     public ArrayList<WorldDecoration> worldDecorations;
     public HashMap<String, AudioNode> musicNodes;
     public HashMap<String, AudioNode> soundNodes;
+    public HashMap<String,Model >  models;
     public ArrayList<Texture> tileTextures;
     public ArrayList<Float> tileTextures_scales;
     public int tilesTexturesCount;
-    public ArrayList<Culture> cultures;
-    public HashMap<String, Culture> hashedCultures;
-    public ArrayList<Region> regions;
-    public HashMap<String, Region> hashedRegions;
-    public ArrayList<Settlement> settlements;
-    public HashMap<String, Settlement> hashedSettlements; // String is refname of region!
-    public ArrayList<Climate> climates;
-    public HashMap<String, Climate> hashedClimates;
-    public ArrayList<Faction> factions;
-    public HashMap<String, Faction> hashedFactions;
+    public HashMap<String, Culture> cultures;
+    public HashMap<String, Region> regions;
+    public HashMap<String, Settlement> settlements; // String is refname of region!
+    public HashMap<String, Climate> climates;
+    public HashMap<String, Faction> factions;
     public String playerFaction;
     public int currentRound = 0;
     public String currentTurn;
@@ -58,6 +54,9 @@ public class GameDatabase {
         musicNodes = new HashMap<String, AudioNode>();
         soundNodes = new HashMap<String, AudioNode>();
 
+        models = new HashMap<String, Model>();
+
+        
         decorations = new HashMap<String, Spatial>();
         worldDecorations = new ArrayList<WorldDecoration>();
 
@@ -65,19 +64,11 @@ public class GameDatabase {
         tileTextures = new ArrayList<Texture>();
         tileTextures_scales = new ArrayList<Float>();
 
-        regions = new ArrayList<Region>();
-        cultures = new ArrayList<Culture>();
-
-        settlements = new ArrayList<Settlement>();
-        climates = new ArrayList<Climate>();
-        factions = new ArrayList<Faction>();
-
-        hashedFactions = new HashMap<String, Faction>();
-        hashedCultures = new HashMap<String, Culture>();
-
-        hashedRegions = new HashMap<String, Region>();
-        hashedClimates = new HashMap<String, Climate>();
-        hashedSettlements = new HashMap<String, Settlement>();
+        factions = new HashMap<String, Faction>();
+        cultures = new HashMap<String, Culture>();
+        regions = new HashMap<String, Region>();
+        climates = new HashMap<String, Climate>();
+        settlements = new HashMap<String, Settlement>();
 
 
     }

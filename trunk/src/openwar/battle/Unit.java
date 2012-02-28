@@ -18,9 +18,7 @@ import com.jme3.scene.shape.Sphere;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import openwar.battle.formations.BoxFormation;
-import openwar.battle.formations.CircleFormation;
 import openwar.battle.formations.Formation;
-import openwar.battle.formations.LineFormation;
 
 /**
  *
@@ -48,6 +46,7 @@ public class Unit {
     public Vector2f currPos, goalPos, goalDir, currDir, oldGoalDir;
     public Status status;
     public Formation formation;
+    public Unit attackedUnit;
     public Node cone;
 
     public Unit(BattleAppState b, openwar.DB.Unit U, String player) {

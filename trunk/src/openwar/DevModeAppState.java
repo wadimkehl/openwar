@@ -15,14 +15,14 @@ import com.jme3.math.Vector3f;
 import com.jme3.terrain.geomipmap.TerrainPatch;
 import com.jme3.texture.Image;
 import com.jme3.texture.Texture2D;
-import com.sun.imageio.plugins.png.PNGImageWriter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
+import openwar.DB.Climate;
+import openwar.DB.Region;
 import openwar.world.WorldTile;
 
 /**
@@ -120,7 +120,7 @@ public class DevModeAppState extends AbstractAppState {
 
                 } else if ("regions".equals(currTexture)) {
                     if (currType < 0) {
-                        currType = Main.DB.regions.size() - 1;
+                        currType = Main.DB.regions.values().size() - 1;
                     }
                     currSelection = Main.DB.regions.get(currType).name;
                     currRegion = Main.DB.regions.get(currType).refName;
@@ -209,8 +209,8 @@ public class DevModeAppState extends AbstractAppState {
         game.getInputManager().addListener(actionListener, "show_grid");
 
 
-        currRegion = Main.DB.regions.get(0).refName;
-        currClimate = Main.DB.climates.get(0).refName;
+        currRegion = ((Region) Main.DB.regions.values().toArray()[0]).refName;
+        currClimate = ((Climate) Main.DB.climates.values().toArray()[0]).refName;
 
         initialized = true;
         
@@ -262,7 +262,7 @@ public class DevModeAppState extends AbstractAppState {
         if ("regions".equals(currTexture)) {
             for (int z = 0; z < game.worldMapState.map.height; z++) {
                 for (int x = 0; x < game.worldMapState.map.width; x++) {
-                    Vector3f col = Main.DB.hashedRegions.get(
+                    Vector3f col = Main.DB.regions.get(
                             game.worldMapState.map.worldTiles[x][z].region).color;
                     int color = ((0xff & 255) << 24) | ((0xff & (int) col.x) << 16) | ((0xff & (int) col.y) << 8) | (0xff & (int) col.z);
                     im.setRGB(x, z, color);
@@ -273,7 +273,7 @@ public class DevModeAppState extends AbstractAppState {
         if ("climates".equals(currTexture)) {
             for (int z = 0; z < game.worldMapState.map.height; z++) {
                 for (int x = 0; x < game.worldMapState.map.width; x++) {
-                    Vector3f col = Main.DB.hashedClimates.get(
+                    Vector3f col = Main.DB.climates.get(
                             game.worldMapState.map.worldTiles[x][z].climate).color;
                     int color = ((0xff & 255) << 24) | ((0xff & (int) col.x) << 16) | ((0xff & (int) col.y) << 8) | (0xff & (int) col.z);
                     im.setRGB(x, z, color);
@@ -309,7 +309,7 @@ public class DevModeAppState extends AbstractAppState {
 
                 for (int x = 0; x < w; x++) {
 
-                    Vector3f col = Main.DB.hashedRegions.get(game.worldMapState.map.worldTiles[x][z].region).color;
+                    Vector3f col = Main.DB.regions.get(game.worldMapState.map.worldTiles[x][z].region).color;
 
                     buf0.put((byte) ((0xff & (int) col.x)));
                     buf0.put((byte) ((0xff & (int) col.y)));
@@ -330,7 +330,7 @@ public class DevModeAppState extends AbstractAppState {
 
                 for (int x = 0; x < w; x++) {
 
-                    Vector3f col = Main.DB.hashedClimates.get(game.worldMapState.map.worldTiles[x][z].climate).color;
+                    Vector3f col = Main.DB.climates.get(game.worldMapState.map.worldTiles[x][z].climate).color;
 
                     buf0.put((byte) ((0xff & (int) col.x)));
                     buf0.put((byte) ((0xff & (int) col.y)));

@@ -54,11 +54,7 @@ public class MenuAppState extends AbstractAppState implements ScreenController {
     }
 
     public void startGame() {
-        Main.DB.playerFaction = "romans";
-        // Make sure that the player faction is the first in the list
-        Main.DB.factions.remove(Main.DB.hashedFactions.get(Main.DB.playerFaction));
-        Main.DB.factions.add(0, Main.DB.hashedFactions.get(Main.DB.playerFaction));
-
+        Main.DB.currentTurn = Main.DB.playerFaction = "romans";
         game.gameLoaderState.loadWorldMap();
     }
 
