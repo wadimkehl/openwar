@@ -67,29 +67,28 @@ public class XMLDataLoader {
         try {
             Element cul = (Element) root.getElementsByTagName("culture").item(0);
             c = new Culture(cul.getAttribute("name"), cul.getAttribute("refname"));
-            Main.DB.cultures.add(c);
-            Main.DB.hashedCultures.put(c.refName, c);
+            Main.DB.cultures.put(c.refName, c);
 
             Element sett = (Element) root.getElementsByTagName("settlement").item(0);
             NodeList nodes = sett.getElementsByTagName("model");
             for (int i = 0; i < nodes.getLength(); i++) {
                 int l = Integer.parseInt(((Element) nodes.item(i)).getAttribute("level"));
-                c.settlementModels.put(l, ((Element) nodes.item(i)).getAttribute("file"));
+                c.settlementModels.put(l, ((Element) nodes.item(i)).getAttribute("refname"));
             }
 
             Element dock = (Element) root.getElementsByTagName("dock").item(0);
             nodes = dock.getElementsByTagName("model");
             for (int i = 0; i < nodes.getLength(); i++) {
                 int l = Integer.parseInt(((Element) nodes.item(i)).getAttribute("level"));
-                c.dockModels.put(l, ((Element) nodes.item(i)).getAttribute("file"));
+                c.dockModels.put(l, ((Element) nodes.item(i)).getAttribute("refname"));
             }
             
               
             Element army = (Element) root.getElementsByTagName("army").item(0);
-            c.armyModel = army.getAttribute("file");
+            c.armyModel = army.getAttribute("refname");
             
             Element fleet = (Element) root.getElementsByTagName("fleet").item(0);
-            c.fleetModel = fleet.getAttribute("file");
+            c.fleetModel = fleet.getAttribute("refname");
             
   
 
@@ -124,8 +123,8 @@ public class XMLDataLoader {
             return false;
         }
     }
-
-    private boolean loadMusic(Element root) {
+    
+ private boolean loadMusic(Element root) {
         AudioNode entity = new AudioNode();
         String refname = null;
         String file = null;
@@ -157,6 +156,33 @@ public class XMLDataLoader {
             return true;
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Music CANNOT be loaded: {0}", refname);
+            return false;
+        }
+    }
+
+
+    private boolean loadModels(Element root) {
+
+        String refname=null, file;
+        try {
+            NodeList nodes = root.getElementsByTagName("model");
+
+            for (int i = 0; i < nodes.getLength(); i++) {
+                                
+                Element l = (Element) nodes.item(i);
+                refname = l.getAttribute("refname");
+                file = l.getAttribute("file");
+                
+                Main.DB.models.put(refname, 
+                        new Model(refname,file,l.getAttribute("diffuse")));
+
+                logger.log(Level.WARNING, "*Model loaded: {0} *", refname);
+
+            }
+
+            return true;
+        } catch (Exception E) {
+            logger.log(Level.SEVERE, "Model CANNOT be loaded: {0}", refname);
             return false;
         }
     }
@@ -206,7 +232,8 @@ public class XMLDataLoader {
             }
 
             // if we load the sounds, decorations or music, check in meta folder for props.xml
-            if ("sounds".equals(folder) || "decorations".equals(folder) || "music".equals(folder)) {
+            if ("sounds".equals(folder) || "decorations".equals(folder) || 
+                    "music".equals(folder) || "models".equals(folder)) {
                 // search props.xml
                 File props = null;
                 for (File l : f.listFiles()) {
@@ -228,6 +255,8 @@ public class XMLDataLoader {
                     return loadSounds(dom.getDocumentElement());
                 } else if ("decorations".equals(folder)) {
                     return loadDecorations(dom.getDocumentElement());
+                }else if ("models".equals(folder)) {
+                    return loadModels(dom.getDocumentElement());
                 } else {
                     return loadMusic(dom.getDocumentElement());
                 }
@@ -526,8 +555,7 @@ public class XMLDataLoader {
                 cl.name = l.getAttribute("name");
                 cl.refName = l.getAttribute("refname");
                 cl.color = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
-                Main.DB.climates.add(cl);
-                Main.DB.hashedClimates.put(cl.refName, cl);
+                Main.DB.climates.put(cl.refName, cl);
 
             }
 
@@ -541,8 +569,7 @@ public class XMLDataLoader {
                 s = new Scanner(r.getAttribute("color"));
                 reg.color = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
                 reg.owner = r.getAttribute("owner");
-                Main.DB.regions.add(reg);
-                Main.DB.hashedRegions.put(reg.refName, reg);
+                Main.DB.regions.put(reg.refName, reg);
 
                 if (r.getElementsByTagName("settlement").getLength() > 0) {
                     Element sett = (Element) r.getElementsByTagName("settlement").item(0);
@@ -556,8 +583,7 @@ public class XMLDataLoader {
                     se.culture = sett.getAttribute("culture");
                     se.region = reg.refName;
                     reg.settlement = se;
-                    Main.DB.settlements.add(se);
-                    Main.DB.hashedSettlements.put(reg.refName, se);
+                    Main.DB.settlements.put(reg.refName, se);
 
                     NodeList units = sett.getElementsByTagName("unit");
                     for (int j = 0; j < units.getLength(); j++) {
@@ -608,8 +634,7 @@ public class XMLDataLoader {
                 fac.capital = r.getAttribute("capital");
 
 
-                Main.DB.factions.add(fac);
-                Main.DB.hashedFactions.put(fac.refName, fac);
+                Main.DB.factions.put(fac.refName, fac);
 
 
                 NodeList armies = r.getElementsByTagName("army");
@@ -687,6 +712,8 @@ public class XMLDataLoader {
             boolean result = true;
             logger.log(Level.WARNING, "Loading factions");
             result = result & loadData("factions");
+            logger.log(Level.WARNING, "Loading models");
+            result = result & loadData("models");
             logger.log(Level.WARNING, "Loading cultures");
             result = result & loadData("cultures");
             logger.log(Level.WARNING, "Loading units");

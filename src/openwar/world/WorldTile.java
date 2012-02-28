@@ -28,38 +28,38 @@ public class WorldTile extends Tile {
     }
 
     public String shortInfo() {
-        String owner = Main.DB.hashedRegions.get(region).owner;
+        String owner = Main.DB.regions.get(region).owner;
         if (!"".equals(owner)) {
-            owner = "     Owner: " + Main.DB.genFactions.get(Main.DB.hashedRegions.get(region).owner).name;
+            owner = "     Owner: " + Main.DB.genFactions.get(Main.DB.regions.get(region).owner).name;
         }
         return super.toString()
-                + "     Region: " + Main.DB.hashedRegions.get(region).name + owner
-                + "     Climate: " + Main.DB.hashedClimates.get(climate).name;
+                + "     Region: " + Main.DB.regions.get(region).name + owner
+                + "     Climate: " + Main.DB.climates.get(climate).name;
 
 
 
     }
 
     public String MinimapInfo() {
-        String owner = Main.DB.hashedRegions.get(region).owner;
+        String owner = Main.DB.regions.get(region).owner;
         if (!"".equals(owner)) {
-            owner = "\nOwner: " + Main.DB.genFactions.get(Main.DB.hashedRegions.get(region).owner).name;
+            owner = "\nOwner: " + Main.DB.genFactions.get(Main.DB.regions.get(region).owner).name;
         }
-        return "Region: " + Main.DB.hashedRegions.get(region).name
+        return "Region: " + Main.DB.regions.get(region).name
                 + owner;
 
     }
 
     @Override
     public String toString() {
-        String owner = Main.DB.hashedRegions.get(region).owner;
+        String owner = Main.DB.regions.get(region).owner;
         if (!"".equals(owner)) {
-            owner = "     Owner: " + Main.DB.genFactions.get(Main.DB.hashedRegions.get(region).owner).name;
+            owner = "     Owner: " + Main.DB.genFactions.get(Main.DB.regions.get(region).owner).name;
         }
         return super.toString()
                 + "     Type: " + Main.DB.genTiles.get(groundType).name
-                + "     Region: " + Main.DB.hashedRegions.get(region).name
-                + "     Climate: " + Main.DB.hashedClimates.get(climate).name
+                + "     Region: " + Main.DB.regions.get(region).name
+                + "     Climate: " + Main.DB.climates.get(climate).name
                 + owner;
     }
 };

@@ -46,16 +46,14 @@ public class Army extends WorldEntity {
         // we just take the first culture in the list
         // TODO: model should like the the best unit in the army
         
-        String file;
+        String refname;
         if(this.canSail()){
-                file = Main.DB.cultures.get(0).fleetModel;           
+                refname = ((Culture)Main.DB.cultures.values().toArray()[0]).fleetModel;           
         }else {
-                file = Main.DB.cultures.get(0).armyModel;
+                refname = ((Culture)Main.DB.cultures.values().toArray()[0]).armyModel;
         }
         
-        model = map.game.getAssetManager().loadModel("models/" + file);
-        //model.setMaterial(new Material(map.game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md"));
-        model.setShadowMode(ShadowMode.CastAndReceive);
+        model = Main.DB.models.get(refname).model.clone();
         model.setLocalTranslation(0f, .1f, 0f);
         node.setLocalTranslation(map.getGLTileCenter(posX, posZ));
         node.attachChild(model);
@@ -275,7 +273,7 @@ public class Army extends WorldEntity {
 
     public Army cloneSimple() {
         Army a = new Army();
-        Main.DB.hashedFactions.get(owner).armies.add(a);
+        Main.DB.factions.get(owner).armies.add(a);
         a.owner = owner;
         a.posX = posX;
         a.posZ = posZ;

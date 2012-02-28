@@ -9,15 +9,11 @@ import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
-import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.control.BillboardControl;
-import com.jme3.scene.shape.Box;
-import com.jme3.scene.shape.Cylinder;
 import com.jme3.scene.shape.Quad;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -145,7 +141,7 @@ public class Settlement extends WorldEntity {
     public void createData(WorldMap m) {
         map = m;
 
-        owner = Main.DB.hashedRegions.get(region).owner;
+        owner = Main.DB.regions.get(region).owner;
 
 
         for (Building b : buildings.values()) {
@@ -165,18 +161,15 @@ public class Settlement extends WorldEntity {
         calculateConstructionPool();
         calculateRecruitmentPool();
 
-        String file = Main.DB.hashedCultures.get(culture).settlementModels.get(level);
-        model = map.game.getAssetManager().loadModel("models/" + file);
-        Material mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
-        //model.setMaterial(mat);
-        model.setShadowMode(ShadowMode.CastAndReceive);
+        String refname = Main.DB.cultures.get(culture).settlementModels.get(level);
+        model = Main.DB.models.get(refname).model.clone();
         model.setLocalTranslation(0.25f, 0f, 0.25f);
         node.attachChild(model);
 
 
         banner = (Spatial) new Geometry("", new Quad(1f, 2f));
         banner.setLocalTranslation(-0.5f, 1f, 0f);
-        mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        Material mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         mat.setTexture("ColorMap", Main.DB.genFactions.get(owner).banner);
         banner.setQueueBucket(Bucket.Translucent);
@@ -192,7 +185,7 @@ public class Settlement extends WorldEntity {
     }
 
     public void changeOwner(String o) {
-        Main.DB.hashedRegions.get(region).owner = o;
+        Main.DB.regions.get(region).owner = o;
         owner = o;
         Material mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
@@ -250,12 +243,9 @@ public class Settlement extends WorldEntity {
         }
 
         dock.builtLevel = level;
-
-        String file = Main.DB.hashedCultures.get(culture).dockModels.get(level);
-        dock.model = map.game.getAssetManager().loadModel("models/" + file);
-        Material mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
-        //dock.model.setMaterial(mat);
-        dock.model.setShadowMode(ShadowMode.CastAndReceive);
+           
+        String refname = Main.DB.cultures.get(culture).dockModels.get(level);
+        dock.model = Main.DB.models.get(refname).model.clone();
         dock.model.setLocalTranslation(map.getGLTileCenterAboveSea(dock.posX, dock.posZ));
         Vector3f dir = map.getGLTileCenterAboveSea(dock.spawnX, dock.spawnZ).subtractLocal(
                 map.getGLTileCenterAboveSea(dock.posX, dock.posZ));
@@ -463,7 +453,7 @@ public class Settlement extends WorldEntity {
                 }
 
                 buildings.put(b.refName, b);
-                Region r = Main.DB.hashedRegions.get(region);
+                Region r = Main.DB.regions.get(region);
                 String eval = r.owner + "','" + r.refName + "','" + b.refName + "'," + b.level;
                 map.game.doScript("onBuildingBuilt('" + eval + ")");
 
@@ -501,7 +491,7 @@ public class Settlement extends WorldEntity {
                 } else {
                     units.add(u);
                 }
-                Region reg = Main.DB.hashedRegions.get(region);
+                Region reg = Main.DB.regions.get(region);
                 String eval = reg.owner + "','" + reg.refName + "','" + u.refName;
                 map.game.doScript("onUnitRecruited('" + eval + "')");
             }
@@ -529,7 +519,7 @@ public class Settlement extends WorldEntity {
 
     public Army dispatchArmy(ArrayList<Unit> split) {
         Army a = new Army();
-        Main.DB.hashedFactions.get(owner).armies.add(a);
+        Main.DB.factions.get(owner).armies.add(a);
         a.owner = owner;
         a.posX = posX;
         a.posZ = posZ;

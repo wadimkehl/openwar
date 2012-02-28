@@ -18,18 +18,17 @@ public class WorldMapGameLogic {
     Main game;
 
     public void beginGame() {
-        for (Faction f : Main.DB.factions) {
+        for (Faction f : Main.DB.factions.values()) {
             for (Army a : f.armies) {
                 a.resetMovePoints();
             }
         }
 
-        for (Settlement s : Main.DB.settlements) {
+        for (Settlement s : Main.DB.settlements.values()) {
             s.resetMovePoints();
 
         }
 
-        Main.DB.currentTurn = Main.DB.factions.get(0).refName;
         game.doScript("onBeginGame()");
 
         beginTurn();
@@ -38,26 +37,26 @@ public class WorldMapGameLogic {
     public void beginRound() {
         Main.DB.currentRound++;
 
-        for (Faction f : Main.DB.factions) {
+        for (Faction f : Main.DB.factions.values()) {
             for (Army a : f.armies) {
                 a.resetMovePoints();
             }
         }
 
-        for (Settlement s : Main.DB.settlements) {
+        for (Settlement s : Main.DB.settlements.values()) {
             s.newRound();
             s.resetMovePoints();
 
         }
 
-        Main.DB.currentTurn = Main.DB.factions.get(0).refName;
+        Main.DB.currentTurn = Main.DB.playerFaction;
         game.doScript("onBeginRound(" + Main.DB.currentRound + ")");
 
         beginTurn();
     }
 
     public void beginTurn() {
-        Faction f = Main.DB.hashedFactions.get(Main.DB.currentTurn);
+        Faction f = Main.DB.factions.get(Main.DB.currentTurn);
 
 
         if (Main.DB.currentTurn.equals(Main.DB.playerFaction)) {
@@ -83,7 +82,7 @@ public class WorldMapGameLogic {
 
     public void endTurn() {
 
-        Faction f = Main.DB.hashedFactions.get(Main.DB.currentTurn);
+        Faction f = Main.DB.factions.get(Main.DB.currentTurn);
 
         if (Main.DB.currentTurn.equals(Main.DB.playerFaction)) {
             game.worldMapState.uiController.deselectAll();
@@ -96,12 +95,32 @@ public class WorldMapGameLogic {
 
 
         game.doScript("onEndTurn('" + Main.DB.currentTurn + "')");
-        int next = Main.DB.factions.indexOf(f) + 1;
-        if (next == Main.DB.factions.size()) {
-            endRound();
+        
+        boolean next=false;
+        for(String s : Main.DB.factions.keySet())
+        {
+
+            if(next)
+            {
+                if(Main.DB.playerFaction.equals(s))
+                next = false;
+                else
+                {
+                    Main.DB.currentTurn = s;
+                    break;
+                }
+            }
+                       
+            if(s.equals(Main.DB.currentTurn))
+            {
+                next=true;
+            }
+        }
+        
+        if (next) {
+            beginTurn();          
         } else {
-            Main.DB.currentTurn = Main.DB.factions.get(next).refName;
-            beginTurn();
+            endRound();
         }
 
     }

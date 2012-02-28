@@ -164,7 +164,7 @@ public class WorldMinimap {
         for (int j = 0; j < mapHeight; j++) {
             for (int i = 0; i < mapWidth; i++) {
                 Vector3f col = minimapNoOwnerColor;
-                String owner = Main.DB.hashedRegions.get(map.worldTiles[i][mapHeight - 1 - j].region).owner;
+                String owner = Main.DB.regions.get(map.worldTiles[i][mapHeight - 1 - j].region).owner;
                 if (!"".equals(owner)) {
                     col = Main.DB.genFactions.get(owner).color;
                 }
