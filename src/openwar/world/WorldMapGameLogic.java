@@ -4,6 +4,7 @@
  */
 package openwar.world;
 
+import java.util.Set;
 import openwar.DB.Army;
 import openwar.DB.Faction;
 import openwar.DB.Settlement;
@@ -95,32 +96,22 @@ public class WorldMapGameLogic {
 
 
         game.doScript("onEndTurn('" + Main.DB.currentTurn + "')");
-        
-        boolean next=false;
-        for(String s : Main.DB.factions.keySet())
-        {
 
-            if(next)
-            {
-                if(Main.DB.playerFaction.equals(s))
-                next = false;
-                else
-                {
-                    Main.DB.currentTurn = s;
-                    break;
+
+
+
+        // Check if we finish this round
+        Set factions = Main.DB.factions.keySet();
+        for (int i = 0; i < factions.size(); i++) {
+            String s = (String) factions.toArray()[i];
+            if (s.equals(Main.DB.currentTurn)) {
+                if (i + 1 == factions.size()) {
+                    endRound();
+                } else {
+                    Main.DB.currentTurn = (String) factions.toArray()[i + 1];
+                    beginTurn();
                 }
             }
-                       
-            if(s.equals(Main.DB.currentTurn))
-            {
-                next=true;
-            }
-        }
-        
-        if (next) {
-            beginTurn();          
-        } else {
-            endRound();
         }
 
     }

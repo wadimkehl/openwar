@@ -173,7 +173,7 @@ public class WorldMapAppState extends AbstractAppState {
             return;
         }
 
-        Settlement s = map.getSettlement(spat.getParent());
+        Settlement s = map.getSettlement(spat);
         if (s != null) {
 
             if (!s.owner.equals(Main.DB.playerFaction) && !Main.devMode) {
@@ -264,7 +264,7 @@ public class WorldMapAppState extends AbstractAppState {
             return;
         }
 
-        Settlement c = map.getSettlement(s.getParent());
+        Settlement c = map.getSettlement(s);
         if (c != null) {
             map.marchTo(a, c);
             game.playSound("army_march");
