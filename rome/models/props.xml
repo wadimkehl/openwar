@@ -2,7 +2,7 @@
 
 <root>
 
-    <model refname="settlement" file="cityicon.obj" diffuse="uvmap.png" />
+    <model refname="settlement" file="cityicon.obj" diffuse="cityuvmap.png" />
    
     <model refname="dock" file="porticon.obj" diffuse="dockuvmap.png" />
     
