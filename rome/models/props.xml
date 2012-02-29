@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+
+    <model refname="settlement" file="cityicon.obj" diffuse="uvmap.png" />
+   
+    <model refname="dock" file="porticon.obj" diffuse="dockuvmap.png" />
+    
+    <model refname="army" file="emessairyicon.obj" diffuse="emeuvmap.png" />
+ 
+
+    <model refname="fleet" file="manowaricon.obj" diffuse="manowaruvmap.png" />
+
+
+</root>
