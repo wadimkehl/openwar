@@ -38,15 +38,17 @@ public class Model {
     
     public void createData(AssetManager as)
     {
-        mat = new Material(as, "Common/MatDefs/Light/Lighting.j3md");
+        //mat = new Material(as, "Common/MatDefs/Light/Lighting.j3md");
+        mat = new Material(as, "Common/MatDefs/Misc/Unshaded.j3md");
         model = as.loadModel("models/" + file);
         model.setMaterial(mat);
         model.setShadowMode(ShadowMode.CastAndReceive);
         model.setLocalScale(scale);
       
         if(diffuse != null)
-        mat.setTexture("DiffuseMap",as.loadTexture("models/" + diffuse));
-       
+        //mat.setTexture("DiffuseMap",as.loadTexture("models/" + diffuse));
+        mat.setTexture("ColorMap",as.loadTexture("models/" + diffuse));
+
     }
     
 }
