@@ -60,7 +60,7 @@ public class Army extends WorldEntity {
 
         banner = (Spatial) new Geometry("", new Quad(1f, 2f));
         float random_offset = (((float) Math.random()) - 0.5f) * 0.01f;
-        banner.setLocalTranslation(-0.5f, 1f, random_offset);
+        banner.setLocalTranslation(-0.5f, 2f, random_offset);
         Material mat = new Material(map.game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         mat.setTexture("ColorMap", Main.DB.genFactions.get(owner).banner);
