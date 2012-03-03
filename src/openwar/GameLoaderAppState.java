@@ -135,13 +135,15 @@ public class GameLoaderAppState extends AbstractAppState implements ScreenContro
         manager.attach(game.audioState);
         manager.attach(game.screenshotState);
         manager.attach(game.mainMenuState);
-game.bulletState.setThreadingType(ThreadingType.PARALLEL);
-
-                manager.attach(game.bulletState);
+        game.bulletState.setThreadingType(ThreadingType.PARALLEL);
+        game.bulletState.setBroadphaseType(BroadphaseType.DBVT);
+        manager.attach(game.bulletState);
+       
+        if (Main.devMode) {
             game.bulletState.getPhysicsSpace().enableDebug(game.getAssetManager());
-//game.bulletState.setBroadphaseType(BroadphaseType.AXIS_SWEEP_3);
+        }
 
-                DataLoader = new XMLDataLoader(game);
+        DataLoader = new XMLDataLoader(game);
         if (!DataLoader.loadAll()) {
             game.wishToQuit = true;
             return;

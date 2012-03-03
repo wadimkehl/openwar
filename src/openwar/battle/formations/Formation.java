@@ -18,6 +18,8 @@ public abstract class Formation {
     public boolean sparseFormation;
     
     public abstract void doFormation(boolean run, boolean warp,boolean invert);
+    public abstract float getWidth();
+    public abstract float getDepth();
     
     
     
