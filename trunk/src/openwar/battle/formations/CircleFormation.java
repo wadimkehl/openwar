@@ -23,11 +23,10 @@ public class CircleFormation extends Formation {
 
         float number = u.soldiers.size();
         float dist = sparseFormation ? 3f : 1.5f;
-
         float r = (number * dist) / FastMath.TWO_PI;
         float rad = FastMath.HALF_PI;
-        
-       // if(invert) rad +=FastMath.PI;
+
+        // if(invert) rad +=FastMath.PI;
 
         for (int i = 0; i < number; i++) {
 
@@ -44,7 +43,7 @@ public class CircleFormation extends Formation {
 //            if (invert) {
 //                rad -= dist / r;
 //            } else {
-                rad += dist / r;
+            rad += dist / r;
 //            }
 
 
@@ -54,5 +53,18 @@ public class CircleFormation extends Formation {
                 s.setGoal(x, z, cos, sin, run);
             }
         }
+    }
+
+    @Override
+    public float getWidth() {
+
+        float number = u.soldiers.size();
+        float dist = sparseFormation ? 3f : 1.5f;
+        return (number * dist) / FastMath.PI;
+    }
+
+    @Override
+    public float getDepth() {
+        return getWidth();
     }
 }

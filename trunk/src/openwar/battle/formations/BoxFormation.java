@@ -91,4 +91,18 @@ public class BoxFormation extends Formation {
             }
         }
     }
+
+    @Override
+    public float getWidth() {
+        float dist = sparseFormation ? 3f : 1.5f;
+        return (nrPerRow-1) * dist;
+    }
+
+    @Override
+    public float getDepth() {
+        float number = u.soldiers.size();
+        float dist = sparseFormation ? 3f : 1.5f;
+        return (FastMath.ceil((number) / (nrPerRow))-1)*dist;
+
+    }
 }

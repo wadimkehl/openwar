@@ -7,7 +7,6 @@ package openwar;
 import com.jme3.app.Application;
 import java.io.UnsupportedEncodingException;
 import javax.script.ScriptException;
-import openwar.DB.XMLDataLoader;
 import openwar.world.WorldMapAppState;
 import com.jme3.asset.plugins.*;
 import com.jme3.app.state.ScreenshotAppState;
@@ -22,7 +21,6 @@ import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
-import com.jme3.math.FastMath;
 
 import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
@@ -50,7 +48,6 @@ import openwar.DB.GameDatabase;
 
 import de.lessvoid.nifty.elements.Element;
 import java.net.URLDecoder;
-import java.util.concurrent.Callable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -227,8 +224,14 @@ public class Main extends Application {
 
         getInputManager().addMapping("map_scrollup", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, false));
         getInputManager().addMapping("map_scrolldown", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, true));
-  getInputManager().addMapping("battle_strafeup", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, false));
+        getInputManager().addMapping("battle_strafeup", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, false));
         getInputManager().addMapping("battle_strafedown", new MouseAxisTrigger(MouseInput.AXIS_WHEEL, true));
+
+
+        getInputManager().addMapping("mouse_moveright", new MouseAxisTrigger(MouseInput.AXIS_X, true));
+        getInputManager().addMapping("mouse_moveleft", new MouseAxisTrigger(MouseInput.AXIS_X, false));
+        getInputManager().addMapping("mouse_moveup", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
+        getInputManager().addMapping("mouse_movedown", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
 
 
         getInputManager().addMapping("shift", new KeyTrigger(KeyInput.KEY_LSHIFT));
@@ -237,7 +240,7 @@ public class Main extends Application {
         getInputManager().addMapping("ctrl", new KeyTrigger(KeyInput.KEY_RCONTROL));
         getInputManager().addMapping("alt", new KeyTrigger(KeyInput.KEY_LMENU));
         getInputManager().addMapping("alt", new KeyTrigger(KeyInput.KEY_RMENU));
- 
+
         getInputManager().setCursorVisible(true);
         camera.setEnabled(false);
 
@@ -272,8 +275,8 @@ public class Main extends Application {
 
         }
 
-       
-        
+
+
 
     }
 
