@@ -43,6 +43,12 @@ import openwar.world.Tile;
  */
 public class BattleAppState extends AbstractAppState {
 
+    public enum DragMode {
+
+        None,
+        Selection,
+        Formation
+    }
     NanoTimer timer = new NanoTimer();
     long lastClickTime;
     public Vector2f cursorPos;
@@ -51,7 +57,8 @@ public class BattleAppState extends AbstractAppState {
     Quaternion camRot;
     float camMoveSpeed = 80f, camTurnSpeed = 0.7f, camLeftAngle = 0f, camUpAngle = 0.5f;
     public Node sceneNode;
-    public boolean shiftPressed, ctrlPressed, altPressed, leftPressed, rightPressed, dragMode;
+    public boolean shiftPressed, ctrlPressed, altPressed, leftPressed, rightPressed;
+    DragMode dragMode = DragMode.None;
     public Main game;
     public Terrain terrain;
     public ArrayList<Unit> teamA, teamB, selectedUnits;
@@ -90,9 +97,16 @@ public class BattleAppState extends AbstractAppState {
                         return;
                     }
 
-                    if (!dragMode) {
-                        dragMode = true;
-                        sceneNode.attachChild(selectionQuad);
+                    if (dragMode == DragMode.None) {
+
+                        if (rightPressed && !selectedUnits.isEmpty()) {
+                            dragMode = DragMode.Formation;
+                        } else {
+                            dragMode = DragMode.Selection;
+                            sceneNode.attachChild(selectionQuad);
+
+                        }
+
                         dragModeStartPoint = r.getContactPoint().clone();
                     }
 
@@ -103,7 +117,7 @@ public class BattleAppState extends AbstractAppState {
             game.getCamera().setLocation(camLoc);
 
 
-            if (dragMode) {
+            if (dragMode != DragMode.None) {
 
                 CollisionResult r = game.getMousePick(terrain.terrainQuad);
                 if (r == null) {
@@ -130,10 +144,11 @@ public class BattleAppState extends AbstractAppState {
 
             if (name.equals("mouse_left")) {
                 leftPressed = pressed;
+                
                 if (!pressed) {
 
-                    if (dragMode) {
-                        dragMode = false;
+                    if (dragMode == DragMode.Selection) {
+                        dragMode = DragMode.None;
                         sceneNode.detachChild(selectionQuad);
 
                         selectedUnits.clear();
@@ -224,20 +239,39 @@ public class BattleAppState extends AbstractAppState {
                 return;
             }
 
+            Vector2f goal = new Vector2f(pt.x, pt.z);
+            Vector2f meanPos = new Vector2f();
+            Vector2f meanDir = new Vector2f();
+            for (Unit u : selectedUnits) {
+                meanPos.addLocal(u.currPos);
+                meanDir.addLocal(u.currDir);
+
+            }
+            meanPos.divideLocal(selectedUnits.size());
+            meanDir.normalizeLocal();
+
 
             // Check for double click and either walk or run
 //            long time = timer.getTime();
 //            boolean run = (time - lastClickTime < 300000000);
 //            lastClickTime = time;
 
-            // Check if the unit direction should change
-            if (altPressed) {
-                float dx = pt.x - selectedUnits.get(0).currPos.x;
-                float dz = pt.z - selectedUnits.get(0).currPos.y;
-                selectedUnits.get(0).setGoal(pt.x, pt.z, dx, dz, ctrlPressed);
-            } else {
-                selectedUnits.get(0).setGoal(pt.x, pt.z, ctrlPressed);
+
+            for (Unit u : selectedUnits) {
+                Vector2f finalPos = goal.add(u.currPos.subtract(meanPos));
+                
+                // Check if the unit direction should change
+                if (altPressed) {
+                    float dx = finalPos.x - u.currPos.x;
+                    float dz = finalPos.y - u.currPos.y;
+                    u.setGoal(finalPos.x, finalPos.y, dx, dz, ctrlPressed);
+                } else {
+                    u.setGoal(finalPos.x, finalPos.y, ctrlPressed);
+                }
             }
+
+
+
 
             return;
 
@@ -454,12 +488,16 @@ public class BattleAppState extends AbstractAppState {
         game.getCamera().setRotation(camRot);
 
 
-        if (dragMode) {
+        if (dragMode != DragMode.None) {
             Vector3f start = game.getCamera().getScreenCoordinates(dragModeStartPoint);
             Vector3f end = game.getCamera().getScreenCoordinates(dragModeEndPoint);
+            
+            if(dragMode == DragMode.Selection)
+            {
             selectionQuad.setLocalTranslation(Math.min(start.x, end.x), Math.min(start.y, end.y), 0);
             selectionQuad.setLocalScale(
                     FastMath.abs(start.x - end.x), FastMath.abs(start.y - end.y), 1);
+            }
 
         }
 

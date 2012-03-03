@@ -58,7 +58,7 @@ public class Soldier implements PhysicsCollisionListener {
     Status status;
     Material mat;
     public float hp = 1f;
-    Vector2f currPos, currDir, goalPos, goalDir, walkDir;
+    Vector2f currPos, currDir, goalPos, goalDir, walkDir, previewPos;
     // Cylinder collision shape
     float height = 1.8f;
     float radius = 0.4f;
@@ -79,6 +79,7 @@ public class Soldier implements PhysicsCollisionListener {
         goalDir = new Vector2f();
         walkDir = new Vector2f();
         collVec = new Vector2f();
+        previewPos = new Vector2f();
         collObjects = new ArrayList<Soldier>();
 
 
@@ -90,7 +91,7 @@ public class Soldier implements PhysicsCollisionListener {
 
 
         //model = unit.battle.game.getAssetManager().loadModel("models/" + Main.DB.cultures.get(0).armyModel);
-        model = (Spatial) new Geometry("", new Cylinder(5, 5, radius, height, true));
+        model = (Spatial) new Geometry("", new Cylinder(8, 8, radius, height, true));
         mat = new Material(unit.battle.game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
         model.setMaterial(mat);
         model.setShadowMode(ShadowMode.CastAndReceive);
@@ -111,12 +112,13 @@ public class Soldier implements PhysicsCollisionListener {
 
         selectionQuad = (Spatial) new Geometry("", new Quad(1f, 1f));
         Material m = new Material(unit.battle.game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        m.setTexture("ColorMap", unit.battle.game.getAssetManager().loadTexture("factions/rebels/icon.png"));
+        m.setTexture("ColorMap", unit.battle.game.getAssetManager().loadTexture("textures/selection.png"));
         m.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         selectionQuad.setQueueBucket(Bucket.Transparent);
+        m.getAdditionalRenderState().setDepthWrite(false);
         selectionQuad.setMaterial(m);
-        selectionQuad.setLocalRotation(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Z));
-        selectionQuad.setLocalTranslation(0, 5f, 0);
+        selectionQuad.setLocalRotation(new Quaternion().fromAngleAxis(-FastMath.HALF_PI, Vector3f.UNIT_X));
+        selectionQuad.setLocalTranslation(-(radius+0.1f), -height/2f+0.1f, (radius+0.1f));
 
         node = new Node("soldier");
         node.attachChild(model);
@@ -134,9 +136,10 @@ public class Soldier implements PhysicsCollisionListener {
 
     public void select(boolean on) {
         if (on) {
-            mat.setTexture("DiffuseMap", unit.battle.game.getAssetManager().loadTexture("map/8.tga"));
+            node.attachChild(selectionQuad);
         } else {
-            mat.setTexture("DiffuseMap", null);
+            node.detachChild(selectionQuad);
+
         }
     }
 
