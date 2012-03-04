@@ -25,6 +25,7 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.UpdateControl;
+import com.jme3.scene.shape.Cylinder;
 import com.jme3.scene.shape.Quad;
 import com.jme3.shadow.PssmShadowRenderer;
 import com.jme3.system.NanoTimer;
@@ -50,6 +51,7 @@ public class BattleAppState extends AbstractAppState {
         Formation
     }
     NanoTimer timer = new NanoTimer();
+    public Spatial dragStartShape, dragEndShape;
     long lastClickTime;
     public Vector2f cursorPos;
     public Vector3f camLoc, camDir, camLeft, camUp, dragModeStartPoint, dragModeEndPoint;
@@ -102,6 +104,8 @@ public class BattleAppState extends AbstractAppState {
                         if (rightPressed && !selectedUnits.isEmpty()) {
                             dragMode = DragMode.Formation;
                             selectedUnits.get(0).togglePreviewFormation(true);
+                            sceneNode.attachChild(dragStartShape);
+                            sceneNode.attachChild(dragEndShape);
                         } else {
                             dragMode = DragMode.Selection;
                             sceneNode.attachChild(selectionQuad);
@@ -133,7 +137,10 @@ public class BattleAppState extends AbstractAppState {
                     selectionQuad.setLocalScale(
                             FastMath.abs(start.x - end.x), FastMath.abs(start.y - end.y), 1);
                 } else {
-                    selectedUnits.get(0).previewFormation(dragModeStartPoint, dragModeEndPoint);
+                    dragStartShape.setLocalTranslation(dragModeStartPoint);
+                    dragEndShape.setLocalTranslation(dragModeEndPoint);
+
+                    selectedUnits.get(0).previewFormation(dragModeStartPoint, dragModeEndPoint,false);
                 }
 
             }
@@ -193,6 +200,9 @@ public class BattleAppState extends AbstractAppState {
 
                     if (dragMode == DragMode.Formation) {
                         dragMode = DragMode.None;
+                        sceneNode.detachChild(dragStartShape);
+                        sceneNode.detachChild(dragEndShape);
+                    selectedUnits.get(0).previewFormation(dragModeStartPoint, dragModeEndPoint,true);
                         selectedUnits.get(0).togglePreviewFormation(false);
                         return;
                     }
@@ -405,6 +415,11 @@ public class BattleAppState extends AbstractAppState {
 
 
         terrain.createData();
+
+        dragStartShape = (Spatial) new Geometry("", new Cylinder(8, 8, 0.25f, 3f, true));
+        dragStartShape.setMaterial(new Material(game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md"));
+        dragStartShape.setLocalRotation(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_X));
+        dragEndShape = dragStartShape.clone();
 
 
         float z = -50;

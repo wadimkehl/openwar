@@ -231,6 +231,7 @@ public class Unit {
 
         }
     }
+    
 
     public void togglePreviewFormation(boolean select) {
         previewFormation = select;
@@ -247,7 +248,7 @@ public class Unit {
 
     }
 
-    public void previewFormation(Vector3f start, Vector3f end) {
-        formation.previewFormation(start.x, start.z, end.x, end.z);
+    public void previewFormation(Vector3f start, Vector3f end,boolean accept) {
+        formation.previewFormation(start.x, start.z, end.x, end.z,accept);
     }
 }

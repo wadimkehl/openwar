@@ -70,7 +70,7 @@ public class CircleFormation extends Formation {
     }
 
     @Override
-    public void previewFormation(float lx, float ly, float rx, float ry) {
+    public void previewFormation(float lx, float ly, float rx, float ry,boolean accept) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 }
