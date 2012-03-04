@@ -39,7 +39,7 @@ public class Unit {
     public String refName;
     public String owner;
     public int exp, att, def;
-    public boolean selected, run, invertFormation;
+    public boolean selected, run, invertFormation, previewFormation;
     public float morale = 100f, stamina = 100f;
     public ArrayList<Soldier> soldiers;
     public BattleAppState battle;
@@ -71,7 +71,7 @@ public class Unit {
             soldiers.add(new Soldier(this));
         }
 
-        formation = new BoxFormation(this,15);
+        formation = new BoxFormation(this, 15);
 
     }
 
@@ -204,7 +204,7 @@ public class Unit {
             System.out.println("Unit is walking");
 
         }
-        
+
         invertFormation ^= goalDir.smallestAngleBetween(oldGoalDir) > FastMath.HALF_PI;
         formation.doFormation(run, false, invertFormation);
         this.run = run;
@@ -230,5 +230,24 @@ public class Unit {
 
 
         }
+    }
+
+    public void togglePreviewFormation(boolean select) {
+        previewFormation = select;
+
+        if (previewFormation) {
+            for (Soldier s : soldiers) {
+                battle.sceneNode.attachChild(s.previewQuad);
+            }
+        } else {
+            for (Soldier s : soldiers) {
+                battle.sceneNode.detachChild(s.previewQuad);
+            }
+        }
+
+    }
+
+    public void previewFormation(Vector3f start, Vector3f end) {
+        formation.previewFormation(start.x, start.z, end.x, end.z);
     }
 }

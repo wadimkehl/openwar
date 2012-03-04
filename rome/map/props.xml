@@ -87,6 +87,7 @@
             <settlement name="Rome" posx="31" posz="17" level="0" population="1000" base_growth="2.0" culture="roman_culture">          
                 <building refname="irrigation" level="0" />
                 <building refname="barracks" level="0" />
+                <building refname="docks" level="0" />
 
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>

@@ -5,6 +5,7 @@
 package openwar.battle.formations;
 
 import com.jme3.math.FastMath;
+import com.jme3.math.Vector2f;
 import openwar.battle.Soldier;
 import openwar.battle.Unit;
 
@@ -66,5 +67,10 @@ public class CircleFormation extends Formation {
     @Override
     public float getDepth() {
         return getWidth();
+    }
+
+    @Override
+    public void previewFormation(float lx, float ly, float rx, float ry) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

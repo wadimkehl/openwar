@@ -33,6 +33,7 @@ import com.jme3.texture.Texture2D;
 import com.jme3.water.WaterFilter;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Stack;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
@@ -72,13 +73,14 @@ public class WorldMap {
     public TilePathFinder pathFinder = new TilePathFinder(this);
     private static final Logger logger = Logger.getLogger(WorldMap.class.getName());
     public WorldMinimap minimap;
+    public HashMap<Spatial,Army> hashedArmies;
 
     public WorldMap(Main app, Node scene) {
         game = app;
         assetManager = app.getAssetManager();
         rootScene = scene;
         heightMap = null;
-
+        hashedArmies = new HashMap<Spatial,Army>();
 
     }
 
@@ -284,6 +286,7 @@ public class WorldMap {
         for (Faction f : Main.DB.factions.values()) {
             for (Army a : f.armies) {
                 a.createData(this);
+                hashedArmies.put(a.model, a);
             }
         }
 
@@ -430,6 +433,7 @@ public class WorldMap {
         a.calculateMovePoints();
         Main.DB.factions.get(owner).armies.add(a);
         a.createData(this);
+        hashedArmies.put(a.model, a); 
         return a;
 
     }
@@ -443,6 +447,7 @@ public class WorldMap {
             public Object call() throws Exception {
 
                 Main.DB.factions.get(a.owner).armies.remove(a);
+                hashedArmies.remove(a.model);
                 scene.detachChild(a.node);
 
                 if (selectedArmy == a) {
@@ -475,14 +480,16 @@ public class WorldMap {
 
     // Returns army object
     public Army getArmy(Spatial model) {
-        for (Faction f : Main.DB.factions.values()) {
-            for (Army w : f.armies) {
-                if (w.model == model) {
-                    return w;
-                }
-            }
-        }
-        return null;
+        
+        return hashedArmies.get(model);
+//        for (Faction f : Main.DB.factions.values()) {
+//            for (Army w : f.armies) {
+//                if (w.model == model) {
+//                    return w;
+//                }
+//            }
+//        }
+//        return null;
     }
 
     // Returns army object
@@ -600,13 +607,14 @@ public class WorldMap {
             DrawingAreaTile t = area.get(i);
 
             float r = 0f;
-            float g = 1f;
+            float g = 0.8f;
             float b = 0f;
+            float a = 0.3f;
 
             if (t.l == Border.Unreachable || t.r == Border.Unreachable || t.t == Border.Unreachable || t.b == Border.Unreachable) {
                 r = 0f;
                 g = 0f;
-                b = 1f;
+                b = 0.8f;
             }
             verts[i * 12 + 0] = t.x;
             verts[i * 12 + 1] = getGLTileCornerAboveSea(t.x,t.z).y + 0.025f;
@@ -614,7 +622,7 @@ public class WorldMap {
             colors[i * 16 + 0] = r;
             colors[i * 16 + 1] = g;
             colors[i * 16 + 2] = b;
-            colors[i * 16 + 3] = 0.5f;
+            colors[i * 16 + 3] = a;
 
             verts[i * 12 + 3] = t.x;
             verts[i * 12 + 4] = getGLTileCornerAboveSea(t.x, t.z + 1).y + 0.025f;
@@ -622,7 +630,7 @@ public class WorldMap {
             colors[i * 16 + 4] = r;
             colors[i * 16 + 5] = g;
             colors[i * 16 + 6] = b;
-            colors[i * 16 + 7] = 0.5f;
+            colors[i * 16 + 7] = a;
 
             verts[i * 12 + 6] = t.x + 1;
             verts[i * 12 + 7] = getGLTileCornerAboveSea(t.x + 1, t.z + 1).y + 0.025f;
@@ -630,7 +638,7 @@ public class WorldMap {
             colors[i * 16 + 8] = r;
             colors[i * 16 + 9] = g;
             colors[i * 16 + 10] = b;
-            colors[i * 16 + 11] = 0.5f;
+            colors[i * 16 + 11] = a;
 
             verts[i * 12 + 9] = t.x + 1;
             verts[i * 12 + 10] = getGLTileCornerAboveSea(t.x + 1, t.z).y + 0.025f;
@@ -638,7 +646,7 @@ public class WorldMap {
             colors[i * 16 + 12] = r;
             colors[i * 16 + 13] = g;
             colors[i * 16 + 14] = b;
-            colors[i * 16 + 15] = 0.5f;
+            colors[i * 16 + 15] = a;
 
 
         }
@@ -666,7 +674,8 @@ public class WorldMap {
         reachableArea = new Geometry("reachableArea", m);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setBoolean("VertexColor", true);
-        mat.getAdditionalRenderState().setBlendMode(BlendMode.Modulate);
+        mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
+        //mat.getAdditionalRenderState().setDepthWrite(false);
         reachableArea.setMaterial(mat);
         reachableArea.setShadowMode(ShadowMode.Receive);
         reachableArea.setQueueBucket(Bucket.Transparent);
