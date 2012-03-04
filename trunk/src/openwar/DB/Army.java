@@ -45,7 +45,7 @@ public class Army extends WorldEntity {
         // Because a faction has no culture, but settlements do
         // we just take the first culture in the list
         // TODO: model should like the the best unit in the army
-        
+        // TODO: ship is node, but army is geom, why?
         String refname;
         if(this.canSail()){
                 refname = ((Culture)Main.DB.cultures.values().toArray()[0]).fleetModel;           

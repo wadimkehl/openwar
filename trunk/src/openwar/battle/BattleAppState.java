@@ -101,6 +101,7 @@ public class BattleAppState extends AbstractAppState {
 
                         if (rightPressed && !selectedUnits.isEmpty()) {
                             dragMode = DragMode.Formation;
+                            selectedUnits.get(0).togglePreviewFormation(true);
                         } else {
                             dragMode = DragMode.Selection;
                             sceneNode.attachChild(selectionQuad);
@@ -126,9 +127,14 @@ public class BattleAppState extends AbstractAppState {
                 dragModeEndPoint = r.getContactPoint();
                 Vector3f start = game.getCamera().getScreenCoordinates(dragModeStartPoint);
                 Vector3f end = game.getCamera().getScreenCoordinates(dragModeEndPoint);
-                selectionQuad.setLocalTranslation(Math.min(start.x, end.x), Math.min(start.y, end.y), 0);
-                selectionQuad.setLocalScale(
-                        FastMath.abs(start.x - end.x), FastMath.abs(start.y - end.y), 1);
+
+                if (dragMode == DragMode.Selection) {
+                    selectionQuad.setLocalTranslation(Math.min(start.x, end.x), Math.min(start.y, end.y), 0);
+                    selectionQuad.setLocalScale(
+                            FastMath.abs(start.x - end.x), FastMath.abs(start.y - end.y), 1);
+                } else {
+                    selectedUnits.get(0).previewFormation(dragModeStartPoint, dragModeEndPoint);
+                }
 
             }
 
@@ -144,7 +150,7 @@ public class BattleAppState extends AbstractAppState {
 
             if (name.equals("mouse_left")) {
                 leftPressed = pressed;
-                
+
                 if (!pressed) {
 
                     if (dragMode == DragMode.Selection) {
@@ -170,6 +176,7 @@ public class BattleAppState extends AbstractAppState {
                         }
                         return;
                     }
+                    dragMode = DragMode.None;
 
 
 
@@ -182,6 +189,16 @@ public class BattleAppState extends AbstractAppState {
                 rightPressed = pressed;
 
                 if (!pressed) {
+
+
+                    if (dragMode == DragMode.Formation) {
+                        dragMode = DragMode.None;
+                        selectedUnits.get(0).togglePreviewFormation(false);
+                        return;
+                    }
+
+
+                    dragMode = DragMode.None;
                     CollisionResult r = game.getMousePick(sceneNode);
 
                     if (r != null) {
@@ -259,7 +276,7 @@ public class BattleAppState extends AbstractAppState {
 
             for (Unit u : selectedUnits) {
                 Vector2f finalPos = goal.add(u.currPos.subtract(meanPos));
-                
+
                 // Check if the unit direction should change
                 if (altPressed) {
                     float dx = finalPos.x - u.currPos.x;
@@ -488,18 +505,15 @@ public class BattleAppState extends AbstractAppState {
         game.getCamera().setRotation(camRot);
 
 
-        if (dragMode != DragMode.None) {
+        if (dragMode == DragMode.Selection) {
             Vector3f start = game.getCamera().getScreenCoordinates(dragModeStartPoint);
             Vector3f end = game.getCamera().getScreenCoordinates(dragModeEndPoint);
-            
-            if(dragMode == DragMode.Selection)
-            {
             selectionQuad.setLocalTranslation(Math.min(start.x, end.x), Math.min(start.y, end.y), 0);
             selectionQuad.setLocalScale(
                     FastMath.abs(start.x - end.x), FastMath.abs(start.y - end.y), 1);
-            }
-
         }
+
+
 
 
 

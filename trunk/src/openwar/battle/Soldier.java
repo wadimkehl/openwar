@@ -52,13 +52,13 @@ public class Soldier implements PhysicsCollisionListener {
         Fall,
         Dead
     }
-    Spatial model, selectionQuad;
+    Spatial model, selectionQuad, previewQuad;
     Node node;
     Unit unit;
     Status status;
     Material mat;
     public float hp = 1f;
-    Vector2f currPos, currDir, goalPos, goalDir, walkDir, previewPos;
+    public Vector2f currPos, currDir, goalPos, goalDir, walkDir, previewPos;
     // Cylinder collision shape
     float height = 1.8f;
     float radius = 0.4f;
@@ -110,7 +110,7 @@ public class Soldier implements PhysicsCollisionListener {
         cone.setLocalRotation(l.multLocal(q));
         cone.setLocalTranslation(0, 2, 0);
 
-        selectionQuad = (Spatial) new Geometry("", new Quad(1f, 1f));
+        selectionQuad = (Spatial) new Geometry("", new Quad(radius*2.5f, radius*2.5f));
         Material m = new Material(unit.battle.game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         m.setTexture("ColorMap", unit.battle.game.getAssetManager().loadTexture("textures/selection.png"));
         m.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
@@ -120,6 +120,13 @@ public class Soldier implements PhysicsCollisionListener {
         selectionQuad.setLocalRotation(new Quaternion().fromAngleAxis(-FastMath.HALF_PI, Vector3f.UNIT_X));
         selectionQuad.setLocalTranslation(-(radius+0.1f), -height/2f+0.1f, (radius+0.1f));
 
+
+        previewQuad = (Spatial) new Geometry("", new Quad(radius*2.5f, radius*2.5f));
+        previewQuad.setQueueBucket(Bucket.Transparent);
+        previewQuad.setMaterial(m);
+        previewQuad.setLocalRotation(new Quaternion().fromAngleAxis(-FastMath.HALF_PI, Vector3f.UNIT_X));
+
+        
         node = new Node("soldier");
         node.attachChild(model);
         node.attachChild(cone);
@@ -303,6 +310,12 @@ public class Soldier implements PhysicsCollisionListener {
 
 
 
+        if(unit.previewFormation)
+        {
+           previewQuad.setLocalTranslation(previewPos.x-(radius+0.1f), 
+                   terrain.getHeight(previewPos)+0.1f, previewPos.y+(radius+0.1f));
+
+        }
 
     }
 }
