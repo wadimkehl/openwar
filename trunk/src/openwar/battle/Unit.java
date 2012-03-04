@@ -18,6 +18,7 @@ import com.jme3.scene.shape.Sphere;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import openwar.battle.formations.BoxFormation;
+import openwar.battle.formations.CircleFormation;
 import openwar.battle.formations.Formation;
 
 /**
@@ -71,7 +72,7 @@ public class Unit {
             soldiers.add(new Soldier(this));
         }
 
-        formation = new BoxFormation(this, 15);
+        formation = new BoxFormation(this);
 
     }
 
