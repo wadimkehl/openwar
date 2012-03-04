@@ -23,9 +23,25 @@ public class BoxFormation extends Formation {
     }
 
     @Override
+    public float getWidth() {
+        float dist = sparseFormation ? 3f : 1.5f;
+        return nrPerRow * dist; // nrPerRow - 1 ?
+    }
+
+    @Override
+    public float getDepth() {
+        float number = u.soldiers.size();
+        float dist = sparseFormation ? 3f : 1.5f;
+        return (FastMath.ceil((number) / (nrPerRow)) - 1) * dist;
+
+    }
+
+    @Override
     public void doFormation(boolean run, boolean warp, boolean invert) {
 
-
+        float currNr = nrPerRow;
+        float currRow = 0;
+        float currCol = 0;
         float number = u.soldiers.size();
         float dist = sparseFormation ? 3f : 1.5f;
         float angle = FastMath.atan2(u.goalDir.y, u.goalDir.x);
@@ -38,120 +54,95 @@ public class BoxFormation extends Formation {
 
         nrPerRow = number < nrPerRow ? number : nrPerRow;
 
-        float nrCol = FastMath.ceil((number) / (nrPerRow));
-        float currRow = 0;
-        float currCol = 0;
-        
-        if (invert) {
-            for (int i = 0; i < u.soldiers.size(); i++) {
+        int start = invert ? u.soldiers.size() - 1 : 0;
+        int end = invert ? -1 : u.soldiers.size();
+        int increment = invert ? -1 : 1;
+        for (int i = start; i != end; i += increment) {
 
-                Soldier s = u.soldiers.get(i);
-                float x = u.goalPos.x - (currRow - nrPerRow * 0.5f) * dist * cos;
-                float z = u.goalPos.y + (currRow - nrPerRow * 0.5f) * dist * sin;
+            Soldier s = u.soldiers.get(i);
+            float x = u.goalPos.x - (currRow - currNr * 0.5f) * dist * cos;
+            float y = u.goalPos.y + (currRow - currNr * 0.5f) * dist * sin;
+            x += (currCol) * dist * sin;
+            y += (currCol) * dist * cos;
 
-                x += (currCol) * dist * sin;
-                z += (currCol) * dist * cos;
+            if (warp) {
+                s.setPosition(x, y, u.goalDir.x, u.goalDir.y);
+            } else {
+                s.setGoal(x, y, u.goalDir.x, u.goalDir.y, run);
+            }
 
-                currRow++;
-                if (currRow == nrPerRow) {
-                    currRow = 0;
-                    currCol++;
-                }
-
-                if (warp) {
-                    s.setPosition(x, z, u.goalDir.x, u.goalDir.y);
-                } else {
-                    s.setGoal(x, z, u.goalDir.x, u.goalDir.y, run);
+            currRow++;
+            number--;
+            if (currRow >= nrPerRow) {
+                currRow = 0;
+                currCol++;
+                if (number < nrPerRow) {
+                    currNr = number;
                 }
 
             }
+
+
         }
-        else
-        {
-            for (int i = u.soldiers.size()-1; i >= 0; i--) {
-
-                Soldier s = u.soldiers.get(i);
-                float x = u.goalPos.x - (currRow - nrPerRow * 0.5f) * dist * cos;
-                float z = u.goalPos.y + (currRow - nrPerRow * 0.5f) * dist * sin;
-
-                x += (currCol) * dist * sin;
-                z += (currCol) * dist * cos;
-
-                currRow++;
-                if (currRow == nrPerRow) {
-                    currRow = 0;
-                    currCol++;
-                }
-
-                if (warp) {
-                    s.setPosition(x, z, u.goalDir.x, u.goalDir.y);
-                } else {
-                    s.setGoal(x, z, u.goalDir.x, u.goalDir.y, run);
-                }
-
-            }
-        }
-    }
-
-    @Override
-    public float getWidth() {
-        float dist = sparseFormation ? 3f : 1.5f;
-        return (nrPerRow-1) * dist;
-    }
-
-    @Override
-    public float getDepth() {
-        float number = u.soldiers.size();
-        float dist = sparseFormation ? 3f : 1.5f;
-        return (FastMath.ceil((number) / (nrPerRow))-1)*dist;
 
     }
 
     @Override
-    public void previewFormation(float lx, float ly, float rx, float ry) {
-        
-        Vector2f diff = new Vector2f(rx-lx,ry-ly);
+    public void previewFormation(float lx, float ly, float rx, float ry, boolean accept) {
+
+        Vector2f diff = new Vector2f(rx - lx, ry - ly);
+        float width = diff.length();
         diff.normalizeLocal();
-        
-        float dist = sparseFormation ? 3f : 1.5f;
-        
-        float width = FastMath.abs(rx-lx);
-    
         float angle = FastMath.atan2(diff.y, diff.x);
-        if (angle < 0) {
-            angle += FastMath.TWO_PI;
-        }
-        //angle += FastMath.HALF_PI;
         float cos = FastMath.cos(angle);
         float sin = FastMath.sin(angle);
-             
-        nrPerRow = 1+ width/dist;
-        System.err.println(width + " " + nrPerRow);
+        float dist = sparseFormation ? 3f : 1.5f;
+        float centerx = lx + (rx - lx) / 2f;
+        float centery = ly + (ry - ly) / 2f;
+
+        nrPerRow = width / dist;
+        float currNr = nrPerRow;
         float currRow = 0;
         float currCol = 0;
-     
+        float number = u.soldiers.size();
+
         for (int i = 0; i < u.soldiers.size(); i++) {
 
-                Soldier s = u.soldiers.get(i);
-                float x = lx + currRow * dist * cos;
-                float z = ly - currRow * dist * sin;
+            Soldier s = u.soldiers.get(i);
+            float x = centerx + (currRow - currNr * 0.5f) * dist * cos;
+            float y = centery + (currRow - currNr * 0.5f) * dist * sin;
+            x -= (currCol) * dist * sin;
+            y += (currCol) * dist * cos;
 
-                x -= (currCol) * dist * sin;
-                z += (currCol) * dist * cos;
+            s.previewPos.x = x;
+            s.previewPos.y = y;
 
-                currRow++;
-                if (currRow == nrPerRow) {
-                    currRow = 0;
-                    currCol++;
+            currRow++;
+            number--;
+            if (currRow >= nrPerRow) {
+                currRow = 0;
+                currCol++;
+                if (number < nrPerRow) {
+                    currNr = number;
                 }
-
-                s.previewPos.x = x;
-                s.previewPos.y = z;
 
             }
 
-    
-        //System.err.println(width + " " + depth + " " + FastMath.RAD_TO_DEG*angle);
-        
+
+        }
+
+        if (accept) {
+            u.goalPos.x = centerx;
+            u.goalPos.y = centery;
+            u.goalDir.x = -diff.y;
+            u.goalDir.y = -diff.x;
+            for (Soldier s : u.soldiers) {
+                s.setGoal(s.previewPos.x, s.previewPos.y, u.goalDir.x, u.goalDir.y, u.run);
+            }
+
+        }
+
+
+
     }
 }

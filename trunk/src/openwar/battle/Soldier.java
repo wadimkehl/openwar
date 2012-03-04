@@ -131,7 +131,7 @@ public class Soldier implements PhysicsCollisionListener {
         node.attachChild(model);
         node.attachChild(cone);
 
-        collShape = new CylinderCollisionShape(new Vector3f(radius, height / 2f, radius), 1);
+        collShape = new CylinderCollisionShape(new Vector3f(radius*0.75f, height / 2f, radius*0.75f), 1);
         collControl = new SoldierCollision(collShape, this);
         unit.battle.game.bulletState.getPhysicsSpace().add(collControl);
 

@@ -19,7 +19,7 @@ public abstract class Formation {
  
     
     
-    public abstract void previewFormation(float lx, float ly, float rx, float ry);
+    public abstract void previewFormation(float lx, float ly, float rx, float ry, boolean accept);
     public abstract void doFormation(boolean run, boolean warp,boolean invert);
     public abstract float getWidth();
     public abstract float getDepth();
