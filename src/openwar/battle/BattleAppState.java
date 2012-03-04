@@ -140,7 +140,7 @@ public class BattleAppState extends AbstractAppState {
                     dragStartShape.setLocalTranslation(dragModeStartPoint);
                     dragEndShape.setLocalTranslation(dragModeEndPoint);
 
-                    selectedUnits.get(0).previewFormation(dragModeStartPoint, dragModeEndPoint,false);
+                    selectedUnits.get(0).previewFormation(dragModeStartPoint, dragModeEndPoint, false);
                 }
 
             }
@@ -202,7 +202,7 @@ public class BattleAppState extends AbstractAppState {
                         dragMode = DragMode.None;
                         sceneNode.detachChild(dragStartShape);
                         sceneNode.detachChild(dragEndShape);
-                    selectedUnits.get(0).previewFormation(dragModeStartPoint, dragModeEndPoint,true);
+                        selectedUnits.get(0).previewFormation(dragModeStartPoint, dragModeEndPoint, true);
                         selectedUnits.get(0).togglePreviewFormation(false);
                         return;
                     }

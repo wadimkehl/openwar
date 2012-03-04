@@ -22,6 +22,10 @@ public class BoxFormation extends Formation {
         nrPerRow = soldierPerRow;
     }
 
+    public BoxFormation(Unit unit) {
+        this(unit, 15);
+    }
+
     @Override
     public float getWidth() {
         float dist = sparseFormation ? 3f : 1.5f;
@@ -106,6 +110,14 @@ public class BoxFormation extends Formation {
         float currCol = 0;
         float number = u.soldiers.size();
 
+
+        if (accept) {
+            u.goalPos.x = centerx;
+            u.goalPos.y = centery;
+            u.goalDir.x = -diff.y;
+            u.goalDir.y = -diff.x;
+        }
+
         for (int i = 0; i < u.soldiers.size(); i++) {
 
             Soldier s = u.soldiers.get(i);
@@ -125,24 +137,13 @@ public class BoxFormation extends Formation {
                 if (number < nrPerRow) {
                     currNr = number;
                 }
-
             }
 
-
-        }
-
-        if (accept) {
-            u.goalPos.x = centerx;
-            u.goalPos.y = centery;
-            u.goalDir.x = -diff.y;
-            u.goalDir.y = -diff.x;
-            for (Soldier s : u.soldiers) {
+            if (accept) {
                 s.setGoal(s.previewPos.x, s.previewPos.y, u.goalDir.x, u.goalDir.y, u.run);
+
             }
-
         }
-
-
 
     }
 }
