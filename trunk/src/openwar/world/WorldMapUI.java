@@ -111,16 +111,16 @@ public class WorldMapUI implements ScreenController {
 
     public void refreshSettlementLayer() {
         for (int i = 0; i < 12; i++) {
-            setImage("construction" + i, null);
+            setImage("construction" + i, (Texture2D) game.getAssetManager().loadTexture("textures/back.png"));
         }
         for (int i = 0; i < 6; i++) {
-            setImage("constructionList" + i, null);
+            setImage("constructionList" + i, (Texture2D) game.getAssetManager().loadTexture("textures/back.png"));
         }
         for (int i = 0; i < 10; i++) {
-            setImage("recruitment" + i, null);
+            setImage("recruitment" + i, (Texture2D) game.getAssetManager().loadTexture("textures/back.png"));
         }
         for (int i = 0; i < 10; i++) {
-            setImage("recruitmentList" + i, null);
+            setImage("recruitmentList" + i, (Texture2D) game.getAssetManager().loadTexture("textures/back.png"));
         }
 
         Settlement s = selectedSettlement;
@@ -431,20 +431,21 @@ public class WorldMapUI implements ScreenController {
             return;
         }
 
-        // TODO: check why this is not working
-        if (!game.worldMapState.ctrlPressed) {
-            deselectUnits();
-        }
-
-
         if (game.worldMapState.shiftPressed) {
             for (int i = Math.min(index, lastIndex); i <= Math.max(index, lastIndex); i++) {
                 selectUnit(i);
             }
-
         } else {
+
+            // TODO: Nifty consumes ctrl, but not alt...
+            if (!game.worldMapState.altPressed) {
+                deselectUnits();
+            }
             selectUnit(index);
+
+
         }
+
 
         drawReachableArea();
         lastIndex = index;
@@ -489,6 +490,8 @@ public class WorldMapUI implements ScreenController {
 
     public void setImage(String id, Texture2D t) {
         Element l = elements.get(id);
+
+
         if (t == null) {
             l.getRenderer(ImageRenderer.class).setImage(null);
         } else {

@@ -70,6 +70,8 @@ public class Army extends WorldEntity {
 
         map.scene.attachChild(node);
         calculateMovePoints();
+        
+        map.hashedArmies.put(model, this);
 
     }
 
@@ -250,6 +252,8 @@ public class Army extends WorldEntity {
         for (Unit u : cargo) {
             a.units.add(u);
         }
+        a.createData(map);
+
         a.calculateMovePoints();
         map.selectArmy(a);
 
@@ -277,7 +281,6 @@ public class Army extends WorldEntity {
         a.owner = owner;
         a.posX = posX;
         a.posZ = posZ;
-        a.createData(map);
         map.scene.attachChild(a.node);
 
         return a;
@@ -287,6 +290,8 @@ public class Army extends WorldEntity {
 
         Army a = cloneSimple();
         mergeUnitsTo(a, split);
+        a.createData(map);
+
         map.game.playSound("army_split");
 
 
