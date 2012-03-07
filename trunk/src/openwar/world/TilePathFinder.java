@@ -127,7 +127,9 @@ public class TilePathFinder {
                         continue;
                     }
                     
-                    if(map.worldTiles[newx][newz].entity != null)
+                    // Avoid other entities when not goal
+                    if(map.worldTiles[newx][newz].entity != null &&
+                            (newx != end.x && newz != end.z))
                     {
                         continue;
                     }
