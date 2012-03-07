@@ -16,6 +16,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.texture.Image.Format;
 import com.jme3.texture.Texture2D;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -58,12 +59,14 @@ public class XMLDataLoader {
             return true;
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Decoration CANNOT be loaded: {0}", refname);
+            logger.log(Level.SEVERE, E.toString());
+
             return false;
         }
     }
 
     private boolean loadCulture(Element root) {
-        Culture c=null;
+        Culture c = null;
         try {
             Element cul = (Element) root.getElementsByTagName("culture").item(0);
             c = new Culture(cul.getAttribute("name"), cul.getAttribute("refname"));
@@ -82,21 +85,23 @@ public class XMLDataLoader {
                 int l = Integer.parseInt(((Element) nodes.item(i)).getAttribute("level"));
                 c.dockModels.put(l, ((Element) nodes.item(i)).getAttribute("refname"));
             }
-            
-              
+
+
             Element army = (Element) root.getElementsByTagName("army").item(0);
             c.armyModel = army.getAttribute("refname");
-            
+
             Element fleet = (Element) root.getElementsByTagName("fleet").item(0);
             c.fleetModel = fleet.getAttribute("refname");
-            
-  
+
+
 
 
             logger.log(Level.WARNING, "*Culture loaded: {0} *", c.refName);
             return true;
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Culture CANNOT be loaded: {0}", c.refName);
+            logger.log(Level.SEVERE, E.toString());
+
             return false;
         }
     }
@@ -120,11 +125,13 @@ public class XMLDataLoader {
             return true;
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Sound CANNOT be loaded: {0}", refname);
+            logger.log(Level.SEVERE, E.toString());
+
             return false;
         }
     }
-    
- private boolean loadMusic(Element root) {
+
+    private boolean loadMusic(Element root) {
         AudioNode entity = new AudioNode();
         String refname = null;
         String file = null;
@@ -156,25 +163,26 @@ public class XMLDataLoader {
             return true;
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Music CANNOT be loaded: {0}", refname);
+            logger.log(Level.SEVERE, E.toString());
+
             return false;
         }
     }
 
-
     private boolean loadModels(Element root) {
 
-        String refname=null, file;
+        String refname = null, file;
         try {
             NodeList nodes = root.getElementsByTagName("model");
 
             for (int i = 0; i < nodes.getLength(); i++) {
-                                
+
                 Element l = (Element) nodes.item(i);
                 refname = l.getAttribute("refname");
                 file = l.getAttribute("file");
-                
-                Main.DB.models.put(refname, 
-                        new Model(refname,file,l.getAttribute("diffuse")));
+
+                Main.DB.models.put(refname,
+                        new Model(refname, file, l.getAttribute("diffuse")));
 
                 logger.log(Level.WARNING, "*Model loaded: {0} *", refname);
 
@@ -183,6 +191,8 @@ public class XMLDataLoader {
             return true;
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Model CANNOT be loaded: {0}", refname);
+            logger.log(Level.SEVERE, E.toString());
+
             return false;
         }
     }
@@ -232,8 +242,8 @@ public class XMLDataLoader {
             }
 
             // if we load the sounds, decorations or music, check in meta folder for props.xml
-            if ("sounds".equals(folder) || "decorations".equals(folder) || 
-                    "music".equals(folder) || "models".equals(folder)) {
+            if ("sounds".equals(folder) || "decorations".equals(folder)
+                    || "music".equals(folder) || "models".equals(folder)) {
                 // search props.xml
                 File props = null;
                 for (File l : f.listFiles()) {
@@ -255,7 +265,7 @@ public class XMLDataLoader {
                     return loadSounds(dom.getDocumentElement());
                 } else if ("decorations".equals(folder)) {
                     return loadDecorations(dom.getDocumentElement());
-                }else if ("models".equals(folder)) {
+                } else if ("models".equals(folder)) {
                     return loadModels(dom.getDocumentElement());
                 } else {
                     return loadMusic(dom.getDocumentElement());
@@ -298,8 +308,7 @@ public class XMLDataLoader {
                     result = loadBuilding(root);
                 } else if ("factions".equals(folder)) {
                     result = loadFaction(root);
-                }
-                else if ("cultures".equals(folder)) {
+                } else if ("cultures".equals(folder)) {
                     result = loadCulture(root);
                 }
 
@@ -309,6 +318,8 @@ public class XMLDataLoader {
             }
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Error while reading {0} data...", folder);
+            logger.log(Level.SEVERE, E.toString());
+
             return false;
         }
         return true;
@@ -336,12 +347,14 @@ public class XMLDataLoader {
             Description desc = new Description();
             String image = "units" + File.separator + entity.refName + File.separator + d.getAttribute("card");
             desc.card = (Texture2D) assets.loadTexture(image);
-            entity.desc = desc;
+            desc.info = d.getAttribute("card");
 
+            entity.desc = desc;
             Main.DB.genUnits.put(entity.refName, entity);
             logger.log(Level.WARNING, "*Unit loaded: {0} *", entity.refName);
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Unit CANNOT be loaded: {0}", entity.refName);
+            logger.log(Level.SEVERE, E.toString());
             return false;
         }
         return true;
@@ -411,6 +424,8 @@ public class XMLDataLoader {
             logger.log(Level.WARNING, "*Building loaded: {0} *", entity.refName);
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Building CANNOT be loaded: {0}", entity.refName);
+            logger.log(Level.SEVERE, E.toString());
+
             return false;
         }
         return true;
@@ -455,6 +470,8 @@ public class XMLDataLoader {
             logger.log(Level.WARNING, "*Faction loaded: {0} *", entity.refName);
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Faction CANNOT be loaded: {0}", entity.refName);
+            logger.log(Level.SEVERE, E.toString());
+
             return false;
         }
         return true;
@@ -667,7 +684,7 @@ public class XMLDataLoader {
 
             }
 
-        
+
             c = decorations.getElementsByTagName("decoration");
             for (int i = 0; i < c.getLength(); i++) {
                 Element r = (Element) c.item(i);
@@ -696,6 +713,8 @@ public class XMLDataLoader {
             return true;
         } catch (Exception E) {
             logger.log(Level.SEVERE, "Map CANNOT be loaded");
+            logger.log(Level.SEVERE, E.toString());
+
             return false;
         }
     }
@@ -711,30 +730,32 @@ public class XMLDataLoader {
         try {
             boolean result = true;
             logger.log(Level.WARNING, "Loading factions");
-            result = result & loadData("factions");
+            result &= loadData("factions");
             logger.log(Level.WARNING, "Loading models");
-            result = result & loadData("models");
+            result &= loadData("models");
             logger.log(Level.WARNING, "Loading cultures");
-            result = result & loadData("cultures");
+            result &= loadData("cultures");
             logger.log(Level.WARNING, "Loading units");
-            result = result & loadData("units");
+            result &= loadData("units");
             logger.log(Level.WARNING, "Loading buildings");
-            result = result & loadData("buildings");
+            result &= loadData("buildings");
             logger.log(Level.WARNING, "Loading sounds");
-            result = result & loadData("sounds");
+            result &= loadData("sounds");
             logger.log(Level.WARNING, "Loading music");
-            result = result & loadData("music");
+            result &= loadData("music");
             logger.log(Level.WARNING, "Loading decorations");
-            result = result & loadData("decorations");
+            result &= loadData("decorations");
             logger.log(Level.WARNING, "Loading map");
-            result = result & loadData("map");
+            result &= loadData("map");
             logger.log(Level.WARNING, "Loading scripts");
-            result = result & loadData("scripts");
+            result &= loadData("scripts");
 
             return result;
         } catch (Exception E) {
+            logger.log(Level.SEVERE, E.toString());
+
             return false;
         }
-
+        
     }
 }

@@ -340,25 +340,25 @@ public class Main extends Application {
     @Override
     public void update() {
         super.update();
-        if (speed == 0 || paused) {
+
+        if (wishToQuit) {
+            stop();
+        }
+
+        if (paused) {
             return;
         }
 
 
-        float tpf = timer.getTimePerFrame() * speed;
+        float tpf = timer.getTimePerFrame();
         stateManager.update(tpf);
         rootNode.updateLogicalState(tpf);
         rootNode.updateGeometricState();
         guiNode.updateLogicalState(tpf);
         guiNode.updateGeometricState();
         stateManager.render(renderManager);
-
         renderManager.render(tpf, context.isRenderable());
         stateManager.postRender();
-
-        if (wishToQuit) {
-            stop();
-        }
 
 
         if (gameLoaderState.status == GameLoaderAppState.Status.None) {
