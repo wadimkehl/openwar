@@ -180,6 +180,8 @@ public class Settlement extends WorldEntity {
 
         node.setLocalTranslation(map.getGLTileCenterAboveSea(posX, posZ));
         map.scene.attachChild(node);
+        
+        super.createData(m);
 
     }
 

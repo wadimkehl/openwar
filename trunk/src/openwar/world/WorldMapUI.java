@@ -250,7 +250,7 @@ public class WorldMapUI implements ScreenController {
         if (!selectedUnits.isEmpty()) {
             int x = selectedFrom.posX;
             int z = selectedFrom.posZ;
-            game.worldMapState.map.drawReachableArea(selectedUnits, x, z);
+            game.worldMapState.map.drawReachableArea(selectedUnits, x, z, selectedFrom.owner);
         }
     }
 

@@ -28,7 +28,10 @@ public abstract class WorldEntity {
         node = new Node();
     }
 
-    public abstract void createData(WorldMap m);
+    public void createData(WorldMap m)
+    {
+        map.worldTiles[posX][posZ].entity = this;
+    }
 
     public abstract void update(float tpf);
     

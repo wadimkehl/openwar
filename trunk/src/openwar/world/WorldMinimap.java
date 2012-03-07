@@ -12,7 +12,6 @@ import com.jme3.texture.Texture2D;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.ImageRenderer;
 import de.lessvoid.nifty.render.NiftyImage;
-import de.lessvoid.nifty.tools.SizeValue;
 import java.nio.ByteBuffer;
 import openwar.Main;
 
@@ -120,10 +119,12 @@ public class WorldMinimap {
             M = 2 * HY;
             for (;;) {
                 if (map.insideTerrain(x, y)) {
-                    int base = (y * mapHeight + x) * 3;
+                    int base = (y * mapHeight + x) * 4;
                     data.put(base, (byte) (((int) minimapCameraColor.x) & 0xff));
                     data.put(base + 1, (byte) (((int) minimapCameraColor.y) & 0xff));
                     data.put(base + 2, (byte) (((int) minimapCameraColor.z) & 0xff));
+                    data.put(base + 3, (byte) (250 & 0xff));
+
                 }
                 if (x == xQ) {
                     break;
@@ -140,10 +141,12 @@ public class WorldMinimap {
             M = 2 * HX;
             for (;;) {
                 if (map.insideTerrain(x, y)) {
-                    int base = (y * mapHeight + x) * 3;
+                    int base = (y * mapHeight + x) * 4;
                     data.put(base, (byte) (((int) minimapCameraColor.x) & 0xff));
                     data.put(base + 1, (byte) (((int) minimapCameraColor.y) & 0xff));
                     data.put(base + 2, (byte) (((int) minimapCameraColor.z) & 0xff));
+                    data.put(base + 3, (byte) (250 & 0xff));
+
                 }
                 if (y == yQ) {
                     break;
@@ -160,7 +163,7 @@ public class WorldMinimap {
 
     public void update() {
 
-        ByteBuffer data = ByteBuffer.allocateDirect(mapHeight * mapWidth * 3);
+        ByteBuffer data = ByteBuffer.allocateDirect(mapHeight * mapWidth * 4);
         for (int j = 0; j < mapHeight; j++) {
             for (int i = 0; i < mapWidth; i++) {
                 Vector3f col = minimapNoOwnerColor;
@@ -175,6 +178,7 @@ public class WorldMinimap {
                 data.put((byte) (r & 0xff));
                 data.put((byte) (g & 0xff));
                 data.put((byte) (b & 0xff));
+                data.put((byte) (128 & 0xff));
             }
         }
 
@@ -213,7 +217,7 @@ public class WorldMinimap {
         drawMinimapLine(data, ru, rb);
         drawMinimapLine(data, lb, rb);
 
-        minimapImage = new Texture2D(new Image(Image.Format.RGB8, mapWidth, mapHeight, data));
+        minimapImage = new Texture2D(new Image(Image.Format.RGBA8, mapWidth, mapHeight, data));
         minimapElement.getRenderer(ImageRenderer.class).setImage(
                 new NiftyImage(map.game.nifty.getRenderEngine(), new RenderImageJme(minimapImage)));
 

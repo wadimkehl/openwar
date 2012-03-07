@@ -600,9 +600,12 @@
                         
                         <!-- panel for mini map -->
                         <panel id="minimap_panel" height="75%" width="*" childLayout="center">
-                            <image id="minimap" height="100%" width="100%" align="center" valign="center">
-                                <interact onClick="onMinimapClick()" onMouseOver="onMinimapHover()" /> 
-                            </image>
+                            <panel childLayout="overlay">
+                                <image id="minimap_map" filename="map/heights.png" align="center" valign="center"/>
+                                <image id="minimap" height="100%" width="100%" align="center" valign="center">
+                                    <interact onClick="onMinimapClick()" onMouseOver="onMinimapHover()" /> 
+                                </image>
+                            </panel>
                         </panel>
                         <panel height="*" width="*"/> 
                     </panel>

@@ -36,7 +36,8 @@ public class TilePathFinder {
 
         None,
         Unreachable,
-        Hostile
+        Hostile,
+        Enemy
     }
 
     public class DrawingAreaTile extends Tile {
@@ -117,7 +118,7 @@ public class TilePathFinder {
                     if (alreadyClosed) {
                         continue;
                     }
-
+                    
                     if (walks && !map.walkableTile(newx, newz)) {
                         continue;
                     }
@@ -125,6 +126,14 @@ public class TilePathFinder {
                     if (sails && !map.sailableTile(newx, newz)) {
                         continue;
                     }
+                    
+                    if(map.worldTiles[newx][newz].entity != null)
+                    {
+                        continue;
+                    }
+                   
+                    
+                    
 
                     float new_distance = best.distance + map.getTileCosts(newx, newz);
 
@@ -165,7 +174,7 @@ public class TilePathFinder {
         return path;
     }
 
-    public ArrayList<DrawingAreaTile> getReachableArea(ArrayList<Unit> units, int posX, int posZ) {
+    public ArrayList<DrawingAreaTile> getReachableArea(ArrayList<Unit> units, int posX, int posZ, String owner) {
         ArrayList<DrawingAreaTile> area = new ArrayList<DrawingAreaTile>();
 
         boolean walks = true;
@@ -182,6 +191,7 @@ public class TilePathFinder {
             points = Math.min(u.currMovePoints, points);
         }
 
+        
         if (points <= 0) {
             DrawingAreaTile d = new DrawingAreaTile(posX, posZ);
             d.l = d.t = d.r = d.b = Border.Unreachable;
@@ -242,6 +252,7 @@ public class TilePathFinder {
         for (int z = -points; z <= points; z++) {
             for (int x = -points; x <= points; x++) {
                 if (distance[center + x][center + z] <= points) {
+                    
                     DrawingAreaTile t = new DrawingAreaTile(posX + x, posZ + z);
                     if (distance[center + x - 1][center + z] > points) {
                         t.l = Border.Unreachable;
@@ -255,6 +266,14 @@ public class TilePathFinder {
                     if (distance[center + x][center + z + 1] > points) {
                         t.b = Border.Unreachable;
                     }
+                    
+                    WorldEntity ent = map.worldTiles[posX + x][posZ + z].entity;
+                    if(ent != null && !ent.owner.equals(owner))
+                    {
+                        t.l = t.b = t.r = t.t = Border.Enemy;
+                    }
+                    
+                    
                     area.add(t);
                 }
             }
@@ -265,6 +284,6 @@ public class TilePathFinder {
 
     public ArrayList<DrawingAreaTile> getReachableArea(Army army) {
 
-        return getReachableArea(army.units, army.posX, army.posZ);
+        return getReachableArea(army.units, army.posX, army.posZ, army.owner);
     }
 }

@@ -384,38 +384,38 @@ public class WorldMapAppState extends AbstractAppState {
 
     public int battle(ArrayList<Army> a1, ArrayList<Army> a2) {
 
-        BattleAppState b = new BattleAppState(a1, a2, new Tile(a1.get(0).posX, a1.get(0).posZ));
-        game.gameLoaderState.loadBattle(b);
-
-
-        return 0;
-
-//        int power1 = 0, power2 = 0;
+//        BattleAppState b = new BattleAppState(a1, a2, new Tile(a1.get(0).posX, a1.get(0).posZ));
+//        game.gameLoaderState.loadBattle(b);
 //
-//        for (Army a : a1) {
-//            power1 += a.units.size();
-//        }
-//        for (Army a : a2) {
-//            power2 += a.units.size();
-//        }
 //
-//        if (power1 > power2) {
-//            for (Army a : a2) {
-//                map.removeArmy(a);
-//                game.playSound("army_death");
-//            }
-//            return 1;
-//        }
-//        if (power1 < power2) {
-//            for (Army a : a1) {
-//                map.removeArmy(a);
-//                game.playSound("army_death");
-//
-//            }
-//            return 2;
-//        } else {
-//            return 0;
-//        }
+//        return 0;
+
+        int power1 = 0, power2 = 0;
+
+        for (Army a : a1) {
+            power1 += a.units.size();
+        }
+        for (Army a : a2) {
+            power2 += a.units.size();
+        }
+
+        if (power1 >= power2) {
+            for (Army a : a2) {
+                map.removeArmy(a);
+                game.playSound("army_death");
+            }
+            return 1;
+        }
+        if (power1 < power2) {
+            for (Army a : a1) {
+                map.removeArmy(a);
+                game.playSound("army_death");
+
+            }
+            return 2;
+        } else {
+            return 0;
+        }
     }
 
     public int siege(ArrayList<Army> a1, ArrayList<Army> a2, Settlement s) {
