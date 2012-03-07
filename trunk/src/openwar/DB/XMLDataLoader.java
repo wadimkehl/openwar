@@ -180,9 +180,14 @@ public class XMLDataLoader {
                 Element l = (Element) nodes.item(i);
                 refname = l.getAttribute("refname");
                 file = l.getAttribute("file");
+                Model m = new Model(refname, file, l.getAttribute("diffuse"));
+                Main.DB.models.put(refname,m);
+                
+                 Scanner s = new Scanner(l.getAttribute("scale"));
+                    s.useLocale(Locale.ENGLISH);
+                m.scale = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
 
-                Main.DB.models.put(refname,
-                        new Model(refname, file, l.getAttribute("diffuse")));
+         
 
                 logger.log(Level.WARNING, "*Model loaded: {0} *", refname);
 
