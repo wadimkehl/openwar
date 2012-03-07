@@ -4,7 +4,8 @@
 
     <unit name="Trireme" refname="trireme" maxcount="15" maxmovepoints="10" turnstorecruit="2" walks="false" sails="true" cargo="true" />
     
-    <description card="unitcard.jpg" detail="info.jpg" info="info.txt"  />
+    <description card="unitcard.jpg" detail="info.jpg" 
+    info="Triremes are funny. Triremes stink like skanks..."  />
 
     
     <stats att_melee="1" att_assault="1" att_range="5" armor="1" shield="0" melee="true" ranged="true" />

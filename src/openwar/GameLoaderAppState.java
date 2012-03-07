@@ -96,7 +96,6 @@ public class GameLoaderAppState extends AbstractAppState implements ScreenContro
 
             case Init:
                 InitGame();
-                status = Status.MainMenu;
                 break;
 
             case MainMenu:
@@ -138,16 +137,18 @@ public class GameLoaderAppState extends AbstractAppState implements ScreenContro
         game.bulletState.setThreadingType(ThreadingType.PARALLEL);
         game.bulletState.setBroadphaseType(BroadphaseType.DBVT);
         manager.attach(game.bulletState);
+        
+        
+        status = Status.MainMenu;
+
        
         if (Main.devMode) {
             game.bulletState.getPhysicsSpace().enableDebug(game.getAssetManager());
         }
 
         DataLoader = new XMLDataLoader(game);
-        if (!DataLoader.loadAll()) {
-            game.wishToQuit = true;
-            return;
-        }
+        game.wishToQuit = !DataLoader.loadAll();
+  
 
         game.audioState.setMusicVolume(0.05f);
     }
