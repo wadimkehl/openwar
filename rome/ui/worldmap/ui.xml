@@ -326,16 +326,21 @@
                     
                 <panel height="*" width="*" childLayout="vertical" visibleToMouse="true" backgroundImage="ui/worldmap/temp.tga" >                        
                         
-                    <panel  childLayout="vertical">
+                        
+                    <panel childLayout="horizontal"> 
+                        <panel  width="10%"/>
+
+                        <panel  childLayout="vertical">
                             
 
-                        <panel  height="30%"/>
-
-                        <panel childLayout="horizontal">
+                            <panel  height="30%" childLayout="vertical">
+                                <panel height="20%"/>
+                                <text id="settlement_name" font="ui/fonts/palatino.fnt" align="center" valign="center" />
+                        
+                        
+                            </panel>
                                 
-                            <panel  width="10%"/>
-
-                            <panel childLayout="vertical" width="75%" height="100%">
+                            <panel childLayout="vertical" width="85%" >
                             
 
                                 <panel childLayout="horizontal" >
@@ -405,7 +410,7 @@
                                         <image id="constructionList0"    >
                                             <interact onPrimaryClick="onConstructionListClick(0,0)" onSecondaryClick="onConstructionListClick(0,1)" />                                     
                                         </image>
-                                        <image id="constructionList0Bar" />                              
+                                        <image id="constructionListBar0" />                              
                                     </panel>
                             
                                     <panel height="*" width="0.35%"/>
@@ -491,7 +496,7 @@
                                         <image id="recruitmentList0"    >
                                             <interact onPrimaryClick="onRecruitmentListClick(0,0)" onSecondaryClick="onRecruitmentListClick(0,1)" />                                     
                                         </image>
-                                        <image id="recruitmentList0Bar" />                              
+                                        <image id="recruitmentListBar0" />                              
                                     </panel>            
                                     <panel height="*" width="0.35%"/>
                                     
@@ -499,7 +504,7 @@
                                         <image id="recruitmentList1"    >
                                             <interact onPrimaryClick="onRecruitmentListClick(1,0)" onSecondaryClick="onRecruitmentListClick(1,1)" />                                     
                                         </image>
-                                        <image id="recruitmentList1Bar" />                              
+                                        <image id="recruitmentListBar1" />                              
                                     </panel>            
                                     <panel height="*" width="0.35%"/>
                                     
@@ -507,7 +512,7 @@
                                         <image id="recruitmentList2"    >
                                             <interact onPrimaryClick="onRecruitmentListClick(2,0)" onSecondaryClick="onRecruitmentListClick(2,1)" />                                     
                                         </image>
-                                        <image id="recruitmentList2Bar" />                              
+                                        <image id="recruitmentListBar2" />                              
                                     </panel>            
                                     <panel height="*" width="0.35%"/>
                                     
@@ -515,7 +520,7 @@
                                         <image id="recruitmentList3"    >
                                             <interact onPrimaryClick="onRecruitmentListClick(3,0)" onSecondaryClick="onRecruitmentListClick(3,1)" />                                     
                                         </image>
-                                        <image id="recruitmentList3Bar" />                              
+                                        <image id="recruitmentListBar3" />                              
                                     </panel>            
                                     <panel height="*" width="0.35%"/>
                                     
@@ -523,7 +528,7 @@
                                         <image id="recruitmentList4"    >
                                             <interact onPrimaryClick="onRecruitmentListClick(4,0)" onSecondaryClick="onRecruitmentListClick(4,1)" />                                     
                                         </image>
-                                        <image id="recruitmentList4Bar" />                              
+                                        <image id="recruitmentListBar4" />                              
                                     </panel>            
                                     <panel height="*" width="0.35%"/>
                                     
@@ -531,7 +536,7 @@
                                         <image id="recruitmentList5"    >
                                             <interact onPrimaryClick="onRecruitmentListClick(5,0)" onSecondaryClick="onRecruitmentListClick(5,1)" />                                     
                                         </image>
-                                        <image id="recruitmentList5Bar" />                              
+                                        <image id="recruitmentListBar5" />                              
                                     </panel>            
                                     <panel height="*" width="0.35%"/>
                                     
@@ -539,7 +544,7 @@
                                         <image id="recruitmentList6"    >
                                             <interact onPrimaryClick="onRecruitmentListClick(6,0)" onSecondaryClick="onRecruitmentListClick(6,1)" />                                     
                                         </image>
-                                        <image id="recruitmentList6Bar" />                              
+                                        <image id="recruitmentListBar6" />                              
                                     </panel>            
                                     <panel height="*" width="0.35%"/>
                                     
@@ -547,7 +552,7 @@
                                         <image id="recruitmentList7"    >
                                             <interact onPrimaryClick="onRecruitmentListClick(7,0)" onSecondaryClick="onRecruitmentListClick(7,1)" />                                     
                                         </image>
-                                        <image id="recruitmentList7Bar" />                              
+                                        <image id="recruitmentListBar7" />                              
                                     </panel>            
                                     <panel height="*" width="0.35%"/>
                                     
@@ -555,14 +560,14 @@
                                         <image id="recruitmentList8"    >
                                             <interact onPrimaryClick="onRecruitmentListClick(8,0)" onSecondaryClick="onRecruitmentListClick(8,1)" />                                     
                                         </image>
-                                        <image id="recruitmentList8Bar" />                              
+                                        <image id="recruitmentListBar8" />                              
                                     </panel>            
                                     <panel height="*" width="0.35%"/>
                                     <panel width="10%" height="*" childLayout="overlay">
                                         <image id="recruitmentList9"    >
                                             <interact onPrimaryClick="onRecruitmentListClick(9,0)" onSecondaryClick="onRecruitmentListClick(9,1)" />                                     
                                         </image>
-                                        <image id="recruitmentList9Bar" />                              
+                                        <image id="recruitmentListBar9" />                              
                                     </panel>            
                                     <panel height="*" width="0.35%"/>
                                 
