@@ -72,6 +72,8 @@ public class Army extends WorldEntity {
         calculateMovePoints();
         
         map.hashedArmies.put(model, this);
+        
+        super.createData(m);
 
     }
 
@@ -140,9 +142,13 @@ public class Army extends WorldEntity {
                     }
                 }
 
+                map.worldTiles[posX][posZ].entity=null;           
                 posX = t.x;
                 posZ = t.z;
                 node.setLocalTranslation(map.getGLTileCenter(t));
+                map.worldTiles[posX][posZ].entity=this;
+
+                
 
 
                 if (map.selectedArmy == this) {

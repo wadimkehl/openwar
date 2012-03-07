@@ -17,6 +17,7 @@ public class WorldTile extends Tile {
     public int cost, modifier;
     public String region = "";
     public String climate = "";
+    public WorldEntity entity=null;
 
     public WorldTile(int x, int z, int type, int co, String r, String c) {
         super(x, z);

@@ -11,6 +11,7 @@ import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
@@ -181,9 +182,10 @@ public class WorldMap {
         Geometry plane = new Geometry("", new Quad(2 * width, 2 * height));
         Material mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         plane.setMaterial(mat);
-        plane.setLocalRotation(new Quaternion().fromAngles((float) Math.PI / 2f, 0f, 0f));
-        plane.setLocalTranslation(-width / 2, 1f, -height / 2);
-        // this.scene.attachChild(plane);
+                plane.setLocalRotation(new Quaternion().fromAngleAxis(-FastMath.HALF_PI,Vector3f.UNIT_X));
+
+        plane.setLocalTranslation(0, 1f, 0);
+        //this.scene.attachChild(plane);
         return true;
     }
 
@@ -445,6 +447,7 @@ public class WorldMap {
             public Object call() throws Exception {
 
                 Main.DB.factions.get(a.owner).armies.remove(a);
+                worldTiles[a.posX][a.posZ].entity=null;
                 hashedArmies.remove(a.model);
                 scene.detachChild(a.node);
 
@@ -593,9 +596,9 @@ public class WorldMap {
 
     }
 
-    public void drawReachableArea(ArrayList<Unit> units, int posX, int posZ) {
+    public void drawReachableArea(ArrayList<Unit> units, int posX, int posZ, String owner) {
 
-        ArrayList<DrawingAreaTile> area = pathFinder.getReachableArea(units, posX, posZ);
+        ArrayList<DrawingAreaTile> area = pathFinder.getReachableArea(units, posX, posZ,owner);
 
         float[] verts = new float[area.size() * 12];
         float[] colors = new float[area.size() * 16];
@@ -614,6 +617,13 @@ public class WorldMap {
                 g = 0f;
                 b = 0.8f;
             }
+            
+            if (t.l == Border.Enemy || t.r == Border.Enemy || t.t == Border.Enemy || t.b == Border.Enemy) {
+                r = 0.8f;
+                g = 0f;
+                b = 0;
+            }
+            
             verts[i * 12 + 0] = t.x;
             verts[i * 12 + 1] = getGLTileCornerAboveSea(t.x,t.z).y + 0.025f;
             verts[i * 12 + 2] = t.z;
@@ -683,7 +693,7 @@ public class WorldMap {
      // Run BFS to find the reachable tiles for the army
     public void drawReachableArea(Army army) {
 
-        drawReachableArea(army.units, army.posX, army.posZ);
+        drawReachableArea(army.units, army.posX, army.posZ,army.owner);
 
     }
 
