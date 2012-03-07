@@ -161,6 +161,7 @@ public class WorldMapAppState extends AbstractAppState {
 
         Spatial spat = (Spatial) r.getGeometry();
         Army a = map.getArmy(spat);
+        if(a == null) a = map.getArmy(spat.getParent());
         if (a != null && a != map.selectedArmy) {
 
             if (!a.owner.equals(Main.DB.playerFaction) && !Main.devMode) {
@@ -247,6 +248,7 @@ public class WorldMapAppState extends AbstractAppState {
         // TODO: BLENDER exports spatial into two cascaded nodes!
         Spatial s = (Spatial) r.getGeometry();
         Army ar = map.getArmy(s);
+        if(ar == null) ar = map.getArmy(s.getParent());
         if (ar != null) {
 
             if (ar == map.selectedArmy) {

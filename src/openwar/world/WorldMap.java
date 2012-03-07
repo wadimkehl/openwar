@@ -286,7 +286,6 @@ public class WorldMap {
         for (Faction f : Main.DB.factions.values()) {
             for (Army a : f.armies) {
                 a.createData(this);
-                hashedArmies.put(a.model, a);
             }
         }
 
@@ -433,7 +432,6 @@ public class WorldMap {
         a.calculateMovePoints();
         Main.DB.factions.get(owner).armies.add(a);
         a.createData(this);
-        hashedArmies.put(a.model, a); 
         return a;
 
     }
