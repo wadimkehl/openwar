@@ -340,9 +340,14 @@ public class Settlement extends WorldEntity {
         for (Building b : buildings.values()) {
             for (RecruitmentStats recStats : b.recStats.values()) {
                 int recruiting = 0;
-
-                //TODO: subtract the units that are already recruited
-                recruitmentPool.put(recStats.refName, recStats.currUnits);
+                
+                for(Recruitment r : recruitments)
+                {
+                    if(r.refName.equals(recStats.refName)) recruiting++;                      
+                }
+                int available = recStats.currUnits-recruiting;
+                if(available>0)
+                recruitmentPool.put(recStats.refName, available);
             }
         }
 
@@ -365,16 +370,18 @@ public class Settlement extends WorldEntity {
             return;
         }
 
-        int n = recruitmentPool.get(r);
         Recruitment rec = new Recruitment();
         rec.refName = r;
         rec.currentTurn = 0;
-        int i = recruitmentPool.get(r);
-        recruitmentPool.put(r, i--);
-
-        if (i <= 0) {
+        
+        int n = recruitmentPool.get(r)-1;
+        if(n <= 0)
+        {
             recruitmentPool.remove(r);
         }
+        else
+        recruitmentPool.put(r, n);
+
         recruitments.add(rec);
     }
 
@@ -417,7 +424,7 @@ public class Settlement extends WorldEntity {
 
 
                 // Skip if maximum recruitable units
-                if (rs.currUnits == rs.grs.maxUnits) {
+                if (rs.currUnits >= rs.grs.maxUnits) {
                     continue;
                 }
 
@@ -441,7 +448,6 @@ public class Settlement extends WorldEntity {
                 constructions.remove(0);
                 Building b = new Building(c.refName, c.level);
 
-                // TODO: remove grs from lower-level building or else multi counting
                 // Refresh
                 GenericBuilding gb = Main.DB.genBuildings.get(c.refName);
                 for (GenericRecruitmentStats grs : gb.levels.get(c.level).genRecStats.values()) {

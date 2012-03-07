@@ -11,14 +11,14 @@
         <description card="0.jpg" detail="detail.jpg" info="info.txt"  />
         <requires name="population" value="500" />
 
-        <provides name="unit" value="militia 1 1" />
+        <provides name="unit" value="militia 1 2" />
          
     </level>
     
     <level level="1" name="Smaller barracks" refname="medium_barracks" cost="2500" turns="2"  >
         
         <description card="1.jpg" detail="detail.jpg" info="info.txt"  />
-        <provides name="unit" value="militia 2 1" />
+        <provides name="unit" value="militia 2 2" />
         <requires name="population" value="1000" />
 
         
@@ -28,7 +28,7 @@
     <level level="2" name="Large barracks" refname="high_barracks" cost="5000" turns="3" >
         
         <description card="2.jpg" detail="detail.jpg" info="info.txt"  />
-        <provides name="unit" value="militia 3 1" />
+        <provides name="unit" value="militia 3 2" />
         <requires name="population" value="1500" />
 
         
