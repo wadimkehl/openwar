@@ -48,14 +48,7 @@ public class WorldMapUI implements ScreenController {
     Nifty nifty;
     Screen screen;
     public Main game;
-    public Element unitImage[] = new Element[20];
-    public Element buildingImage[] = new Element[12];
-    public Element constructionImage[] = new Element[12];
-    public Element recruitmentImage[] = new Element[10];
-    public Element recruitmentListImage[] = new Element[10];
-    public Element constructionListImage[] = new Element[6];
-    public Element constructionListBarImage;
-    public Element recruitmentListBarImage[] = new Element[10];
+    public HashMap<String, Element> elements = new HashMap<String, Element>();
     public ArrayList<Unit> selectedUnits = new ArrayList<Unit>();
     public WorldEntity selectedFrom = null;
     public Settlement selectedSettlement;
@@ -79,28 +72,29 @@ public class WorldMapUI implements ScreenController {
     public void onStartScreen() {
 
         for (int i = 0; i < 20; i++) {
-            unitImage[i] = nifty.getCurrentScreen().findElementByName("unit" + i);
+            elements.put("unit" + i, screen.findElementByName("unit" + i));
+
         }
         for (int i = 0; i < 12; i++) {
-            buildingImage[i] = nifty.getCurrentScreen().findElementByName("building" + i);
-        }
-        for (int i = 0; i < 12; i++) {
-            constructionImage[i] = nifty.getCurrentScreen().findElementByName("construction" + i);
-        }
-        for (int i = 0; i < 10; i++) {
-            recruitmentImage[i] = nifty.getCurrentScreen().findElementByName("recruitment" + i);
-        }
-        for (int i = 0; i < 6; i++) {
-            constructionListImage[i] = nifty.getCurrentScreen().findElementByName("constructionList" + i);
-        }
-        for (int i = 0; i < 10; i++) {
-            recruitmentListImage[i] = nifty.getCurrentScreen().findElementByName("recruitmentList" + i);
-        }
-        for (int i = 0; i < 10; i++) {
-            recruitmentListBarImage[i] = nifty.getCurrentScreen().findElementByName("recruitmentList" + i + "Bar");
+            elements.put("building" + i, screen.findElementByName("building" + i));
+            elements.put("construction" + i, screen.findElementByName("construction" + i));
+
         }
 
-        constructionListBarImage = nifty.getCurrentScreen().findElementByName("constructionList0Bar");
+        for (int i = 0; i < 10; i++) {
+            elements.put("recruitment" + i, screen.findElementByName("recruitment" + i));
+            elements.put("recruitmentList" + i, screen.findElementByName("recruitmentList" + i));
+            elements.put("recruitmentListBar" + i, screen.findElementByName("recruitmentListBar" + i));
+
+        }
+        for (int i = 0; i < 6; i++) {
+            elements.put("constructionList" + i, screen.findElementByName("constructionList" + i));
+            elements.put("constructionListBar" + i, screen.findElementByName("constructionListBar" + i));
+
+        }
+
+
+        elements.put("settlement_name", screen.findElementByName("settlement_name"));
 
 
     }
@@ -117,48 +111,50 @@ public class WorldMapUI implements ScreenController {
 
     public void refreshSettlementLayer() {
         for (int i = 0; i < 12; i++) {
-            setConstructionImage(i, null);
+            setImage("construction" + i, null);
         }
         for (int i = 0; i < 6; i++) {
-            setConstructionListImage(i, null);
+            setImage("constructionList" + i, null);
         }
         for (int i = 0; i < 10; i++) {
-            setRecruitmentImage(i, null);
+            setImage("recruitment" + i, null);
         }
         for (int i = 0; i < 10; i++) {
-            setRecruitmentListImage(i, null);
+            setImage("recruitmentList" + i, null);
         }
 
         Settlement s = selectedSettlement;
-
         if (s == null) {
             return;
         }
+
+        setText("settlement_name", s.name);
+
 
         int i = 0;
         for (Construction c : s.constructionPool.values()) {
             GenericBuilding gb = Main.DB.genBuildings.get(c.refName);
             Level l = gb.levels.get(c.level);
-            setConstructionImage(i, l.desc.card);
+            setImage("construction" + i, l.desc.card);
             i++;
         }
         i = 0;
         for (Construction c : s.constructions) {
             GenericBuilding gb = Main.DB.genBuildings.get(c.refName);
             Level l = gb.levels.get(c.level);
-            setConstructionListImage(i, l.desc.card);
+            setImage("constructionList" + i, l.desc.card);
             i++;
         }
         i = 0;
         for (String r : s.recruitmentPool.keySet()) {
             GenericUnit gu = Main.DB.genUnits.get(r);
-            setRecruitmentImage(i, gu.desc.card);
+            setImage("recruitment" + i, gu.desc.card);
             i++;
         }
         i = 0;
         for (Recruitment r : s.recruitments) {
             GenericUnit gu = Main.DB.genUnits.get(r.refName);
-            setRecruitmentListImage(i, gu.desc.card);
+            setImage("recruitmentList" + i, gu.desc.card);
             i++;
         }
 
@@ -166,20 +162,20 @@ public class WorldMapUI implements ScreenController {
             int l = s.constructions.get(0).currentTurn;
             int h = s.constructions.get(0).nrTurns;
             Texture2D t = createProgressBar(l, h);
-            setConstructionListBarImage(0, t);
+            setImage("constructionListBar0", t);
 
         } else {
-            setConstructionListBarImage(0, null);
+            setImage("constructionListBar0", null);
         }
 
         if (!s.recruitments.isEmpty()) {
             int l = s.recruitments.get(0).currentTurn;
             int h = Main.DB.genUnits.get(s.recruitments.get(0).refName).turnsToRecruit;
             Texture2D t = createProgressBar(l, h);
-            setRecruitmentListBarImage(0, t);
+            setImage("recruitmentListBar0", t);
 
         } else {
-            setRecruitmentListBarImage(0, null);
+            setImage("recruitmentListBar0", null);
         }
 
 
@@ -200,8 +196,6 @@ public class WorldMapUI implements ScreenController {
             }
 
         }
-
-
         Texture2D t = new Texture2D(new Image(Image.Format.RGBA8, 1, max, buf));
         t.setMagFilter(MagFilter.Nearest);
         return t;
@@ -212,23 +206,23 @@ public class WorldMapUI implements ScreenController {
 
         deselectUnits();
         for (int i = 0; i < 20; i++) {
-            setUnitImage(i, null);
+            setImage("unit" + i, null);
         }
         for (int i = 0; i < 12; i++) {
-            setBuildingImage(i, null);
+            setImage("building" + i, null);
         }
-        for (int i = 0; i < 12; i++) {
-            setConstructionImage(i, null);
-        }
-        for (int i = 0; i < 6; i++) {
-            setConstructionListImage(i, null);
-        }
-        for (int i = 0; i < 10; i++) {
-            setRecruitmentImage(i, null);
-        }
-        for (int i = 0; i < 10; i++) {
-            setRecruitmentListImage(i, null);
-        }
+//        for (int i = 0; i < 12; i++) {
+//            setImage("construction" + i, null);
+//        }
+//        for (int i = 0; i < 6; i++) {
+//            setImage("constructionList" + i, null);
+//        }
+//        for (int i = 0; i < 10; i++) {
+//            setImage("recruitment" + i, null);
+//        }
+//        for (int i = 0; i < 10; i++) {
+//            setImage("recruitmentList" + i, null);
+//        }
         game.showUIElement("settlement_layer", false);
         selectedSettlement = null;
 
@@ -237,14 +231,14 @@ public class WorldMapUI implements ScreenController {
     public void deselectUnits() {
         selectedUnits.clear();
         for (int i = 0; i < 20; i++) {
-            unitImage[i].stopEffect(EffectEventId.onCustom);
+            elements.get("unit" + i).stopEffect(EffectEventId.onCustom);
         }
 
 
     }
 
     public void selectUnit(int number) {
-        unitImage[number].startEffect(EffectEventId.onCustom, null, "selected");
+        elements.get("unit" + number).startEffect(EffectEventId.onCustom, null, "selected");
         selectedUnits.add(selectedFrom.units.get(number));
         game.playSound("world_select_unit");
 
@@ -267,11 +261,11 @@ public class WorldMapUI implements ScreenController {
         lastSettlementLayerSelection = LastLayerSelection.Units;
 
         for (int i = 0; i < 12; i++) {
-            game.worldMapState.uiController.setBuildingImage(i, null);
+            game.worldMapState.uiController.setImage("building" + i, null);
         }
 
         for (int i = 0; i < list.size(); i++) {
-            game.worldMapState.uiController.setUnitImage(i, Main.DB.genUnits.get(list.get(i).refName).desc.card);
+            game.worldMapState.uiController.setImage("unit" + i, Main.DB.genUnits.get(list.get(i).refName).desc.card);
         }
     }
 
@@ -284,7 +278,7 @@ public class WorldMapUI implements ScreenController {
 
 
         for (int i = 0; i < 20; i++) {
-            game.worldMapState.uiController.setUnitImage(i, null);
+            game.worldMapState.uiController.setImage("unit" + i, null);
         }
 
         if (selectedSettlement == null) {
@@ -297,7 +291,7 @@ public class WorldMapUI implements ScreenController {
         for (Building b : list.values()) {
             GenericBuilding gb = Main.DB.genBuildings.get(b.refName);
             Level l = gb.levels.get(b.level);
-            game.worldMapState.uiController.setBuildingImage(i, l.desc.card);
+            game.worldMapState.uiController.setImage("building" + i, l.desc.card);
             i++;
         }
     }
@@ -493,90 +487,8 @@ public class WorldMapUI implements ScreenController {
 
     }
 
-    public void setUnitImage(int number, Texture2D t) {
-        if (t == null) {
-            unitImage[number].getRenderer(ImageRenderer.class).setImage(null);
-        } else {
-            unitImage[number].getRenderer(ImageRenderer.class).setImage(
-                    new NiftyImage(nifty.getRenderEngine(), new RenderImageJme(t)));
-        }
-
-    }
-
-    public void setBuildingImage(int number, Texture2D t) {
-        if (t == null) {
-            buildingImage[number].getRenderer(ImageRenderer.class).setImage(null);
-        } else {
-            buildingImage[number].getRenderer(ImageRenderer.class).setImage(
-                    new NiftyImage(nifty.getRenderEngine(), new RenderImageJme(t)));
-        }
-
-    }
-
-    public void setConstructionImage(int number, Texture2D t) {
-        if (t == null) {
-            constructionImage[number].getRenderer(ImageRenderer.class).setImage(null);
-        } else {
-            constructionImage[number].getRenderer(ImageRenderer.class).setImage(
-                    new NiftyImage(nifty.getRenderEngine(), new RenderImageJme(t)));
-        }
-
-    }
-
-    public void setRecruitmentImage(int number, Texture2D t) {
-        if (t == null) {
-            recruitmentImage[number].getRenderer(ImageRenderer.class).setImage(null);
-        } else {
-            recruitmentImage[number].getRenderer(ImageRenderer.class).setImage(
-                    new NiftyImage(nifty.getRenderEngine(), new RenderImageJme(t)));
-        }
-
-    }
-
-    public void setConstructionListImage(int number, Texture2D t) {
-        if (t == null) {
-            constructionListImage[number].getRenderer(ImageRenderer.class).setImage(null);
-        } else {
-            constructionListImage[number].getRenderer(ImageRenderer.class).setImage(
-                    new NiftyImage(nifty.getRenderEngine(), new RenderImageJme(t)));
-        }
-
-    }
-
-    public void setRecruitmentListImage(int number, Texture2D t) {
-        if (t == null) {
-            recruitmentListImage[number].getRenderer(ImageRenderer.class).setImage(null);
-        } else {
-            recruitmentListImage[number].getRenderer(ImageRenderer.class).setImage(
-                    new NiftyImage(nifty.getRenderEngine(), new RenderImageJme(t)));
-        }
-
-    }
-
-    public void setConstructionListBarImage(int number, Texture2D t) {
-        if (t == null) {
-            constructionListBarImage.getRenderer(ImageRenderer.class).setImage(null);
-        } else {
-            constructionListBarImage.getRenderer(ImageRenderer.class).setImage(
-                    new NiftyImage(nifty.getRenderEngine(), new RenderImageJme(t)));
-        }
-
-    }
-
-    public void setRecruitmentListBarImage(int number, Texture2D t) {
-        if (t == null) {
-            recruitmentListBarImage[number].getRenderer(ImageRenderer.class).setImage(null);
-        } else {
-            recruitmentListBarImage[number].getRenderer(ImageRenderer.class).setImage(
-                    new NiftyImage(nifty.getRenderEngine(), new RenderImageJme(t)));
-        }
-
-    }
-
     public void setImage(String id, Texture2D t) {
-        Element l = nifty.getCurrentScreen().findElementByName(id);
-
-
+        Element l = elements.get(id);
         if (t == null) {
             l.getRenderer(ImageRenderer.class).setImage(null);
         } else {
@@ -586,7 +498,7 @@ public class WorldMapUI implements ScreenController {
     }
 
     public void setText(String id, String t) {
-        Element l = nifty.getCurrentScreen().findElementByName(id);
+        Element l = elements.get(id);
         l.getRenderer(TextRenderer.class).setText(t);
     }
 }
