@@ -56,7 +56,6 @@ public class WorldMapUI implements ScreenController {
     public Element constructionListImage[] = new Element[6];
     public Element constructionListBarImage;
     public Element recruitmentListBarImage[] = new Element[10];
-
     public ArrayList<Unit> selectedUnits = new ArrayList<Unit>();
     public WorldEntity selectedFrom = null;
     public Settlement selectedSettlement;
@@ -103,7 +102,7 @@ public class WorldMapUI implements ScreenController {
 
         constructionListBarImage = nifty.getCurrentScreen().findElementByName("constructionList0Bar");
 
-     
+
     }
 
     @Override
@@ -164,32 +163,48 @@ public class WorldMapUI implements ScreenController {
         }
 
         if (!s.constructions.isEmpty()) {
-
-            int h = s.constructions.get(0).nrTurns;
             int l = s.constructions.get(0).currentTurn;
-            ByteBuffer buf = ByteBuffer.allocateDirect(h * 4);
-
-            for (int p = h-1; p >= 0; p--) {
-
-                buf.put((byte) (0));
-                buf.put((byte) ((0xff & 255)));
-                buf.put((byte) (0));
-                if (p >= l) {
-                    buf.put((byte) ((0xff & 128)));
-                } else {
-                    buf.put((byte) (0));
-                }
-
-            }
-            Texture2D t = new Texture2D(new Image(Image.Format.RGBA8, 1, h, buf));
-            t.setMagFilter(MagFilter.Nearest);
+            int h = s.constructions.get(0).nrTurns;
+            Texture2D t = createProgressBar(l, h);
             setConstructionListBarImage(0, t);
 
         } else {
             setConstructionListBarImage(0, null);
         }
 
+        if (!s.recruitments.isEmpty()) {
+            int l = s.recruitments.get(0).currentTurn;
+            int h = Main.DB.genUnits.get(s.recruitments.get(0).refName).turnsToRecruit;
+            Texture2D t = createProgressBar(l, h);
+            setRecruitmentListBarImage(0, t);
 
+        } else {
+            setRecruitmentListBarImage(0, null);
+        }
+
+
+    }
+
+    public Texture2D createProgressBar(int curr, int max) {
+        ByteBuffer buf = ByteBuffer.allocateDirect(max * 4);
+
+        for (int i = max - 1; i >= 0; i--) {
+
+            buf.put((byte) (0));
+            buf.put((byte) ((0xff & 255)));
+            buf.put((byte) (0));
+            if (i >= curr) {
+                buf.put((byte) ((0xff & 128)));
+            } else {
+                buf.put((byte) (0));
+            }
+
+        }
+
+
+        Texture2D t = new Texture2D(new Image(Image.Format.RGBA8, 1, max, buf));
+        t.setMagFilter(MagFilter.Nearest);
+        return t;
 
     }
 
@@ -286,7 +301,6 @@ public class WorldMapUI implements ScreenController {
             i++;
         }
     }
-
 
     public void selectSettlement(Settlement s) {
 

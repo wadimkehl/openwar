@@ -8,7 +8,7 @@
         
         <description card="image.jpg" detail="detail.jpg" info="info.txt" />
         
-        <provides name="unit" value="bowmen 1 1" />
+        <provides name="unit" value="bowmen 1 2" />
                  
     </level>
 
