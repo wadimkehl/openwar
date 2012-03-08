@@ -44,14 +44,14 @@ def toggleUIElement(String name)
 
 // displays a blocking ui popup of the current active screen
 // name is the id of the popup template in the xml file
-def showUIPopUp(String name)
+def createUIPopUp(name)
 {
-    showUIPopUp(name)
+    game.createUIPopUp(name)
 }
 
-// closes a blocking ui popup that has been displayed with showUIPopUp()
-// name is the id of the popup template in the xml file
-def closeUIPopUp(String name)
-{   
-    closeUIPopUp(name)
+
+def showUIPopUp()
+{
+    game.showUIPopUp()
 }
+

@@ -6,6 +6,9 @@
 def onBeginGame()
 {
     println "Game begins"
+    game.createUIPopUp("popup_welcome")
+    game.setPopUpText("popup_text0","Welcome")
+    game.showUIPopUp()
     
 }
 
@@ -61,6 +64,20 @@ def onEndRound(round)
    
     
 }
+
+// called when the player clicks a button in a PopUp
+// element is the name of the popup template
+// number is the number specified by onPopUpClick()
+def onWorldMapPopUpClicked(String element, int number)
+{
+
+    println element
+    
+    if(element == "popup_battle")
+    game.worldMapState.resolveBattle()
+    
+}
+
 
 // called when the player clicks any element on the world map gui
 // element is the name defined in the ui xml file

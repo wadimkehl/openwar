@@ -167,10 +167,14 @@ public class WorldMinimap {
         for (int j = 0; j < mapHeight; j++) {
             for (int i = 0; i < mapWidth; i++) {
                 Vector3f col = minimapNoOwnerColor;
+                int a = 0;
+                
                 String owner = Main.DB.regions.get(map.worldTiles[i][mapHeight - 1 - j].region).owner;
                 if (!"".equals(owner)) {
                     col = Main.DB.genFactions.get(owner).color;
+                    a = 160;
                 }
+                
                 float border = borderMap[i][mapHeight - 1 - j];
                 int r = (int) (col.x * border);
                 int g = (int) (col.y * border);
@@ -178,7 +182,7 @@ public class WorldMinimap {
                 data.put((byte) (r & 0xff));
                 data.put((byte) (g & 0xff));
                 data.put((byte) (b & 0xff));
-                data.put((byte) (128 & 0xff));
+                data.put((byte) (a & 0xff));
             }
         }
 

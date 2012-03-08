@@ -12,26 +12,26 @@
             
             <panel height="20%" width="100%" childLayout="center">
                 <text id="new_game" font="ui/fonts/palatino.fnt" color="#f00f" text="New Game" >
-                    <interact onPrimaryClick="startGame()" /> 
+                    <interact onClick="startGame()" /> 
                 </text>
             </panel>
             
                 <panel height="20%" width="100%" childLayout="center">
                 <text id="quick_battle" font="ui/fonts/palatino.fnt" color="#f00f" text="Quick Battle" >
-                    <interact onPrimaryClick="quickBattle()" /> 
+                    <interact onClick="quickBattle()" /> 
                 </text>
             </panel>
             
             
             <panel height="20%" width="100%" childLayout="center">
                 <text id="options" font="ui/fonts/palatino.fnt" color="#f00f" text="Options" >
-                    <interact onPrimaryClick="" /> 
+                    <interact onClick="" /> 
                 </text>
             </panel>
             
             <panel height="20%" width="100%" childLayout="center">
                 <text id="quit_game" font="ui/fonts/palatino.fnt" color="#f00f" text="Quit">
-                    <interact onPrimaryClick="quitGame()" /> 
+                    <interact onClick="quitGame()" /> 
                 </text>
             </panel>        
            

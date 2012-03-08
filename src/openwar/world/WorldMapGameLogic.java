@@ -31,7 +31,7 @@ public class WorldMapGameLogic {
         }
 
         game.doScript("onBeginGame()");
-
+        
         beginTurn();
     }
 

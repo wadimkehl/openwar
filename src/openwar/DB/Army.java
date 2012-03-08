@@ -135,7 +135,7 @@ public class Army extends WorldEntity {
                             ArrayList<Army> a2 = new ArrayList<Army>();
                             a1.add(this);
                             a2.add(a);
-                            int result = map.game.worldMapState.battle(a1, a2);
+                            map.game.worldMapState.initiateBattle(a1, a2);
                             return;
 
                         }
