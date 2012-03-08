@@ -5,8 +5,42 @@
     <useControls filename="nifty-default-controls.xml" />
 
 
+        
+    <popup id="popup_welcome" childLayout="center" controller="openwar.world.WorldMapUI" >
+        <panel height="50%" width="50%"  childLayout="vertical" backgroundImage="ui/worldmap/temp.tga" visibleToMouse="true">
+            <panel height="20%"childLayout="center" />
+                <text id="popup_text0" font="ui/fonts/palatino.fnt" align="center" valign="center"/>
+             <panel height="50%"childLayout="center" />
+
+            <panel height="30%"childLayout="center">
+                <image width="10%" height="40%" filename="ui/worldmap/menue.tga" imageMode="subImage:0,0,250,150" >
+                    <interact onClick="onPopUpClick(0)"/>
+                </image>            
+            </panel>
+  
+        </panel>
+    </popup>
+    
+        <popup id="popup_battle" childLayout="center" controller="openwar.world.WorldMapUI" >
+        <panel height="50%" width="50%"  childLayout="vertical" backgroundImage="ui/worldmap/temp.tga" visibleToMouse="true">
+            <panel height="20%"childLayout="center" />
+                <text id="popup_text0" font="ui/fonts/palatino.fnt" align="center" valign="center"/>
+             <panel height="50%"childLayout="center" />
+
+            <panel height="30%"childLayout="center">
+                <image width="10%" height="40%" filename="ui/worldmap/menue.tga" imageMode="subImage:0,0,250,150" >
+                    <interact onClick="onPopUpClick(0)"/>
+                </image>            
+            </panel>
+  
+        </panel>
+    </popup>
+
+
     <screen id="start" controller="openwar.world.WorldMapUI">
 
+
+        
        
 
         <layer id="back_layer" childLayout="vertical" >

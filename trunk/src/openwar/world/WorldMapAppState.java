@@ -38,6 +38,10 @@ public class WorldMapAppState extends AbstractAppState {
     public Main game;
     public WorldMapUI uiController;
     public WorldMapGameLogic logic;
+    
+    public ArrayList<Army> army1,army2;
+    
+    
     private AnalogListener analogListener = new AnalogListener() {
 
         @Override
@@ -105,7 +109,7 @@ public class WorldMapAppState extends AbstractAppState {
         @Override
         public void onAction(String name, boolean pressed, float tpf) {
 
-            if (!isEnabled()) {
+            if (!isEnabled() || uiController.currentPopUpActive) {
                 return;
             }
 
@@ -333,7 +337,7 @@ public class WorldMapAppState extends AbstractAppState {
     @Override
     public void update(float tpf) {
 
-        map.update(tpf);
+            map.update(tpf);
 
     }
 
@@ -381,33 +385,27 @@ public class WorldMapAppState extends AbstractAppState {
 
 
     }
+    
+    public int resolveBattle()
+    {
+          int power1 = 0, power2 = 0;
 
-    public int battle(ArrayList<Army> a1, ArrayList<Army> a2) {
-
-//        BattleAppState b = new BattleAppState(a1, a2, new Tile(a1.get(0).posX, a1.get(0).posZ));
-//        game.gameLoaderState.loadBattle(b);
-//
-//
-//        return 0;
-
-        int power1 = 0, power2 = 0;
-
-        for (Army a : a1) {
+        for (Army a : army1) {
             power1 += a.units.size();
         }
-        for (Army a : a2) {
+        for (Army a : army2) {
             power2 += a.units.size();
         }
 
         if (power1 >= power2) {
-            for (Army a : a2) {
+            for (Army a : army2) {
                 map.removeArmy(a);
                 game.playSound("army_death");
             }
             return 1;
         }
         if (power1 < power2) {
-            for (Army a : a1) {
+            for (Army a : army1) {
                 map.removeArmy(a);
                 game.playSound("army_death");
 
@@ -416,6 +414,23 @@ public class WorldMapAppState extends AbstractAppState {
         } else {
             return 0;
         }
+    }
+
+    public void initiateBattle(ArrayList<Army> a1, ArrayList<Army> a2) {
+
+//        BattleAppState b = new BattleAppState(a1, a2, new Tile(a1.get(0).posX, a1.get(0).posZ));
+//        game.gameLoaderState.loadBattle(b);
+//
+//
+//        return 0;
+            army1 = a1;
+            army2=a2;
+            game.createUIPopUp("popup_battle");
+            game.setPopUpText("popup_text0","BATTLE!!!");
+            game.showUIPopUp();
+
+            
+      
     }
 
     public int siege(ArrayList<Army> a1, ArrayList<Army> a2, Settlement s) {

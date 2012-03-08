@@ -412,6 +412,9 @@ public class WorldMap {
         for (Settlement s : Main.DB.settlements.values()) {
             s.update(tpf);
         }
+        
+        if(game.worldMapState.uiController.currentPopUpActive)
+            return;
 
         for (Faction f : Main.DB.factions.values()) {
             for (Army a : f.armies) {

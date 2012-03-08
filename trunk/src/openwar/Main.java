@@ -35,6 +35,8 @@ import com.jme3.scene.Spatial.CullHint;
 import com.jme3.scene.control.UpdateControl;
 import com.jme3.system.AppSettings;
 import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.builder.PanelBuilder;
+import de.lessvoid.nifty.builder.PopupBuilder;
 import java.io.File;
 import java.util.HashMap;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -74,7 +76,6 @@ public class Main extends Application {
     public FlyByCamera camera;
     public boolean wishToQuit;
     private static final Logger logger = Logger.getLogger(Main.class.getName());
-    public HashMap<String, String> hashedPopUpId;
 
     private String getJarFolder() {
         String path = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
@@ -204,8 +205,6 @@ public class Main extends Application {
             nifty.setDebugOptionPanelColors(true);
         }
 
-
-        hashedPopUpId = new HashMap<String, String>();
 
 
         inputManager.clearMappings();
@@ -417,21 +416,18 @@ public class Main extends Application {
         return;
     }
 
-    public void showUIPopUp(String name) {
-        String element = nifty.createPopup(name).getId();
-        if (element == null) {
-            logger.log(Level.SEVERE, "Cannot find popup template: {0}", name);
-            return;
-        }
-        nifty.showPopup(nifty.getCurrentScreen(), element, null);
-        hashedPopUpId.put(name, element);
+    public void createUIPopUp(String name) {
+        worldMapState.uiController.createPopUp(name);
     }
 
-    public void closeUIPopUp(String name) {
-        if (name == null || hashedPopUpId.get(name) == null) {
-            logger.log(Level.SEVERE, "Cannot find popup with id: {0}", name);
-            return;
-        }
-        nifty.closePopup(hashedPopUpId.get(name));
+    public void showUIPopUp() {
+        worldMapState.uiController.showPopUp();
     }
+    
+    public void setPopUpText(String name,String t)
+    {
+        worldMapState.uiController.setPopUpText(name, t);
+    }
+
+   
 }

@@ -24,9 +24,10 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import openwar.DB.Building;
 import openwar.DB.GenericBuilding;
-import openwar.DB.GenericBuilding.Level;
 import openwar.DB.GenericUnit;
 import openwar.DB.Settlement;
 import openwar.DB.Settlement.Construction;
@@ -58,6 +59,10 @@ public class WorldMapUI implements ScreenController {
     EffectProperties prop = new EffectProperties(p);
     boolean hintShown;
     public LastLayerSelection lastSettlementLayerSelection = LastLayerSelection.Units;
+    private static final Logger logger = Logger.getLogger(WorldMapUI.class.getName());
+    public Element currentPopUp;
+    public String currentPopUpName,currentPopUpAnswer;
+    public boolean currentPopUpActive;
 
     public WorldMapUI() {
     }
@@ -134,14 +139,14 @@ public class WorldMapUI implements ScreenController {
         int i = 0;
         for (Construction c : s.constructionPool.values()) {
             GenericBuilding gb = Main.DB.genBuildings.get(c.refName);
-            Level l = gb.levels.get(c.level);
+            GenericBuilding.Level l = gb.levels.get(c.level);
             setImage("construction" + i, l.desc.card);
             i++;
         }
         i = 0;
         for (Construction c : s.constructions) {
             GenericBuilding gb = Main.DB.genBuildings.get(c.refName);
-            Level l = gb.levels.get(c.level);
+            GenericBuilding.Level l = gb.levels.get(c.level);
             setImage("constructionList" + i, l.desc.card);
             i++;
         }
@@ -290,7 +295,7 @@ public class WorldMapUI implements ScreenController {
         int i = 0;
         for (Building b : list.values()) {
             GenericBuilding gb = Main.DB.genBuildings.get(b.refName);
-            Level l = gb.levels.get(b.level);
+            GenericBuilding.Level l = gb.levels.get(b.level);
             game.worldMapState.uiController.setImage("building" + i, l.desc.card);
             i++;
         }
@@ -488,10 +493,66 @@ public class WorldMapUI implements ScreenController {
 
     }
 
+    public void createPopUp(String name) {
+        currentPopUp = null;
+        Element element = nifty.createPopup(name);
+        if (element == null) {
+            logger.log(Level.SEVERE, "Cannot find popup template: {0}", name);
+            return;
+        }
+        currentPopUpName = name;
+        currentPopUp = element;
+    }
+
+    public void showPopUp() {
+        if (currentPopUp == null) {
+            logger.log(Level.SEVERE, "No PopUp was created. Use createPopUp() first.");
+            return;
+        }
+        nifty.showPopup(nifty.getCurrentScreen(), currentPopUp.getId(), null);
+        currentPopUpActive=true;
+
+    }
+
+    public void setPopUpText(String id, String t) {
+        if (currentPopUp == null) {
+            logger.log(Level.SEVERE, "No PopUp was created. Use createPopUp() first.");
+            return;
+        }
+
+        Element l = currentPopUp.findElementByName(id);
+        if (l == null) {
+            logger.log(Level.SEVERE, "Cannot text element '{0}' in PopUp '{1}'", new Object[]{id, currentPopUpName});
+            return;
+        }
+        l.getRenderer(TextRenderer.class).setText(t);
+    }
+
+
+    public void closePopUp() {
+        if (currentPopUp == null) {
+            logger.log(Level.SEVERE, "No PopUp was created. Use createPopUp() first.");
+            return;
+        }
+        nifty.closePopup(currentPopUp.getId());
+        currentPopUpActive=false;
+
+    }
+
+    public void onPopUpClick(String i) {
+        System.err.println("onWorldMapPopUpClicked('" + currentPopUpName + "'," + i + ")");
+        currentPopUpAnswer = i;
+        closePopUp();
+        game.doScript("onWorldMapPopUpClicked('" + currentPopUpName + "'," + i + ")");
+
+    }
+
     public void setImage(String id, Texture2D t) {
         Element l = elements.get(id);
-
-
+        if (l == null) {
+            logger.log(Level.SEVERE, "Cannot find image element: {0}", id);
+            return;
+        }
         if (t == null) {
             l.getRenderer(ImageRenderer.class).setImage(null);
         } else {
@@ -502,6 +563,10 @@ public class WorldMapUI implements ScreenController {
 
     public void setText(String id, String t) {
         Element l = elements.get(id);
+        if (l == null) {
+            logger.log(Level.SEVERE, "Cannot find text element: {0}", id);
+            return;
+        }
         l.getRenderer(TextRenderer.class).setText(t);
     }
 }
