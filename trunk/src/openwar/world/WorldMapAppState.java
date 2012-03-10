@@ -286,9 +286,6 @@ public class WorldMapAppState extends AbstractAppState {
     public void initialize(AppStateManager stateManager, Application app) {
         game = (Main) app;
 
-        logic = new WorldMapGameLogic(game);
-
-
         game.getInputManager().addListener(actionListener, "mouse_left");
         game.getInputManager().addListener(actionListener, "mouse_right");
         game.getInputManager().addListener(actionListener, "show_grid");
@@ -325,6 +322,7 @@ public class WorldMapAppState extends AbstractAppState {
         game.nifty.fromXml("ui/worldmap/ui.xml", "start", uiController);
         map.minimap = new WorldMinimap(map);
 
+        logic = new WorldMapGameLogic(game);
         logic.beginGame();
 
 

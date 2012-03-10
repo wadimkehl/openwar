@@ -17,6 +17,7 @@ import openwar.Main;
 public class WorldMapGameLogic {
 
     Main game;
+    WorldAI ai;
 
     public void beginGame() {
         for (Faction f : Main.DB.factions.values()) {
@@ -31,7 +32,7 @@ public class WorldMapGameLogic {
         }
 
         game.doScript("onBeginGame()");
-        
+
         beginTurn();
     }
 
@@ -58,32 +59,36 @@ public class WorldMapGameLogic {
 
     public void beginTurn() {
         Faction f = Main.DB.factions.get(Main.DB.currentTurn);
+        game.doScript("onBeginTurn('" + Main.DB.currentTurn + "')");
+
 
 
         if (Main.DB.currentTurn.equals(Main.DB.playerFaction)) {
-
-
             if (game.worldMapState.map.selectedArmy != null) {
                 game.worldMapState.map.selectArmy(game.worldMapState.map.selectedArmy);
             } else if (game.worldMapState.map.selectedSettlement != null) {
                 game.worldMapState.uiController.selectSettlement(game.worldMapState.map.selectedSettlement);
                 game.worldMapState.uiController.drawReachableArea();
             }
-        }
 
 
-        game.doScript("onBeginTurn('" + Main.DB.currentTurn + "')");
+        } else {
 
-
-        if (!Main.DB.currentTurn.equals(Main.DB.playerFaction)) {
+            System.err.println("Calculating influence map for " + f.refName);
+            ai.calculateInfluenceMap(f);
             endTurn();
         }
+
+
 
     }
 
     public void endTurn() {
 
         Faction f = Main.DB.factions.get(Main.DB.currentTurn);
+        game.doScript("onEndTurn('" + Main.DB.currentTurn + "')");
+
+
 
         if (Main.DB.currentTurn.equals(Main.DB.playerFaction)) {
             game.worldMapState.uiController.deselectAll();
@@ -93,11 +98,6 @@ public class WorldMapGameLogic {
 
 
         }
-
-
-        game.doScript("onEndTurn('" + Main.DB.currentTurn + "')");
-
-
 
 
         // Check if we finish this round
@@ -126,5 +126,6 @@ public class WorldMapGameLogic {
 
     public WorldMapGameLogic(Main m) {
         game = m;
+        ai = new WorldAI(this);
     }
 }
