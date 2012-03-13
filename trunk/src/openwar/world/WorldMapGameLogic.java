@@ -73,14 +73,12 @@ public class WorldMapGameLogic {
 
         for (Faction f : Main.DB.factions.values()) {
             for (Army a : f.armies) {
-                a.resetMovePoints();
+                a.newRound();
             }
         }
 
         for (Settlement s : Main.DB.settlements.values()) {
             s.newRound();
-            s.resetMovePoints();
-
         }
 
         currentTurn = turnOrder.get(turnOrderCounter);
@@ -105,7 +103,7 @@ public class WorldMapGameLogic {
                 game.worldMapState.uiController.drawReachableArea();
             }
 
-
+            
         } else {
 
             ai.calculateInfluenceMap(f);

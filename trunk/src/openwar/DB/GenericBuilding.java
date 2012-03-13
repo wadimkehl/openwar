@@ -27,7 +27,7 @@ public class GenericBuilding {
         public int level;
         public String name;
         public String refName;
-        public int cost;
+        public int cost, upkeep;
         public int turns;
         public HashMap<String, String> requires;
         public HashMap<String, ArrayList<String>> provides;
@@ -53,12 +53,13 @@ public class GenericBuilding {
 
     }
 
-    public void addLevel(int l, String n, String r, int c, int t, Description d) {
+    public void addLevel(int l, String n, String r, int c, int u, int t, Description d) {
         Level lev = new Level();
         lev.level = l;
         lev.name = n;
         lev.refName = r;
         lev.cost = c;
+        lev.upkeep = u;
         lev.turns = t;
         lev.desc = d;
         levels.put(l, lev);

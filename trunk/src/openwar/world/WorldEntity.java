@@ -35,6 +35,9 @@ public abstract class WorldEntity {
 
     public abstract void update(float tpf);
     
+    public abstract void newRound();
+
+    
     public int calculateMovePoints() {
 
         int points = 10000;
@@ -43,6 +46,17 @@ public abstract class WorldEntity {
         }
         return points;
 
+    }
+    
+    public int calculateUnitsUpkeep()
+    {
+        
+        float total = 0;
+        
+        for (Unit u : units)
+            total += u.calculateUpkeep();
+        
+        return (int) total;
     }
 
     public int resetMovePoints() {

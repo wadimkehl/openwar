@@ -62,16 +62,13 @@
         <faction refname="romans" gold="1000" capital="roma">
             <army posx="29" posz="15" >
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
-                <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
-                <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />
-                
+                    
             </army> 
             
         </faction>
         
         <faction refname="greeks" gold="1000" capital="syracuse">
             <army posx="31" posz="13" >
-                <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
                 <unit refname="bowmen" count="100" exp="0" att_bonus="0" def_bonus="0" />               
             </army> 
@@ -88,7 +85,7 @@
         <region name="Ocean" refname="" owner="" color="0 0 0" />
         
         <region name="Roma" refname="roma" color="255 0 0" owner="romans" >
-            <settlement name="Rome" posx="31" posz="17" level="0" population="1000" base_growth="2.0" culture="roman_culture">          
+            <settlement name="Rome" posx="31" posz="17" level="0" population="3500" base_growth="2.0" culture="roman_culture">          
                 <building refname="irrigation" level="0" />
                 <building refname="barracks" level="0" />
                 <building refname="docks" level="0" />
@@ -100,7 +97,7 @@
         </region>
         
         <region name="Arretium" refname="arretium" color="255 255 0" owner="romans" >
-            <settlement name="Arretium" posx="24" posz="8" level="0" population="1000" base_growth="2.0" culture="roman_culture">          
+            <settlement name="Arretium" posx="24" posz="8" level="0" population="2000" base_growth="2.0" culture="roman_culture">          
             </settlement>
         </region>
         
@@ -111,35 +108,29 @@
         </region>
         
         <region name="Syracuse" refname="syracuse" color="0 255 0" owner="greeks" >
-            <settlement name="Syracuse" posx="43" posz="50" level="0" population="1000" base_growth="2.0" culture="greek_culture">          
-                <building refname="irrigation" level="0" />
+            <settlement name="Syracuse" posx="43" posz="50" level="0" population="3000" base_growth="2.5" culture="greek_culture">          
                 <building refname="barracks" level="0" />
                 
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
-                <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>
             </settlement>
         </region>
         
         <region name="Segesta" refname="segesta" color="100 255 100" owner="greeks" >
-            <settlement name="Segesta" posx="35" posz="46" level="0" population="1000" base_growth="2.0" culture="greek_culture">          
-                <building refname="irrigation" level="0" />
+            <settlement name="Segesta" posx="35" posz="46" level="0" population="3000" base_growth="2.0" culture="greek_culture">          
                 <building refname="barracks" level="0" />
                 <building refname="docks" level="0" />
                 
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
-                <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>
             </settlement>
             <dock posx="40" posz="44" spawnx="40" spawnz="43"/>
 
         </region>
         
         <region name="Carthage" refname="carthage" color="100 100 100" owner="rebels" >
-            <settlement name="Carthage" posx="19" posz="55" level="0" population="1000" base_growth="2.0" culture="greek_culture">          
-                <building refname="irrigation" level="0" />
+            <settlement name="Carthage" posx="19" posz="55" level="0" population="1500" base_growth="2.0" culture="greek_culture">          
                 <building refname="barracks" level="0" />
                 
                 <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0" />
-                <unit refname="militia" count="100" exp="0" att_bonus="0" def_bonus="0"/>
             </settlement>
         </region>
 

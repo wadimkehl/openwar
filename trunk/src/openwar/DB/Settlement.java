@@ -30,19 +30,19 @@ public class Settlement extends WorldEntity {
 
     public class Statistics {
 
-        int population, total_income, total_growth;
-        public double base_growth, total_order;
-        public double tax_rate;
-        public HashMap<String, Double> growth_modifier;
-        public HashMap<String, Double> income_modifier;
+        public int population, total_income;
+        public float base_growth, total_order, total_growth;
+        public float tax_rate = 5f;
+        public HashMap<String, Float> growth_modifier;
+        public HashMap<String, Float> income_modifier;
         public HashMap<String, Integer> income_adder;
-        public HashMap<String, Double> order_modifier;
+        public HashMap<String, Float> order_modifier;
 
         public int computeIncome() {
-            double factor = tax_rate;
+            float factor = tax_rate / 100f;
 
-            for (Double d : income_modifier.values()) {
-                factor += d;
+            for (Float d : income_modifier.values()) {
+                factor += d / 100f;
             }
 
             total_income = (int) (population * factor);
@@ -54,32 +54,31 @@ public class Settlement extends WorldEntity {
             return total_income;
         }
 
-        public int computeGrowth() {
-            double factor = base_growth;
+        public float computeGrowth() {
+            total_growth = base_growth / 100f;
 
-            for (Double d : growth_modifier.values()) {
-                factor += d;
+            for (Float d : growth_modifier.values()) {
+                total_growth += d / 100f;
             }
 
-            total_growth = (int) (population * factor);
             return total_growth;
         }
 
-        public double computeOrder() {
-            total_order = 1;
+        public float computeOrder() {
+            total_order = 1f;
 
-            for (Double d : order_modifier.values()) {
-                total_order += d;
+            for (Float d : order_modifier.values()) {
+                total_order += d / 100f;
             }
 
             return total_order;
         }
 
         public Statistics() {
-            growth_modifier = new HashMap<String, Double>();
-            income_modifier = new HashMap<String, Double>();
+            growth_modifier = new HashMap<String, Float>();
+            income_modifier = new HashMap<String, Float>();
             income_adder = new HashMap<String, Integer>();
-            order_modifier = new HashMap<String, Double>();
+            order_modifier = new HashMap<String, Float>();
 
         }
     }
@@ -180,7 +179,7 @@ public class Settlement extends WorldEntity {
 
         node.setLocalTranslation(map.getGLTileCenterAboveSea(posX, posZ));
         map.scene.attachChild(node);
-        
+
         super.createData(m);
 
     }
@@ -244,7 +243,7 @@ public class Settlement extends WorldEntity {
         }
 
         dock.builtLevel = level;
-           
+
         String refname = Main.DB.cultures.get(culture).dockModels.get(level);
         dock.model = Main.DB.models.get(refname).model.clone();
         dock.model.setLocalTranslation(map.getGLTileCenterAboveSea(dock.posX, dock.posZ));
@@ -341,14 +340,16 @@ public class Settlement extends WorldEntity {
         for (Building b : buildings.values()) {
             for (RecruitmentStats recStats : b.recStats.values()) {
                 int recruiting = 0;
-                
-                for(Recruitment r : recruitments)
-                {
-                    if(r.refName.equals(recStats.refName)) recruiting++;                      
+
+                for (Recruitment r : recruitments) {
+                    if (r.refName.equals(recStats.refName)) {
+                        recruiting++;
+                    }
                 }
-                int available = recStats.currUnits-recruiting;
-                if(available>0)
-                recruitmentPool.put(recStats.refName, available);
+                int available = recStats.currUnits - recruiting;
+                if (available > 0) {
+                    recruitmentPool.put(recStats.refName, available);
+                }
             }
         }
 
@@ -361,6 +362,12 @@ public class Settlement extends WorldEntity {
             return;
         }
 
+        int cost = Main.DB.genBuildings.get(c.refName).levels.get(c.level).cost;
+        if (Main.DB.factions.get(owner).gold < cost) {
+            return;
+        }
+        Main.DB.factions.get(owner).gold -= cost;
+
         constructions.add(c);
         constructionPool.remove(c.refName);
 
@@ -371,29 +378,43 @@ public class Settlement extends WorldEntity {
             return;
         }
 
+        int cost = Main.DB.genUnits.get(r).cost;
+        if (Main.DB.factions.get(owner).gold < cost) {
+            return;
+        }
+
+
         Recruitment rec = new Recruitment();
         rec.refName = r;
         rec.currentTurn = 0;
-        
-        int n = recruitmentPool.get(r)-1;
-        if(n <= 0)
-        {
-            recruitmentPool.remove(r);
-        }
-        else
-        recruitmentPool.put(r, n);
 
+        int n = recruitmentPool.get(r) - 1;
+        if (n <= 0) {
+            recruitmentPool.remove(r);
+        } else {
+            recruitmentPool.put(r, n);
+        }
+
+        Main.DB.factions.get(owner).gold -= cost;
         recruitments.add(rec);
     }
 
     public void abortConstruction(Construction c) {
         constructions.remove(c);
+
+        int cost = Main.DB.genBuildings.get(c.refName).levels.get(c.level).cost;
+        Main.DB.factions.get(owner).gold += cost;
+
+
         constructionPool.put(c.refName, c);
 
     }
 
     public void abortRecruitment(Recruitment r) {
         recruitments.remove(r);
+
+        int cost = Main.DB.genUnits.get(r.refName).cost;
+        Main.DB.factions.get(owner).gold += cost;
 
         if (recruitmentPool.containsKey(r.refName)) {
             int l = recruitmentPool.get(r.refName);
@@ -406,13 +427,31 @@ public class Settlement extends WorldEntity {
 
 
     }
+    
+    
+    public int calculateBuildingsUpkeep()
+    {
+        int total=0;
+        
+        for (Building b : buildings.values())
+            total += Main.DB.genBuildings.get(b.refName).levels.get(b.level).upkeep;
+        
+        return total;
+    }
 
+    @Override
     public void newRound() {
 
         stats.computeIncome();
         stats.computeOrder();
         stats.computeGrowth();
         stats.population += stats.population * stats.total_growth;
+
+        Main.DB.factions.get(owner).gold += stats.total_income
+                - calculateUnitsUpkeep() - calculateBuildingsUpkeep();
+
+        resetMovePoints();
+
 
         // Update recruitment stats
         for (Building b : buildings.values()) {

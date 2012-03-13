@@ -17,6 +17,7 @@ public class GenericUnit {
     public int maxCount;
     public int maxMovePoints;
     public int turnsToRecruit;
+    public int cost,upkeep;
     public boolean walks, sails, cargo;
     public Map<String, Integer> stats;
     public Description desc;

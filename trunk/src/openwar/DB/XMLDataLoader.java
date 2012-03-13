@@ -344,6 +344,8 @@ public class XMLDataLoader {
             entity.maxCount = Integer.parseInt(unit.getAttribute("maxcount"));
             entity.maxMovePoints = Integer.parseInt(unit.getAttribute("maxmovepoints"));
             entity.turnsToRecruit = Integer.parseInt(unit.getAttribute("turnstorecruit"));
+            entity.cost = Integer.parseInt(unit.getAttribute("cost"));
+            entity.upkeep = Integer.parseInt(unit.getAttribute("upkeep"));
             entity.walks = Boolean.parseBoolean(unit.getAttribute("walks"));
             entity.sails = Boolean.parseBoolean(unit.getAttribute("sails"));
             entity.cargo = Boolean.parseBoolean(unit.getAttribute("cargo"));
@@ -400,6 +402,7 @@ public class XMLDataLoader {
                 entity.addLevel(Integer.parseInt(l.getAttribute("level")),
                         l.getAttribute("name"), l.getAttribute("refname"),
                         Integer.parseInt(l.getAttribute("cost")),
+                        Integer.parseInt(l.getAttribute("upkeep")),
                         Integer.parseInt(l.getAttribute("turns")), desc);
 
                 for (int j = 0; j < req.getLength(); j++) {
@@ -602,7 +605,7 @@ public class XMLDataLoader {
                     se.posZ = Integer.parseInt(sett.getAttribute("posz"));
                     se.level = Integer.parseInt(sett.getAttribute("level"));
                     se.stats.population = Integer.parseInt(sett.getAttribute("population"));
-                    se.stats.base_growth = Double.parseDouble(sett.getAttribute("base_growth"));
+                    se.stats.base_growth = Float.parseFloat(sett.getAttribute("base_growth"));
                     se.culture = sett.getAttribute("culture");
                     se.region = reg.refName;
                     reg.settlement = se;

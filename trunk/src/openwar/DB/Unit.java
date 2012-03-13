@@ -28,4 +28,12 @@ public class Unit {
         
         currMovePoints = Main.DB.genUnits.get(refName).maxMovePoints;
     }
+    
+    public float calculateUpkeep()
+    {
+        float upkeep = Main.DB.genUnits.get(refName).upkeep;        
+        float maxCount = Main.DB.genUnits.get(refName).maxCount;
+        float fraction = ((float) count)/maxCount;     
+        return (upkeep * fraction);
+    }
 }

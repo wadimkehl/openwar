@@ -2,7 +2,8 @@
 
 <root>
 
-    <unit name="Bowmen" refname="bowmen" maxcount="100" maxmovepoints="20" turnstorecruit="2" walks="true" sails="false" />
+    <unit name="Bowmen" refname="bowmen" maxcount="100" maxmovepoints="20" 
+    turnstorecruit="2" walks="true" sails="false" cost="150" upkeep="20" />
     
     <description card="unitcard.jpg" detail="info.jpg" 
     info="Bowmen are funny. Bowmen stink like skanks..."  />

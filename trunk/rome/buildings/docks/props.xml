@@ -8,7 +8,7 @@
     </building>
       
     
-    <level level="0" name="Small docks" refname="small_docks" cost="1500" turns="3"  >
+    <level level="0" name="Small docks" refname="small_docks" cost="1500" upkeep="100" turns="3"  >
         
         <description card="image.jpg" detail="detail.jpg" info="info.txt" />
         
