@@ -2,7 +2,8 @@
 
 <root>
 
-    <unit name="Militia" refname="militia" maxcount="100" maxmovepoints="20" turnstorecruit="2" walks="true" sails="false" />
+    <unit name="Militia" refname="militia" maxcount="100" maxmovepoints="20" 
+    turnstorecruit="2" walks="true" sails="false" cost="150" upkeep="20" />
     <description card="unitcard.jpg" detail="info.jpg" 
     info="Militia is funny. Bowmen stinks like skanks..."  />
 

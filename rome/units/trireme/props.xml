@@ -2,7 +2,8 @@
 
 <root>
 
-    <unit name="Trireme" refname="trireme" maxcount="15" maxmovepoints="10" turnstorecruit="2" walks="false" sails="true" cargo="true" />
+    <unit name="Trireme" refname="trireme" maxcount="15" maxmovepoints="10" 
+    turnstorecruit="2" walks="false" sails="true" cargo="true" cost="150" upkeep="20" />
     
     <description card="unitcard.jpg" detail="info.jpg" 
     info="Triremes are funny. Triremes stink like skanks..."  />

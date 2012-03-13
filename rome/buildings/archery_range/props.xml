@@ -4,7 +4,7 @@
 
  <building name="Archery Range" refname="archery_range" maxlevel="0" />
    
-    <level level="0" name="Small Archery Range" refname="small_archery_range" cost="1500" turns="2"  >
+    <level level="0" name="Small Archery Range" refname="small_archery_range" cost="1500" upkeep="100" turns="2"  >
         
         <description card="image.jpg" detail="detail.jpg" info="info.txt" />
         

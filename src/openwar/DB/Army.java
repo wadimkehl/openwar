@@ -41,18 +41,18 @@ public class Army extends WorldEntity {
     public void createData(WorldMap m) {
 
         this.map = m;
-        
+
         // Because a faction has no culture, but settlements do
         // we just take the first culture in the list
         // TODO: model should like the the best unit in the army
         // TODO: ship is node, but army is geom, why?
         String refname;
-        if(this.canSail()){
-                refname = ((Culture)Main.DB.cultures.values().toArray()[0]).fleetModel;           
-        }else {
-                refname = ((Culture)Main.DB.cultures.values().toArray()[0]).armyModel;
+        if (this.canSail()) {
+            refname = ((Culture) Main.DB.cultures.values().toArray()[0]).fleetModel;
+        } else {
+            refname = ((Culture) Main.DB.cultures.values().toArray()[0]).armyModel;
         }
-        
+
         model = Main.DB.models.get(refname).model.clone();
         model.setLocalTranslation(0f, .1f, 0f);
         node.setLocalTranslation(map.getGLTileCenter(posX, posZ));
@@ -70,9 +70,9 @@ public class Army extends WorldEntity {
 
         map.scene.attachChild(node);
         calculateMovePoints();
-        
+
         map.hashedArmies.put(model, this);
-        
+
         super.createData(m);
 
     }
@@ -110,15 +110,15 @@ public class Army extends WorldEntity {
                 route.pop();
                 reduceMovePoints(map.getTileCosts(t));
 
-                    
+
                 // If we reached the goal
                 if (route.isEmpty()) {
                     Army a = map.getArmy(t);
-                    
+
                     // if we reached another army
                     if (a != null) {
-                        
-                        
+
+
                         // Friendly army
                         if (a.owner.equals(owner)) {
 
@@ -128,8 +128,8 @@ public class Army extends WorldEntity {
                             } else {
                                 mergeWith(a);
                             }
-                            
-                        // Hostile army
+
+                            // Hostile army
                         } else {
                             ArrayList<Army> a1 = new ArrayList<Army>();
                             ArrayList<Army> a2 = new ArrayList<Army>();
@@ -142,13 +142,13 @@ public class Army extends WorldEntity {
                     }
                 }
 
-                map.worldTiles[posX][posZ].entity=null;           
+                map.worldTiles[posX][posZ].entity = null;
                 posX = t.x;
                 posZ = t.z;
                 node.setLocalTranslation(map.getGLTileCenter(t));
-                map.worldTiles[posX][posZ].entity=this;
+                map.worldTiles[posX][posZ].entity = this;
 
-                
+
 
 
                 if (map.selectedArmy == this) {
@@ -319,6 +319,15 @@ public class Army extends WorldEntity {
             s.units.add(u);
         }
         map.removeArmy(a);
+
+    }
+
+    @Override
+    public void newRound() {
+
+        resetMovePoints();
+
+        Main.DB.factions.get(owner).gold -= calculateUnitsUpkeep();
 
     }
 }

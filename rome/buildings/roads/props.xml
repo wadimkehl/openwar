@@ -4,7 +4,7 @@
 
  <building name="Roads" refname="roads" maxlevel="2" />
    
-    <level level="0" name="Dirt roads" refname="dirt_roads" cost="500" turns="1"  >
+    <level level="0" name="Dirt roads" refname="dirt_roads" cost="500" upkeep="100" turns="1"  >
         
         <description card="image.jpg" detail="detail.jpg" info="info.txt" />
         
@@ -13,7 +13,7 @@
                  
     </level>
 
-    <level level="1" name="Paved roads" refname="paved_roads" cost="2500" turns="4" >
+    <level level="1" name="Paved roads" refname="paved_roads" cost="2500" upkeep="100" turns="4" >
         
         <description card="image.jpg" detail="detail.jpg" info="info.txt"  />
         <provides name="roads" value="1" />
@@ -23,7 +23,7 @@
         
         
     </level>
-    <level level="2" name="Cobbled raods" refname="cobbled_roads" cost="5000" turns="6"  >
+    <level level="2" name="Cobbled raods" refname="cobbled_roads" cost="5000" upkeep="100" turns="6"  >
         
         <description card="image.jpg" detail="detail.jpg" info="info.txt"  />
         <provides name="roads" value="2" />

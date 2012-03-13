@@ -10,12 +10,12 @@ def doAI(String faction)
     {
         
         case "greeks":
-            doAIgreeks()
+        doAIgreeks()
         break
         
         case "rebels":
-            doAIrebels()
-            break          
+        doAIrebels()
+        break          
         
     }
        
@@ -26,6 +26,8 @@ def doAI(String faction)
 def doAIgreeks()
 {
     
+    f = game.DB.factions.get("greeks")
+    println f.gold
     
     
     
@@ -35,7 +37,8 @@ def doAIgreeks()
 def doAIrebels()
 {
     
-    
+    f = game.DB.factions.get("rebels")
+    println f.gold
     
     
 }

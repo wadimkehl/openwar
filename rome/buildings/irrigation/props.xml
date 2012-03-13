@@ -6,7 +6,7 @@
     </building>
       
     
-    <level level="0" name="Low irrigation" refname="low_irrigation" cost="500" turns="1"  >
+    <level level="0" name="Low irrigation" refname="low_irrigation" cost="500" upkeep="100" turns="1"  >
         
         <description card="image.jpg" detail="detail.jpg" info="info.txt" />
         
@@ -14,7 +14,7 @@
                  
     </level>
 
-    <level level="1" name="Medium irrigation" refname="medium_irrigation" cost="2500" turns="2" >
+    <level level="1" name="Medium irrigation" refname="medium_irrigation" cost="2500" upkeep="100" turns="2" >
         <requires name="faction" value="romans" />
         <description card="image.jpg" detail="detail.jpg" info="info.txt"  />
         <provides name="growth" value="1.0" />
@@ -22,7 +22,7 @@
         
         
     </level>
-    <level level="2" name="High irrigation" refname="high_irrigation" cost="5000" turns="3"  >
+    <level level="2" name="High irrigation" refname="high_irrigation" cost="5000" upkeep="100" turns="3"  >
         
         <requires name="faction" value="romans" />
 
