@@ -62,7 +62,7 @@ public class Main extends Application {
     public Nifty nifty;
     public BulletAppState bulletState = new BulletAppState();
     public ScreenshotAppState screenshotState = new ScreenshotAppState();
-    public WorldMapAppState worldMapState = new WorldMapAppState();
+    public WorldMapAppState worldMapState;
     public GameLoaderAppState gameLoaderState = new GameLoaderAppState();
     public DevModeAppState debugState = new DevModeAppState();
     public AudioAppState audioState = new AudioAppState(this);
@@ -181,6 +181,8 @@ public class Main extends Application {
         scriptEngine.setBindings(bindings, ScriptContext.ENGINE_SCOPE);
 
 
+        
+        worldMapState = new WorldMapAppState(this);
 
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
                 assetManager, inputManager, audioRenderer, guiViewPort);

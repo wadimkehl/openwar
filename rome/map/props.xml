@@ -77,6 +77,10 @@
             </army> 
         </faction>
         
+        <faction refname="rebels" gold="1000" capital="carthage">
+            
+        </faction>
+        
     </factions>
     
     <regions>

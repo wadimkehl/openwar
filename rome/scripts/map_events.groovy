@@ -32,7 +32,7 @@ def onUnitRecruited(String faction, String region, String unit)
 // faction is refname
 def onEndTurn(String faction)
 {
-    println faction + " ended turn "
+
 }
 
 
@@ -40,7 +40,7 @@ def onEndTurn(String faction)
 // faction is refname 
 def onBeginTurn(String faction)
 {
-    println faction + " began turn"
+    println faction + " begin turn"
 
     
 }
@@ -49,7 +49,7 @@ def onBeginTurn(String faction)
 // round is current round number 
 def onBeginRound(round)
 {        
-    println "Round began"
+    println "Round " + round
 
    
     
@@ -59,9 +59,7 @@ def onBeginRound(round)
 // round is current round number 
 def onEndRound(round)
 {        
-    
-    println "Round ended"
-   
+       
     
 }
 
@@ -70,8 +68,6 @@ def onEndRound(round)
 // number is the number specified by onPopUpClick()
 def onWorldMapPopUpClicked(String element, int number)
 {
-
-    println element
     
     if(element == "popup_battle")
     game.worldMapState.resolveBattle()
@@ -130,3 +126,6 @@ def onArmySelected()
 {
 
 }
+
+
+

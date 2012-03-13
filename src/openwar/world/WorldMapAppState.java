@@ -168,7 +168,7 @@ public class WorldMapAppState extends AbstractAppState {
         if(a == null) a = map.getArmy(spat.getParent());
         if (a != null && a != map.selectedArmy) {
 
-            if (!a.owner.equals(Main.DB.playerFaction) && !Main.devMode) {
+            if (!a.owner.equals(logic.playerFaction) && !Main.devMode) {
                 return;
             }
 
@@ -181,7 +181,7 @@ public class WorldMapAppState extends AbstractAppState {
         Settlement s = map.getSettlement(spat);
         if (s != null) {
 
-            if (!s.owner.equals(Main.DB.playerFaction) && !Main.devMode) {
+            if (!s.owner.equals(logic.playerFaction) && !Main.devMode) {
                 return;
             }
 
@@ -279,7 +279,10 @@ public class WorldMapAppState extends AbstractAppState {
 
     }
 
-    public WorldMapAppState() {
+    public WorldMapAppState(Main game) {
+        
+          logic = new WorldMapGameLogic(game);
+
     }
 
     @Override
@@ -305,26 +308,27 @@ public class WorldMapAppState extends AbstractAppState {
         sceneNode.addControl(new UpdateControl());
 
         game.rootNode.attachChild(sceneNode);
-        game.getCamera().lookAtDirection(new Vector3f(0f, -1f, -1f).normalizeLocal(), Vector3f.UNIT_Y);
-        game.getCamera().getLocation().y = 20f;
-
-        moveCameraTo(Main.DB.settlements.get(Main.DB.factions.get(Main.DB.playerFaction).capital));
-
+        
 
         map = new WorldMap(game, sceneNode);
         if (!map.createWorldMap()) {
             game.wishToQuit = true;
         }
 
+        
 
-        uiController = new WorldMapUI();
-        uiController.game = game;
+        uiController = new WorldMapUI(game);
         game.nifty.fromXml("ui/worldmap/ui.xml", "start", uiController);
         map.minimap = new WorldMinimap(map);
 
-        logic = new WorldMapGameLogic(game);
         logic.beginGame();
 
+        
+        game.getCamera().lookAtDirection(new Vector3f(0f, -1f, -1f).normalizeLocal(), Vector3f.UNIT_Y);
+        game.getCamera().getLocation().y = 20f;
+        moveCameraTo(Main.DB.settlements.get(Main.DB.factions.get(logic.playerFaction).capital));
+
+        
 
         initialized = true;
 

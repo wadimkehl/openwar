@@ -19,6 +19,7 @@ public class GenericFaction {
     public Vector3f color;
     public ArrayList<String> namesMale, namesFemale;
     public Texture banner, flag, icon;
+    public int turnOrder;
 
     public GenericFaction() {
         namesMale = new ArrayList < String > ();

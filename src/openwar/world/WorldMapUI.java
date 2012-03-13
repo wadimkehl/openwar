@@ -64,7 +64,8 @@ public class WorldMapUI implements ScreenController {
     public String currentPopUpName,currentPopUpAnswer;
     public boolean currentPopUpActive;
 
-    public WorldMapUI() {
+    public WorldMapUI(Main g) {
+        game = g;
     }
 
     @Override
@@ -540,7 +541,6 @@ public class WorldMapUI implements ScreenController {
     }
 
     public void onPopUpClick(String i) {
-        System.err.println("onWorldMapPopUpClicked('" + currentPopUpName + "'," + i + ")");
         currentPopUpAnswer = i;
         closePopUp();
         game.doScript("onWorldMapPopUpClicked('" + currentPopUpName + "'," + i + ")");

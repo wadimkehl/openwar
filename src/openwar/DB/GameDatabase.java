@@ -37,9 +37,7 @@ public class GameDatabase {
     public HashMap<String, Settlement> settlements; // String is refname of region!
     public HashMap<String, Climate> climates;
     public HashMap<String, Faction> factions;
-    public String playerFaction;
-    public int currentRound = 0;
-    public String currentTurn;
+
     public Vector3f heightmapParams, sun_color, sun_direction, water_color;
     public boolean hasWater;
     public float waterHeight;

@@ -181,13 +181,13 @@ public class XMLDataLoader {
                 refname = l.getAttribute("refname");
                 file = l.getAttribute("file");
                 Model m = new Model(refname, file, l.getAttribute("diffuse"));
-                Main.DB.models.put(refname,m);
-                
-                 Scanner s = new Scanner(l.getAttribute("scale"));
-                    s.useLocale(Locale.ENGLISH);
+                Main.DB.models.put(refname, m);
+
+                Scanner s = new Scanner(l.getAttribute("scale"));
+                s.useLocale(Locale.ENGLISH);
                 m.scale = new Vector3f(s.nextFloat(), s.nextFloat(), s.nextFloat());
 
-         
+
 
                 logger.log(Level.WARNING, "*Model loaded: {0} *", refname);
 
@@ -446,6 +446,7 @@ public class XMLDataLoader {
 
             entity.name = faction.getAttribute("name");
             entity.refName = faction.getAttribute("refname");
+            entity.turnOrder = Integer.parseInt(faction.getAttribute("turnOrder"));
             Scanner s = new Scanner(faction.getAttribute("color"));
             float r = s.nextFloat();
             float g = s.nextFloat();
@@ -761,6 +762,6 @@ public class XMLDataLoader {
 
             return false;
         }
-        
+
     }
 }
