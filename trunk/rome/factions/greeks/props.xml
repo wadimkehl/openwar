@@ -2,7 +2,7 @@
 
 <root>
 
-    <faction name="Greeks" refname="greeks" color="255 50 50" religion="greek_pantheon" />
+    <faction name="Greeks" refname="greeks" color="255 50 50" religion="greek_pantheon" turnOrder="2"/>
      <images banner="banner.png" flag="flag.png" icon="icon.png" />
         
     <names>

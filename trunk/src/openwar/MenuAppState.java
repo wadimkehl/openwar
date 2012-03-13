@@ -54,13 +54,12 @@ public class MenuAppState extends AbstractAppState implements ScreenController {
     }
 
     public void startGame() {
-        Main.DB.currentTurn = Main.DB.playerFaction = "romans";
+        game.worldMapState.logic.playerFaction = game.worldMapState.logic.currentTurn = "romans";
         game.gameLoaderState.loadWorldMap();
     }
 
     public void quickBattle() {
 
-        Main.DB.playerFaction = "A";
 
         Unit m = new Unit("militia");
         m.count=45;

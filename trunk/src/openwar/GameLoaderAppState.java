@@ -9,12 +9,9 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.bullet.BulletAppState.ThreadingType;
 import com.jme3.bullet.PhysicsSpace.BroadphaseType;
-import com.jme3.math.Vector3f;
-import com.jme3.scene.control.UpdateControl;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
-import java.util.concurrent.Callable;
 import openwar.DB.XMLDataLoader;
 import openwar.battle.BattleAppState;
 
