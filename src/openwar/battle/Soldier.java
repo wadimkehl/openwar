@@ -4,16 +4,14 @@
  */
 package openwar.battle;
 
-import com.jme3.bullet.collision.PhysicsCollisionEvent;
-import com.jme3.bullet.collision.PhysicsCollisionListener;
+import com.jme3.bullet.collision.PhysicsCollisionObject;
+import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
-import com.jme3.bullet.control.CharacterControl;
+import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.bullet.control.GhostControl;
-import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.FastMath;
-import com.jme3.math.Matrix3f;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
@@ -28,17 +26,12 @@ import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.terrain.geomipmap.TerrainQuad;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  *
  * @author kehl
  */
-public class Soldier implements PhysicsCollisionListener {
-
-    @Override
-    public void collision(PhysicsCollisionEvent event) {
-    }
+public class Soldier {
 
     public enum Status {
 
@@ -49,9 +42,10 @@ public class Soldier implements PhysicsCollisionListener {
         Fight_Melee,
         Attack_Range,
         Fight_Range,
-        Fall,
+        MidAir,
         Dead
     }
+    
     Spatial model, selectionQuad, previewQuad;
     Node node;
     Unit unit;
@@ -64,10 +58,10 @@ public class Soldier implements PhysicsCollisionListener {
     float radius = 0.4f;
     TerrainQuad terrain;
     Node cone;
-    CylinderCollisionShape collShape;
-    SoldierCollision collControl;
+    CollisionShape collShape, rangeShape, meleeShape;
+    GhostControl collControl, rangeControl, meleeControl;
     Vector2f collVec;
-    ArrayList<Soldier> collObjects;
+    boolean collision;
     int loopCounter;
 
     public Soldier(Unit ref) {
@@ -80,7 +74,6 @@ public class Soldier implements PhysicsCollisionListener {
         walkDir = new Vector2f();
         collVec = new Vector2f();
         previewPos = new Vector2f();
-        collObjects = new ArrayList<Soldier>();
 
 
     }
@@ -91,7 +84,7 @@ public class Soldier implements PhysicsCollisionListener {
 
 
         //model = unit.battle.game.getAssetManager().loadModel("models/" + Main.DB.cultures.get(0).armyModel);
-        model = (Spatial) new Geometry("", new Cylinder(8, 8, radius, height, true));
+        model = (Spatial) new Geometry("", new Cylinder(16, 16, radius, height, true));
         mat = new Material(unit.battle.game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
         model.setMaterial(mat);
         model.setShadowMode(ShadowMode.CastAndReceive);
@@ -132,10 +125,45 @@ public class Soldier implements PhysicsCollisionListener {
         node.attachChild(cone);
 
         collShape = new CylinderCollisionShape(new Vector3f(radius*0.75f, height / 2f, radius*0.75f), 1);
-        collControl = new SoldierCollision(collShape, this);
-        unit.battle.game.bulletState.getPhysicsSpace().add(collControl);
+        meleeShape = new SphereCollisionShape(10);
+        rangeShape = new SphereCollisionShape(100);
 
+        collControl = new GhostControl(collShape);
+        meleeControl =new GhostControl(meleeShape);
+        rangeControl = new GhostControl(rangeShape);
+                
+        
+        collControl.setCollideWithGroups(PhysicsCollisionObject.COLLISION_GROUP_01 | 
+                                         PhysicsCollisionObject.COLLISION_GROUP_02);
+        meleeControl.setCollisionGroup(PhysicsCollisionObject.COLLISION_GROUP_03);
+        rangeControl.setCollisionGroup(PhysicsCollisionObject.COLLISION_GROUP_03);
+        
+        if("A".equals(unit.owner))
+        {            
+            collControl.setCollisionGroup(PhysicsCollisionObject.COLLISION_GROUP_01);        
+            meleeControl.setCollideWithGroups(PhysicsCollisionObject.COLLISION_GROUP_02);
+            rangeControl.setCollideWithGroups(PhysicsCollisionObject.COLLISION_GROUP_02);
+        }
+        else
+        {
+            collControl.setCollisionGroup(PhysicsCollisionObject.COLLISION_GROUP_02);
+            meleeControl.setCollideWithGroups(PhysicsCollisionObject.COLLISION_GROUP_01);
+            rangeControl.setCollideWithGroups(PhysicsCollisionObject.COLLISION_GROUP_01);  
+        }
+     
+        
+        
+        unit.battle.game.bulletState.getPhysicsSpace().add(collControl);    
+        unit.battle.game.bulletState.getPhysicsSpace().add(meleeControl);
         node.addControl(collControl);
+        node.addControl(meleeControl);
+        
+        if(unit.rangeStats != null)
+        {
+           unit.battle.game.bulletState.getPhysicsSpace().add(rangeControl);
+           node.addControl(rangeControl);
+        }
+        
         unit.battle.hashedSoldiers.put(node, this);
 
 
@@ -251,13 +279,11 @@ public class Soldier implements PhysicsCollisionListener {
 
         
         loopCounter++;
-        if (!collObjects.isEmpty()) {
+        if (collision) {
             loopCounter = 0;
-            collVec.x = collVec.y = 0;
-            collVec.subtractLocal(collObjects.get(0).currPos.subtract(currPos));
-            collObjects.clear();
             currPos.addLocal(collVec.multLocal(tpf));
             node.setLocalTranslation(currPos.x, terrain.getHeight(currPos) + height * 0.5f, currPos.y);
+            collision=false;
 
         } 
         switch (status) {
