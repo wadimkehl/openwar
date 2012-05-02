@@ -688,6 +688,8 @@ public class WorldMap {
         mat.getAdditionalRenderState().setBlendMode(BlendMode.Alpha);
         //mat.getAdditionalRenderState().setDepthWrite(false);
         reachableArea.setMaterial(mat);
+        
+        // TODO: JME changes for transparent and shadow recieving stuff, fix in future
         reachableArea.setShadowMode(ShadowMode.Receive);
         reachableArea.setQueueBucket(Bucket.Transparent);
         scene.attachChild(reachableArea);

@@ -39,7 +39,8 @@ public class Unit {
     };
     public String refName;
     public String owner;
-    public int exp, att, def;
+    public UnitMeleeStats meleeStats;
+    public UnitRangeStats rangeStats;
     public boolean selected, run, invertFormation, previewFormation;
     public float morale = 100f, stamina = 100f;
     public ArrayList<Soldier> soldiers;
@@ -55,9 +56,7 @@ public class Unit {
         battle = b;
         status = Unit.Status.Idle;
         owner = player;
-        exp = U.exp;
-        att = U.att;
-        def = U.def;
+
 
         currPos = new Vector2f(0, 0);
         goalPos = new Vector2f(0, 0);
@@ -117,6 +116,12 @@ public class Unit {
                             @Override
                             public Object call() throws Exception {
                                 s.node.detachChild(s.selectionQuad);
+                                battle.game.bulletState.getPhysicsSpace().remove(s.collControl);
+                                battle.game.bulletState.getPhysicsSpace().remove(s.meleeControl);
+                                if (rangeStats != null) {
+                                    battle.game.bulletState.getPhysicsSpace().remove(s.rangeControl);
+                                }
+
                                 soldiers.remove(s);
                                 return null;
                             }
@@ -182,6 +187,11 @@ public class Unit {
 
     }
 
+    public void setFormation(Formation form, boolean warp) {
+        formation = form;
+        formation.doFormation(run, warp, invertFormation);
+    }
+
     public void setGoal(float x, float z, float dx, float dz, boolean run) {
         //TODO: x needs to be inverted for rotations to work...
         oldGoalDir = goalDir.clone();
@@ -232,7 +242,6 @@ public class Unit {
 
         }
     }
-    
 
     public void togglePreviewFormation(boolean select) {
         previewFormation = select;
@@ -249,7 +258,7 @@ public class Unit {
 
     }
 
-    public void previewFormation(Vector3f start, Vector3f end,boolean accept) {
-        formation.previewFormation(start.x, start.z, end.x, end.z,accept);
+    public void previewFormation(Vector3f start, Vector3f end, boolean accept) {
+        formation.previewFormation(start.x, start.z, end.x, end.z, accept);
     }
 }

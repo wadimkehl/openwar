@@ -50,6 +50,7 @@ public class BattleAppState extends AbstractAppState {
         Selection,
         Formation
     }
+    
     NanoTimer timer = new NanoTimer();
     public Spatial dragStartShape, dragEndShape;
     long lastClickTime;
@@ -67,6 +68,9 @@ public class BattleAppState extends AbstractAppState {
     public Tile tile;
     public BattleUI uiController;
     public HashMap<Spatial, Soldier> hashedSoldiers;
+    public HashMap<Spatial, Projectile> hashedProjectiles;
+    public SoldierCollision soldierListener;
+    
     private AnalogListener analogListener = new AnalogListener() {
 
         @Override
@@ -348,6 +352,8 @@ public class BattleAppState extends AbstractAppState {
         sceneNode = new Node("Battle");
         sceneNode.addControl(new UpdateControl());
         hashedSoldiers = new HashMap<Spatial, Soldier>();
+        hashedProjectiles = new HashMap<Spatial,Projectile>();
+
 
 
     }
@@ -480,6 +486,11 @@ public class BattleAppState extends AbstractAppState {
 
         game.getViewPort().addProcessor(fpp);
 
+        
+        soldierListener = new SoldierCollision(this);
+        game.bulletState.getPhysicsSpace().addCollisionListener(soldierListener);
+
+        
 
         selectionQuad = new Geometry("", new Quad(1, 1));
         game.guiNode.attachChild(selectionQuad);
