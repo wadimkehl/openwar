@@ -6,6 +6,7 @@ package openwar.battle.formations;
 
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector2f;
+import java.util.ArrayList;
 import openwar.battle.Soldier;
 import openwar.battle.Unit;
 
@@ -38,6 +39,82 @@ public class BoxFormation extends Formation {
         float dist = sparseFormation ? 3f : 1.5f;
         return (FastMath.ceil((number) / (nrPerRow)) - 1) * dist;
 
+    }
+
+    @Override
+    public void doExactFormation(boolean run, boolean warp, boolean fromPreview) {
+
+        float currNr = nrPerRow;
+        float currRow = 0;
+        float currCol = 0;
+        float number = u.soldiers.size();
+        float dist = sparseFormation ? 3f : 1.5f;
+        float angle = FastMath.atan2(u.goalDir.y, u.goalDir.x);
+        if (angle < 0) {
+            angle += FastMath.TWO_PI;
+        }
+        angle += FastMath.HALF_PI;
+        float cos = FastMath.cos(angle);
+        float sin = FastMath.sin(angle);
+
+        nrPerRow = number < nrPerRow ? number : nrPerRow;
+
+        ArrayList<Vector2f> positions = new ArrayList<Vector2f>();
+
+        if (fromPreview) {
+            for (int i = 0; i != u.soldiers.size(); i++) {
+                u.soldiers.get(i).pos_found = false;
+                positions.add(u.soldiers.get(i).previewPos);
+
+            }
+
+        } else {
+            for (int i = 0; i != u.soldiers.size(); i++) {
+
+                u.soldiers.get(i).pos_found = false;
+                float x = u.goalPos.x - (currRow - currNr * 0.5f) * dist * cos;
+                float y = u.goalPos.y + (currRow - currNr * 0.5f) * dist * sin;
+                x += (currCol) * dist * sin;
+                y += (currCol) * dist * cos;
+                positions.add(new Vector2f(x, y));
+
+                currRow++;
+                number--;
+                if (currRow >= nrPerRow) {
+                    currRow = 0;
+                    currCol++;
+                    if (number < nrPerRow) {
+                        currNr = number;
+                    }
+
+                }
+            }
+        }
+        
+        for (Vector2f p : positions) {
+            float minDist = 100000000;
+            Soldier minSol = null;
+
+            for (int i = 0; i != u.soldiers.size(); i++) {
+
+                Soldier s = u.soldiers.get(i);
+                if (!s.pos_found) {
+                    float d = p.distanceSquared(s.currPos);
+                    if (d < minDist) {
+                        minDist = d;
+                        minSol = s;
+                    }
+                }
+
+            }
+            minSol.pos_found = true;
+            if (warp) {
+                minSol.setPosition(p.x, p.y, u.goalDir.x, u.goalDir.y);
+            } else {
+                minSol.setGoal(p.x, p.y, u.goalDir.x, u.goalDir.y, run);
+            }
+
+        }
     }
 
     @Override
@@ -92,7 +169,7 @@ public class BoxFormation extends Formation {
     }
 
     @Override
-    public void previewFormation(float lx, float ly, float rx, float ry, boolean accept) {
+    public void previewFormation(float lx, float ly, float rx, float ry) {
 
         Vector2f diff = new Vector2f(rx - lx, ry - ly);
         float width = diff.length();
@@ -109,14 +186,6 @@ public class BoxFormation extends Formation {
         float currRow = 0;
         float currCol = 0;
         float number = u.soldiers.size();
-
-
-        if (accept) {
-            u.goalPos.x = centerx;
-            u.goalPos.y = centery;
-            u.goalDir.x = -diff.y;
-            u.goalDir.y = -diff.x;
-        }
 
         for (int i = 0; i < u.soldiers.size(); i++) {
 
@@ -139,10 +208,6 @@ public class BoxFormation extends Formation {
                 }
             }
 
-            if (accept) {
-                s.setGoal(s.previewPos.x, s.previewPos.y, u.goalDir.x, u.goalDir.y, u.run);
-
-            }
         }
 
     }

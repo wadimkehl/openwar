@@ -5,9 +5,11 @@
     <unit name="Militia" refname="militia" maxcount="100" maxmovepoints="20" 
     turnstorecruit="2" walks="true" sails="false" cost="150" upkeep="20" />
     <description card="unitcard.jpg" detail="info.jpg" 
-    info="Militia is funny. Bowmen stinks like skanks..."  />
-
+    info="Militia is funny. Militia is cool..."  />
     
-    <stats att_melee="5" att_assault="2" armor="2" shield="0" melee="true"/>
-
+ 
+    <melee damage="5" assault="3" shield="1" armor="10" distance="1.0"/>
+    
+    <spatial model="soldier.blend" skeleton="" diffuse="militia.dds" />
+  
 </root>

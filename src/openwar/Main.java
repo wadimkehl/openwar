@@ -245,25 +245,16 @@ public class Main extends Application {
         getInputManager().setCursorVisible(true);
         camera.setEnabled(false);
 
-
-        if (!devMode) {
-            getInputManager().addMapping("map_strafeup", new KeyTrigger(KeyInput.KEY_W));
-            getInputManager().addMapping("map_strafedown", new KeyTrigger(KeyInput.KEY_S));
-            getInputManager().addMapping("map_strafeleft", new KeyTrigger(KeyInput.KEY_A));
-            getInputManager().addMapping("map_straferight", new KeyTrigger(KeyInput.KEY_D));
-            getInputManager().addMapping("battle_forward", new KeyTrigger(KeyInput.KEY_W));
+        getInputManager().addMapping("battle_forward", new KeyTrigger(KeyInput.KEY_W));
             getInputManager().addMapping("battle_backward", new KeyTrigger(KeyInput.KEY_S));
             getInputManager().addMapping("battle_strafeleft", new KeyTrigger(KeyInput.KEY_A));
             getInputManager().addMapping("battle_straferight", new KeyTrigger(KeyInput.KEY_D));
+        getInputManager().addMapping("map_strafeup", new KeyTrigger(KeyInput.KEY_W));
+            getInputManager().addMapping("map_strafedown", new KeyTrigger(KeyInput.KEY_S));
+            getInputManager().addMapping("map_strafeleft", new KeyTrigger(KeyInput.KEY_A));
+            getInputManager().addMapping("map_straferight", new KeyTrigger(KeyInput.KEY_D));
 
-        } else {
-
-
-
-            getInputManager().addMapping("map_strafeup", new KeyTrigger(KeyInput.KEY_U));
-            getInputManager().addMapping("map_strafedown", new KeyTrigger(KeyInput.KEY_J));
-            getInputManager().addMapping("map_strafeleft", new KeyTrigger(KeyInput.KEY_H));
-            getInputManager().addMapping("map_straferight", new KeyTrigger(KeyInput.KEY_K));
+        if (devMode) {
 
             getInputManager().addMapping("texture_types", new KeyTrigger(KeyInput.KEY_1));
             getInputManager().addMapping("texture_regions", new KeyTrigger(KeyInput.KEY_2));

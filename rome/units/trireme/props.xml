@@ -9,7 +9,6 @@
     info="Triremes are funny. Triremes stink like skanks..."  />
 
     
-    <stats att_melee="1" att_assault="1" att_range="5" armor="1" shield="0" melee="true" ranged="true" />
     <model refname="trireme" skeleton="ship" texture="bowmen.jpg" />
 
 

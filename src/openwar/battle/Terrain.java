@@ -4,8 +4,8 @@
  */
 package openwar.battle;
 
+import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.collision.shapes.HeightfieldCollisionShape;
-import com.jme3.bullet.collision.shapes.MeshCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.material.Material;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
@@ -29,6 +29,9 @@ public class Terrain {
     int size = 512;
     public RigidBodyControl bodyControl;
 
+    
+    public HeightfieldCollisionShape collShape;
+    
     public Terrain(BattleAppState ba) {
         battle = ba;
 
@@ -47,9 +50,14 @@ public class Terrain {
         Material mat_terrain = new Material(battle.game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
         mat_terrain.setTexture("DiffuseMap", battle.game.getAssetManager().loadTexture("map/1.tga"));
         terrainQuad.setMaterial(mat_terrain);
-        //terrainQuad.setLocalTranslation(size / 2f, 0f, size / 2f);
         terrainQuad.setLocalScale(1f, 0.25f, 1f);
+        
+        collShape = new HeightfieldCollisionShape(heightmap.getHeightMap(), terrainQuad.getLocalScale());
+        bodyControl = new RigidBodyControl(collShape,0);
+        terrainQuad.addControl(bodyControl);                
+        battle.game.bulletState.getPhysicsSpace().add(terrainQuad);
 
+        bodyControl.setCollisionGroup(PhysicsCollisionObject.COLLISION_GROUP_01);         
         TerrainLodControl control = new TerrainLodControl(terrainQuad, battle.game.getCamera());
         terrainQuad.addControl(control);
 

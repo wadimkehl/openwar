@@ -177,15 +177,7 @@ public class WorldMap {
         terrain = new TerrainQuad("terrain", 33, heightMap.getSize(), heightMap.getHeightMap());
         terrain.setMaterial(matTerrain);
         terrain.setLocalTranslation(width / 2f, 0f, height / 2f);
-
-        // Create 4 planes that hide the water effect outside of the game map
-        Geometry plane = new Geometry("", new Quad(2 * width, 2 * height));
-        Material mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
-        plane.setMaterial(mat);
-                plane.setLocalRotation(new Quaternion().fromAngleAxis(-FastMath.HALF_PI,Vector3f.UNIT_X));
-
-        plane.setLocalTranslation(0, 1f, 0);
-        //this.scene.attachChild(plane);
+       
         return true;
     }
 
@@ -345,7 +337,10 @@ public class WorldMap {
             water.setWaterHeight(Main.DB.waterHeight);
             water.setSpeed(0.1f);
             water.setFoamHardness(2f);
-            water.setFoamExistence(new Vector3f(0.1f, 0.2f, 0.18f));
+            water.setFoamExistence(new Vector3f(0.1f, 0.2f, 0.18f));           
+            water.setCenter(new Vector3f(0,0,0));
+            water.setRadius(width);
+            water.setShapeType(WaterFilter.AreaShape.Square);
             fpp.addFilter(water);
         }
 

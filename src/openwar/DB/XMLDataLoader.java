@@ -19,7 +19,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +31,8 @@ import openwar.Main;
 import openwar.world.WorldDecoration;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class XMLDataLoader {
@@ -336,8 +340,9 @@ public class XMLDataLoader {
         try {
             Element unit = (Element) root.getElementsByTagName("unit").item(0);
             Element d = (Element) root.getElementsByTagName("description").item(0);
-            Element stats = (Element) root.getElementsByTagName("stats").item(0);
-
+            Element melee = (Element) root.getElementsByTagName("melee").item(0);
+            Element range = (Element) root.getElementsByTagName("range").item(0);
+            Element spatial = (Element) root.getElementsByTagName("spatial").item(0);
 
             entity.name = unit.getAttribute("name");
             entity.refName = unit.getAttribute("refname");
@@ -355,8 +360,36 @@ public class XMLDataLoader {
             String image = "units" + File.separator + entity.refName + File.separator + d.getAttribute("card");
             desc.card = (Texture2D) assets.loadTexture(image);
             desc.info = d.getAttribute("card");
-
             entity.desc = desc;
+
+
+
+            if (melee != null) {
+                entity.melee_stats = new HashMap<String, String>();
+                NamedNodeMap m = melee.getAttributes();
+                for (int i = 0; i < m.getLength(); i++) {
+                    Node n = m.item(i);
+                    entity.melee_stats.put(n.getNodeName(), n.getNodeValue());
+                }
+            }
+
+            if (range != null) {
+                entity.range_stats = new HashMap<String, String>();
+                NamedNodeMap m = range.getAttributes();
+                for (int i = 0; i < m.getLength(); i++) {
+                    Node n = m.item(i);
+                    entity.range_stats.put(n.getNodeName(), n.getNodeValue());
+                }
+            }
+            
+             if (spatial != null) {
+                entity.model = spatial.getAttribute("model");
+                entity.diffuse = spatial.getAttribute("diffuse");
+                entity.skeleton = spatial.getAttribute("skeleton");              
+            }
+
+
+
             Main.DB.genUnits.put(entity.refName, entity);
             logger.log(Level.WARNING, "*Unit loaded: {0} *", entity.refName);
         } catch (Exception E) {
