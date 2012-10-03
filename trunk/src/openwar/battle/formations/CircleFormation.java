@@ -68,7 +68,7 @@ public class CircleFormation extends Formation {
     }
 
     @Override
-    public void previewFormation(float lx, float ly, float rx, float ry, boolean accept) {
+    public void previewFormation(float lx, float ly, float rx, float ry) {
         float dist = sparseFormation ? 3f : 1.5f;
         float number = u.soldiers.size();
         Vector2f diff = new Vector2f(rx - lx, ry - ly);
@@ -79,14 +79,6 @@ public class CircleFormation extends Formation {
 
         float rad = FastMath.HALF_PI;
         float increment = FastMath.TWO_PI / number;
-
-
-        if (accept) {
-            u.goalPos.x = centerx;
-            u.goalPos.y = centery;
-            u.goalDir.x = -diff.y;
-            u.goalDir.y = -diff.x;
-        }
 
 
         for (Soldier s : u.soldiers) {
@@ -100,14 +92,17 @@ public class CircleFormation extends Formation {
             //rad += dist / r;
             rad += increment;
 
-            if (accept) {
-                s.setGoal(s.previewPos.x, s.previewPos.y, cos, sin, u.run);
-
-            }
+           
         }
 
 
 
 
+    }
+
+
+    @Override
+    public void doExactFormation(boolean run, boolean warp, boolean fromPreview) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

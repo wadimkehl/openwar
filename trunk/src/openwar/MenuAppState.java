@@ -61,6 +61,7 @@ public class MenuAppState extends AbstractAppState implements ScreenController {
     public void quickBattle() {
 
 
+        /*
         Unit m = new Unit("militia");
         m.count=45;
         m.att=3;
@@ -83,9 +84,28 @@ public class MenuAppState extends AbstractAppState implements ScreenController {
         
         a2.add(m);
         a2.add(l);
+         * 
+         * 
+         */
+        
+        Unit m = new Unit("militia");
+        m.count=10;
+        m.att=3;
+        m.def=2;
+        m.exp=0;
+        
+        
+        ArrayList<Unit> a1 = new ArrayList<Unit>();
+        ArrayList<Unit> a2 = new ArrayList<Unit>();
+        
+        a1.add(m);
+        
+        a2.add(m);
 
         BattleAppState b = new BattleAppState(a1, a2);
         game.gameLoaderState.loadBattle(b);
+        
+        
 
     }
 

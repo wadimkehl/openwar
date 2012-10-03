@@ -10,6 +10,7 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.collision.CollisionResult;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
+import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
@@ -30,7 +31,11 @@ import com.jme3.scene.shape.Quad;
 import com.jme3.shadow.PssmShadowRenderer;
 import com.jme3.system.NanoTimer;
 import com.jme3.terrain.geomipmap.TerrainPatch;
+import com.jme3.texture.Image;
+import com.jme3.texture.Texture;
+import com.jme3.texture.Texture2D;
 import com.jme3.util.SkyFactory;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import openwar.AudioAppState;
@@ -69,7 +74,8 @@ public class BattleAppState extends AbstractAppState {
     public BattleUI uiController;
     public HashMap<Spatial, Soldier> hashedSoldiers;
     public HashMap<Spatial, Projectile> hashedProjectiles;
-    public SoldierCollision soldierListener;
+    public BattleCollisionListener collisionListener;
+    public Texture selectionTexture;
     
     private AnalogListener analogListener = new AnalogListener() {
 
@@ -144,7 +150,7 @@ public class BattleAppState extends AbstractAppState {
                     dragStartShape.setLocalTranslation(dragModeStartPoint);
                     dragEndShape.setLocalTranslation(dragModeEndPoint);
 
-                    selectedUnits.get(0).previewFormation(dragModeStartPoint, dragModeEndPoint, false);
+                    selectedUnits.get(0).previewFormation(dragModeStartPoint, dragModeEndPoint);
                 }
 
             }
@@ -206,8 +212,7 @@ public class BattleAppState extends AbstractAppState {
                         dragMode = DragMode.None;
                         sceneNode.detachChild(dragStartShape);
                         sceneNode.detachChild(dragEndShape);
-                        selectedUnits.get(0).previewFormation(dragModeStartPoint, dragModeEndPoint, true);
-                        selectedUnits.get(0).togglePreviewFormation(false);
+                        selectedUnits.get(0).acceptFormationPreview(dragModeStartPoint, dragModeEndPoint, true);
                         return;
                     }
 
@@ -244,12 +249,12 @@ public class BattleAppState extends AbstractAppState {
 
         }
 
-        Spatial spat = (Spatial) r.getGeometry();
+        Spatial spat = (Spatial) r.getGeometry().getParent().getParent();
         Unit u = getUnitBySoldier(spat);
         if (u != null) {
 
             // If unit is not fleeing from battle
-            if (u.status != Unit.Status.Rout) {
+            if (u.status != Unit.Status.Routing) {
                 deselectAll();
                 selectUnit(u);
             }
@@ -264,6 +269,8 @@ public class BattleAppState extends AbstractAppState {
     public void rightMouseClick(CollisionResult r) {
 
         Vector3f pt = r.getContactPoint();
+        
+        
         if (r.getGeometry() instanceof TerrainPatch) {
 
             if (selectedUnits.isEmpty()) {
@@ -283,21 +290,23 @@ public class BattleAppState extends AbstractAppState {
 
 
             // Check for double click and either walk or run
-//            long time = timer.getTime();
-//            boolean run = (time - lastClickTime < 300000000);
-//            lastClickTime = time;
+            long time = timer.getTime();
+            boolean run = (time - lastClickTime < 300000000);
+            lastClickTime = time;
 
 
             for (Unit u : selectedUnits) {
                 Vector2f finalPos = goal.add(u.currPos.subtract(meanPos));
 
+                u.enemy = null;
+                
                 // Check if the unit direction should change
                 if (altPressed) {
                     float dx = finalPos.x - u.currPos.x;
                     float dz = finalPos.y - u.currPos.y;
-                    u.setGoal(finalPos.x, finalPos.y, dx, dz, ctrlPressed);
+                    u.setGoal(finalPos.x, finalPos.y, dx, dz, ctrlPressed | run);
                 } else {
-                    u.setGoal(finalPos.x, finalPos.y, ctrlPressed);
+                    u.setGoal(finalPos.x, finalPos.y, ctrlPressed | run);
                 }
             }
 
@@ -307,6 +316,20 @@ public class BattleAppState extends AbstractAppState {
             return;
 
         }
+        
+        Spatial spat = (Spatial) r.getGeometry();
+        Unit u = getUnitBySoldier(spat);
+        if (u != null) {
+
+                       for (Unit selected : selectedUnits) 
+                           selected.attackUnit(u, ctrlPressed);
+
+
+
+
+            return;
+        }
+
 
 
     }
@@ -363,11 +386,11 @@ public class BattleAppState extends AbstractAppState {
         this();
 
         for (openwar.DB.Unit u : a) {
-            teamA.add(new Unit(this, u, "A"));
+            teamA.add(new Unit(this, u, "romans"));
         }
 
         for (openwar.DB.Unit u : b) {
-            teamB.add(new Unit(this, u, "B"));
+            teamB.add(new Unit(this, u, "greeks"));
         }
 
 
@@ -426,9 +449,12 @@ public class BattleAppState extends AbstractAppState {
         dragStartShape.setMaterial(new Material(game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md"));
         dragStartShape.setLocalRotation(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_X));
         dragEndShape = dragStartShape.clone();
+        
+        collisionListener = new BattleCollisionListener(this);
+        game.bulletState.getPhysicsSpace().addCollisionListener(collisionListener);
 
 
-        float z = -50;
+        float z = -20;
         for (Unit u : teamA) {
             u.createData();
             u.setPosition(0, z, 0, 1);
@@ -436,7 +462,7 @@ public class BattleAppState extends AbstractAppState {
 
         }
 
-        z = 50;
+        z = 20;
         for (Unit u : teamB) {
             u.createData();
             u.setPosition(0, z, 0, -1);
@@ -470,26 +496,27 @@ public class BattleAppState extends AbstractAppState {
         pssm.setDirection(Main.DB.sun_direction);
         game.getViewPort().addProcessor(pssm);
 
-        FilterPostProcessor fpp = new FilterPostProcessor(game.getAssetManager());
+ 
+  
+           if(!Main.devMode)
+        {
+                    
+           FilterPostProcessor fpp = new FilterPostProcessor(game.getAssetManager());
+
+            
         FogFilter fog = new FogFilter();
         fog.setFogColor(new ColorRGBA(0.9f, 0.7f, 0.7f, 1.0f));
         fog.setFogDistance(155);
         fog.setFogDensity(1.0f);
-        //fpp.addFilter(fog);
+        fpp.addFilter(fog);
 
 
         BloomFilter bloom = new BloomFilter();
         bloom.setExposurePower(8f);
         bloom.setBloomIntensity(1.5f);
-        //fpp.addFilter(bloom);
-
-
+        fpp.addFilter(bloom);
         game.getViewPort().addProcessor(fpp);
-
-        
-        soldierListener = new SoldierCollision(this);
-        game.bulletState.getPhysicsSpace().addCollisionListener(soldierListener);
-
+        }
         
 
         selectionQuad = new Geometry("", new Quad(1, 1));

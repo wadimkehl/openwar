@@ -17,9 +17,9 @@ public abstract class Formation {
     public boolean sparseFormation;
     
  
+    public abstract void doExactFormation(boolean run, boolean warp, boolean fromPreview); 
     
-    
-    public abstract void previewFormation(float lx, float ly, float rx, float ry, boolean accept);
+    public abstract void previewFormation(float lx, float ly, float rx, float ry);
     public abstract void doFormation(boolean run, boolean warp,boolean invert);
     public abstract float getWidth();
     public abstract float getDepth();

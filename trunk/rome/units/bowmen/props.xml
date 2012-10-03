@@ -9,7 +9,11 @@
     info="Bowmen are funny. Bowmen stink like skanks..."  />
 
     
-    <stats att_melee="1" att_assault="1" att_range="5" armor="1" shield="0" melee="true" ranged="true" />
+    <melee damage="1" assault="1" shield="0" armor="5" distance="1.0"/>
+    
+    <range damage="3" maxammo="200" distance="60.0"/>
+
+    
     <model refname="ranged_unit" skeleton="ranged_unit" texture="bowmen.jpg" />
 
 

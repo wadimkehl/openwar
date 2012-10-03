@@ -19,6 +19,9 @@ public class GenericUnit {
     public int turnsToRecruit;
     public int cost,upkeep;
     public boolean walks, sails, cargo;
-    public Map<String, Integer> stats;
+    public Map<String, String> melee_stats;
+    public Map<String, String> range_stats;
+    
+    public String model, diffuse,skeleton;
     public Description desc;
 }

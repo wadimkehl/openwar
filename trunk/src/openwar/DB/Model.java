@@ -47,7 +47,7 @@ public class Model {
       
         if(diffuse != null)
         //mat.setTexture("DiffuseMap",as.loadTexture("models/" + diffuse));
-        mat.setTexture("ColorMap",as.loadTexture("models/" + diffuse));
+        mat.setTexture("ColorMap",as.loadTexture("textures/" + diffuse));
 
     }
     
