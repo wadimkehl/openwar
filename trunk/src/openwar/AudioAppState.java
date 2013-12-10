@@ -34,10 +34,10 @@ public class AudioAppState extends AbstractAppState {
 
     public AudioAppState(Main g) {
         game = g;
-        menu = new ArrayList<String>();
-        loading = new ArrayList<String>();
-        fadeOutNodes = new ArrayList<AudioNode>();
-        worldMapIdle = new ArrayList<String>();
+        menu = new ArrayList<>();
+        loading = new ArrayList<>();
+        fadeOutNodes = new ArrayList<>();
+        worldMapIdle = new ArrayList<>();
     }
 
     @Override

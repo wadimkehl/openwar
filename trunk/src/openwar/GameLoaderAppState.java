@@ -80,6 +80,8 @@ public class GameLoaderAppState extends AbstractAppState implements ScreenContro
 
     public void loadWorldMap() {
         game.nifty.fromXml("ui/loading/ui.xml", "start", this);
+         manager.attach(game.worldMapState);
+
         //game.audioState.setMusicMode(AudioAppState.MusicMode.Loading);
         status = Status.LoadingWorldMap;
 
@@ -103,7 +105,9 @@ public class GameLoaderAppState extends AbstractAppState implements ScreenContro
 
 
             case LoadingWorldMap:
-                manager.attach(game.worldMapState);
+                
+               // game.worldMapState.beginGame();
+                
                 if (Main.devMode) {
                     manager.attach(game.debugState);
                 }

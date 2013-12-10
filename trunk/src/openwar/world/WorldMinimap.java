@@ -33,9 +33,13 @@ public class WorldMinimap {
 
     public WorldMinimap(WorldMap m) {
         map = m;
+        
+        
+        Element minimapLayer = map.game.nifty.getCurrentScreen().findElementByName("minimap_layer");
+        
         minimapElement = map.game.nifty.getCurrentScreen().findElementByName("minimap");
-        Element panel = map.game.nifty.getCurrentScreen().findElementByName("minimap_panel");
-
+        Element panel = map.game.nifty.getCurrentScreen().findElementByName("minimap_panel");        
+                
         panelWidth = panel.getWidth();
         panelHeight = panel.getHeight();
         imageHeight = minimapElement.getHeight();

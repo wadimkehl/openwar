@@ -28,6 +28,7 @@ import com.jme3.scene.control.UpdateControl;
 import com.jme3.scene.shape.Quad;
 import com.jme3.shadow.PssmShadowRenderer;
 import com.jme3.terrain.geomipmap.TerrainQuad;
+import com.jme3.terrain.heightmap.ImageBasedHeightMap;
 import com.jme3.texture.Image;
 import com.jme3.texture.Texture;
 import com.jme3.texture.Texture2D;
@@ -63,7 +64,7 @@ public class WorldMap {
     public Node scene = new Node("worldmap"), rootScene;
     public Material matTerrain;
     AssetManager assetManager;
-    WorldHeightMap heightMap;
+    ImageBasedHeightMap heightMap;
     public Texture key0Image, key1Image, key2Image, gridImage;
     public WorldTile[][] worldTiles;
     public Geometry reachableArea;
@@ -171,13 +172,15 @@ public class WorldMap {
         showGrid(false);
 
         // Create mesh data with material and place its north-western edge to the origin
-        heightMap = new WorldHeightMap(Main.DB.heightmapTex.getImage(), Main.DB.heightmapParams.x,
-                Main.DB.heightmapParams.y, Main.DB.heightmapParams.z);
+       // heightMap = new WorldHeightMap(Main.DB.heightmapTex.getImage(), Main.DB.heightmapParams.x,
+       //         Main.DB.heightmapParams.y, Main.DB.heightmapParams.z);
+        heightMap = new ImageBasedHeightMap(Main.DB.heightmapTex.getImage());
         heightMap.load(false, false);
+        heightMap.setHeightScale(0.05f);
         terrain = new TerrainQuad("terrain", 33, heightMap.getSize(), heightMap.getHeightMap());
         terrain.setMaterial(matTerrain);
         terrain.setLocalTranslation(width / 2f, 0f, height / 2f);
-       
+        terrain.setLocalScale(1.0f, 0.025f, 1.0f);
         return true;
     }
 
@@ -402,7 +405,7 @@ public class WorldMap {
     public void update(float tpf) {
 
 
-        minimap.update();
+//        minimap.update();
 
         for (Settlement s : Main.DB.settlements.values()) {
             s.update(tpf);

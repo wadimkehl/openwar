@@ -2,14 +2,14 @@
 
 <root>
 
-    <model refname="settlement" file="cityicon.obj" diffuse="cityuvmap.png" scale="0.8 0.8 0.8 "/>
+    <model refname="settlement" file="city.blend" diffuse="cityuvmap.png" scale="0.8 0.8 0.8 "/>
    
-    <model refname="dock" file="porticon.obj" diffuse="dockuvmap.png" scale="0.8 0.8 0.8 "/>
+    <model refname="dock" file="port.blend" diffuse="dockuvmap.png" scale="0.8 0.8 0.8 "/>
     
-    <model refname="army" file="emessairyicon.obj" diffuse="emeuvmap.png" scale="1 1 1 "/>
+    <model refname="army" file="emissary.blend" diffuse="emeuvmap.png" scale="1 1 1 "/>
  
 
-    <model refname="fleet" file="manowaricon.obj" diffuse="manowaruvmap.png" scale="0.5 0.5 0.5 "/>
+    <model refname="fleet" file="manowar.blend" diffuse="manowaruvmap.png" scale="0.5 0.5 0.5 "/>
     
 
 

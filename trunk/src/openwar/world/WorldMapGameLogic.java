@@ -22,7 +22,7 @@ public class WorldMapGameLogic {
     public String playerFaction;
     public int currentRound = 0;
     public String currentTurn;
-    public ArrayList<String> turnOrder = new ArrayList<String>();
+    public ArrayList<String> turnOrder = new ArrayList<>();
     public int turnOrderCounter = 0;
 
     public void beginGame() {
