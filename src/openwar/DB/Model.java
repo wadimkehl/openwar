@@ -46,7 +46,7 @@ public class Model {
         model.setLocalScale(scale);
       
         if(diffuse != null)
-        //mat.setTexture("DiffuseMap",as.loadTexture("models/" + diffuse));
+        //mat.setTexture("DiffuseMap",as.loadTexture("textures/" + diffuse));
         mat.setTexture("ColorMap",as.loadTexture("textures/" + diffuse));
 
     }

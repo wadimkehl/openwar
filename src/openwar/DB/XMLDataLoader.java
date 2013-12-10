@@ -149,7 +149,9 @@ public class XMLDataLoader {
                 file = l.getAttribute("file");
                 mode = l.getAttribute("mode");
 
-                entity = new AudioNode(assets, "music" + File.separator + file, true, true);
+                entity = new AudioNode(assets, "music" + File.separator + file, true);
+                entity.setPositional(false);
+                entity.setLooping(false);
                 Main.DB.musicNodes.put(refname, entity);
 
 

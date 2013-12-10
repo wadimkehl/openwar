@@ -319,6 +319,17 @@ public class WorldMapAppState extends AbstractAppState {
 
         uiController = new WorldMapUI(game);
         game.nifty.fromXml("ui/worldmap/ui.xml", "start", uiController);
+             
+
+        initialized = true;
+
+
+
+    }
+    
+    
+    public void beginGame()
+    {
         map.minimap = new WorldMinimap(map);
 
         logic.beginGame();
@@ -327,12 +338,6 @@ public class WorldMapAppState extends AbstractAppState {
         game.getCamera().lookAtDirection(new Vector3f(0f, -1f, -1f).normalizeLocal(), Vector3f.UNIT_Y);
         game.getCamera().getLocation().y = 20f;
         moveCameraTo(Main.DB.settlements.get(Main.DB.factions.get(logic.playerFaction).capital));
-
-        
-
-        initialized = true;
-
-
 
     }
 
