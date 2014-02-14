@@ -10,6 +10,7 @@
  
     <melee damage="5" assault="3" shield="1" armor="10" distance="1.0"/>
     
-    <spatial model="soldier.blend" skeleton="" diffuse="militia.dds" />
+    <spatial model="Ninja.mesh.j3o" skeleton="" diffuse="Ninja.jpg" />
   
 </root>
+
