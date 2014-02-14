@@ -21,6 +21,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.BloomFilter;
 import com.jme3.post.filters.FogFilter;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
@@ -38,6 +39,7 @@ import com.jme3.util.SkyFactory;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import jme3tools.optimize.GeometryBatchFactory;
 import openwar.AudioAppState;
 import openwar.DB.Army;
 import openwar.Main;
@@ -45,7 +47,7 @@ import openwar.world.Tile;
 
 /**
  *
- * @author kehl
+ * @author kehl, hermetic
  */
 public class BattleAppState extends AbstractAppState {
 
@@ -444,7 +446,9 @@ public class BattleAppState extends AbstractAppState {
 
 
         terrain.createData();
-
+        CreateGrass();
+        createSky();
+ 
         dragStartShape = (Spatial) new Geometry("", new Cylinder(8, 8, 0.25f, 3f, true));
         dragStartShape.setMaterial(new Material(game.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md"));
         dragStartShape.setLocalRotation(new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_X));
@@ -470,11 +474,11 @@ public class BattleAppState extends AbstractAppState {
             z += u.formation.getDepth() + 5;
 
         }
-
-        Spatial sky = SkyFactory.createSky(game.getAssetManager(), "map/9.tga", true);
-        sceneNode.attachChild(sky);
-
-
+        
+        /*Spatial sky = SkyFactory.createSky(game.getAssetManager(), "map/9.tga", true);
+        sceneNode.attachChild(sky);*/
+        
+        
         sceneNode.attachChild(terrain.terrainQuad);
 
         game.rootNode.attachChild(sceneNode);
@@ -580,6 +584,90 @@ public class BattleAppState extends AbstractAppState {
 
     }
 
+        private void createSky() {
+        sceneNode.attachChild(SkyFactory.createSky(game.getAssetManager(), "textures/Sky/Bright/BrightSky.dds", false));
+    }
+  
+           public void CreateGrass() {
+        Spatial spatial = createGrassSpatial();
+        Node grassNode = new Node("grassPatch");
+        
+        System.out.println("terrain: "+terrain.heightmap.getSize());
+          for (int j = 0; j < 1000; j++) {
+            float x = FastMath.rand.nextInt(terrain.heightmap.getSize());
+            float z = FastMath.rand.nextInt(terrain.heightmap.getSize());
+            float y = terrain.getHeight(x-terrain.heightmap.getSize()/2, z-terrain.heightmap.getSize()/2);
+            System.out.println(x+", "+z+" y: "+y);
+
+            Spatial grass = spatial.clone();
+            grass.setLocalTranslation(x, y-0.2f, z);
+
+            grassNode.attachChild(grass);
+        }
+         spatial = createTreeSpatial();
+         
+      for (int i = 0; i < 30; i++) {
+            float x = FastMath.rand.nextInt(terrain.heightmap.getSize());
+            float z = FastMath.rand.nextInt(terrain.heightmap.getSize());
+            float y = terrain.getHeight(x-terrain.heightmap.getSize()/2, z-terrain.heightmap.getSize()/2);
+            System.out.println(x+", "+z+" y: "+y);
+
+            Spatial grass = spatial.clone();
+            grass.setLocalTranslation(x, y, z);
+        grass.scale(FastMath.rand.nextInt(2)+2); // make tree bigger
+       float angle = 45 * FastMath.DEG_TO_RAD;
+        grass.setLocalRotation(new Quaternion(new float[]{0, angle, 0}));
+ 
+            grassNode.attachChild(grass);
+        }
+
+        Node optimizedGrass = GeometryBatchFactory.optimize(grassNode, true);
+  optimizedGrass.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
+       optimizedGrass.setLocalTranslation(-terrain.heightmap.getSize()/2, 0, -terrain.heightmap.getSize()/2);
+        sceneNode.attachChild(optimizedGrass);
+    }
+
+    public Spatial createGrassSpatial() {
+        float angle = 90 * FastMath.DEG_TO_RAD;
+
+        Quad q = new Quad(2f, 2f);
+        Geometry g = new Geometry("Grass4_Quad1", q);
+
+        //Material mat = game.getAssetManager().loadMaterial("MatDefs/Vegetation/Grass_4.j3m");
+        Material mat = game.getAssetManager().loadMaterial("materials/myGrassmaterial.j3m");
+        /*Material mat = game.getAssetManager().loadMaterial("Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setTexture("ColorMap", game.getAssetManager().loadTexture("Textures/manowaruvmap.png"));*/
+ 
+        g.setMaterial(mat);
+        g.setLocalTranslation(-1f, 0, 0);
+
+        Quad q2 = new Quad(2f, 2f);
+        Geometry g2 = new Geometry("Grass4_Quad2", q2);
+
+        g2.setMaterial(mat);
+        g2.setLocalTranslation(0, 0, 1f);
+        g2.setLocalRotation(new Quaternion(new float[]{0, angle, 0}));
+
+        Node bb = new Node("Grass4_Billboard");
+ 
+        bb.attachChild(g);
+        bb.attachChild(g2);
+
+        return bb;
+    }
+      public Spatial createTreeSpatial() {
+         
+        Spatial treeSpat = game.getAssetManager().loadModel("models/Tree/Tree.mesh.j3o");
+
+        treeSpat.setQueueBucket(Bucket.Transparent); // leaves are transparent
+  
+        
+       Node treeNode = new Node("treePatch");
+       treeNode.attachChild(treeSpat);
+
+        return treeNode;
+      }
+      
     public int ensureMinMax(int value, int min, int max) {
         return Math.min(max, Math.max(min, value));
     }
@@ -590,3 +678,4 @@ public class BattleAppState extends AbstractAppState {
 
     }
 }
+
