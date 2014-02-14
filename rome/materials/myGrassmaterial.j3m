@@ -1,0 +1,16 @@
+Material My grass custom material : Common/MatDefs/Light/Lighting.j3md {
+     MaterialParameters {
+        DiffuseMap : Flip textures/grass.png
+        UseAlpha : true
+        AlphaDiscardThreshold : 0.5
+        UseMaterialColors : true
+        Specular : 1.0 1.0 1.0 1.0
+        Diffuse : 1.0 1.0 1.0 1.0
+        Shininess : 64.0
+     }
+    AdditionalRenderState {
+      Blend Alpha
+      AlphaTestFalloff 0.50
+      FaceCull Off
+    }
+}
