@@ -4,10 +4,13 @@
  */
 package openwar.battle;
 
+import com.jme3.animation.AnimChannel;
+import com.jme3.animation.AnimControl;
+import com.jme3.animation.AnimEventListener;
+import com.jme3.animation.LoopMode;
 import com.jme3.bullet.collision.PhysicsCollisionObject;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.collision.shapes.CylinderCollisionShape;
 import com.jme3.bullet.collision.shapes.SphereCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.GhostControl;
@@ -20,26 +23,27 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.Camera;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.UpdateControl;
-import com.jme3.scene.shape.Cylinder;
 import com.jme3.scene.shape.Dome;
 import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.terrain.geomipmap.TerrainQuad;
+import java.util.Random;
 import java.util.concurrent.Callable;
 import openwar.DB.GenericUnit;
 import openwar.Main;
 
 /**
  *
- * @author kehl
+ * @author kehl, hermetic
  */
-public class Soldier {
+public class Soldier extends Node implements AnimEventListener{
 
     public enum Status {
 
@@ -56,7 +60,22 @@ public class Soldier {
         WalkIdle, WalkStance,
     }
 
-
+    private Camera cam;
+ 
+    private CharacterControl characterControl;
+    private AnimChannel animChannel;
+    private AnimControl animControl;
+ 
+    private boolean attack;
+    private boolean attacking;
+    private boolean takehit;
+    
+    private String idleAnim = "Idle1";
+    private String walkAnim = "Walk";
+    private String attackAnim = "Attack3";
+     private String deadAnim = "Death1";
+    private String jumpAnim = "Climb"; //hilarious
+    
     Spatial model, selectionQuad, previewQuad;
     Node node;
     Unit unit;
@@ -105,7 +124,7 @@ public class Soldier {
         }
 
 
-    }
+   }
 
     public void createData() {
 
@@ -119,12 +138,13 @@ public class Soldier {
         mat.setTexture("DiffuseMap", unit.battle.game.getAssetManager().loadTexture("textures/" + gen.diffuse));
         
 
-        model.setMaterial(mat);
+        //model.setMaterial(mat);
         model.setShadowMode(ShadowMode.CastAndReceive);
         
         Quaternion ql = new Quaternion().fromAngleAxis(FastMath.HALF_PI, Vector3f.UNIT_Y);
-        Quaternion qu = new Quaternion().fromAngleAxis(FastMath.PI, Vector3f.UNIT_Z);
-        model.setLocalRotation(ql.multLocal(qu));
+        //Quaternion qu = new Quaternion().fromAngleAxis(FastMath.PI, Vector3f.UNIT_Z);
+        model.setLocalRotation(ql);
+        model.setLocalTranslation(0, -0.05f, 0);
 
 
         cone = new Node("");
@@ -240,6 +260,11 @@ public class Soldier {
 
         unit.battle.hashedSoldiers.put(node, this);
 
+ 
+	animControl = model.getControl(AnimControl.class);
+	animControl.addListener(this);
+	animChannel = animControl.createChannel();
+	animChannel.setAnim(idleAnim);
 
     }
 
@@ -334,7 +359,8 @@ public class Soldier {
         System.err.println(this + " receives " + total + " from " + from);
 
         hp -= total;
-
+        
+        takehit=true;   //start anim
 
         if (hp <= 0) {
             from.enemy = null;
@@ -374,6 +400,7 @@ public class Soldier {
 
     public void update(float tpf) {
 
+        System.out.println("status: "+status);
 
         if(status == Status.Dead) return;
         if (unit.previewFormation) {
@@ -512,6 +539,7 @@ public class Soldier {
                         if (fightTimer > unit.meleeStats.timeToHit) {
                             enemy.takeMeleeDamage(this);
                             fightTimer = 0;
+                            attack=true;    //play attack-animation
                         } 
                     }
                     else fightTimer = 0;
@@ -526,7 +554,75 @@ public class Soldier {
         physWalk.z = walkDir.y*currSpeed;
         collControl.setLinearVelocity(physWalk);
         
-        
+ 	handleAnimations();
+       
 
     }
+     private void handleAnimations()
+    {
+        //System.out.println("attack: "+attack);
+	if(attacking)
+	{
+	    //waiting for attack animation to finish
+	}
+	else if(attack)
+	{
+ 
+	    animChannel.setAnim(attackAnim,.3f);
+	    animChannel.setLoopMode(LoopMode.DontLoop);
+	    attack = false;
+	    attacking = true;
+	}
+	/*else if(characterControl.onGround())
+	{*/
+        else if(takehit){
+ 		if(!animChannel.getAnimationName().equals(deadAnim))
+		{
+		    animChannel.setAnim(deadAnim,.3f);
+		    animChannel.setLoopMode(LoopMode.Cycle);
+                    takehit=false;
+		}
+           
+        }
+        else    if(currSpeed>0.1f)
+	    {
+		if(!animChannel.getAnimationName().equals(walkAnim))
+		{
+		    animChannel.setAnim(walkAnim,.3f);
+		    animChannel.setLoopMode(LoopMode.Loop);
+		}
+	    }
+	    else
+	    {
+		if(!animChannel.getAnimationName().equals(idleAnim))
+		{
+		    animChannel.setAnim(idleAnim,.3f);
+		    animChannel.setLoopMode(LoopMode.Cycle);
+		}
+	    }
+	//}
+    }
+ 
+   
+    public void onAnimCycleDone(AnimControl control, AnimChannel channel, String animName)
+    {
+	if(channel == animChannel && attacking && animName.equals(attackAnim))
+	{
+	    attacking = false;
+	}
+	if(channel == animChannel && !attacking && animName.equals(idleAnim))
+	{
+            Random rand = new Random();
+            int r=rand.nextInt(4);
+            if(r>3)idleAnim = "Idle3";
+                else if(r>2)idleAnim = "Idle2";
+                    else if(r>1)idleAnim = "Idle1";
+        }
+    }
+ 
+    public void onAnimChange(AnimControl control, AnimChannel channel, String animName)
+    {
+    }
+  
 }
+
